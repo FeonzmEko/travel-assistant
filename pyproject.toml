@@ -1,0 +1,53 @@
+[project]
+name = "travel-assistant"
+version = "0.1.0"
+description = "智能旅游助手 - 基于 LangChain 多 Agent 协作的旅游规划服务"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    "aiosqlite>=0.21.0",
+    "pydantic[email]>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "httpx>=0.28.0",
+    "python-jose[cryptography]>=3.4.0",
+    "passlib[bcrypt]>=1.7.4",
+    "langchain>=0.3.0",
+    "langchain-openai>=0.3.0",
+    "sse-starlette>=2.2.0",
+    "reportlab>=4.4.0",
+    "python-dotenv>=1.1.0",
+    "python-multipart>=0.0.20",
+    "bcrypt==4.2.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=1.0.0",
+    "pytest-cov>=6.0.0",
+    "httpx>=0.28.0",
+    "respx>=0.22.0",
+    "mypy>=2.1.0",
+    "ruff>=0.15.0",
+    "types-passlib>=1.7.0",
+    "types-python-jose>=3.3.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
