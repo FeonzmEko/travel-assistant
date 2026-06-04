@@ -629,6 +629,8 @@ SpotCache（独立表，不与用户关联）
 | transport | VARCHAR(50) | | 到达交通方式 |
 | notes | TEXT | | 备注 |
 | estimated_cost | DECIMAL(10,2) | | 预估费用 |
+| longitude | DECIMAL(10,6) | | 景点经度 |
+| latitude | DECIMAL(10,6) | | 景点纬度 |
 
 #### spot_cache 表
 

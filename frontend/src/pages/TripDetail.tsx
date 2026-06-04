@@ -17,6 +17,8 @@ interface TripActivityData {
   transport?: string;
   notes?: string;
   estimated_cost?: number;
+  longitude?: number;
+  latitude?: number;
 }
 
 interface TripDayData {
@@ -67,16 +69,33 @@ export default function TripDetail() {
       weather: d.weather!,
     }));
 
-  const allSpots: MapSpot[] = [];
+  const mapSpots: MapSpot[] = [];
   const spotNameSet = new Set<string>();
   for (const day of trip.days) {
     for (const act of day.activities) {
-      if (!spotNameSet.has(act.spot_name)) {
+      const hasCoordinate = act.longitude != null && act.latitude != null;
+      if (hasCoordinate && !spotNameSet.has(act.spot_name)) {
         spotNameSet.add(act.spot_name);
-        allSpots.push({ name: act.spot_name, longitude: 0, latitude: 0 });
+        mapSpots.push({
+          name: act.spot_name,
+          longitude: act.longitude!,
+          latitude: act.latitude!,
+          description: act.notes,
+        });
       }
     }
   }
+
+  const mapRoute = mapSpots.length >= 2
+    ? {
+      origin: [mapSpots[0].longitude, mapSpots[0].latitude] as [number, number],
+      destination: [
+        mapSpots[mapSpots.length - 1].longitude,
+        mapSpots[mapSpots.length - 1].latitude,
+      ] as [number, number],
+      waypoints: mapSpots.slice(1, -1).map((spot) => [spot.longitude, spot.latitude] as [number, number]),
+    }
+    : undefined;
 
   return (
     <div style={{ padding: 24 }}>
@@ -102,6 +121,19 @@ export default function TripDetail() {
         breakdownStr={trip.budget_breakdown}
         total={trip.budget_total ?? totalCost}
       />
+
+      <Card title="行程地图" style={{ marginBottom: 16 }}>
+        {mapSpots.length > 0 ? (
+          <AMapView
+            spots={mapSpots}
+            route={mapRoute}
+            center={[mapSpots[0].longitude, mapSpots[0].latitude]}
+            style={{ width: '100%', height: 420 }}
+          />
+        ) : (
+          <Empty description="暂无可展示的景点坐标" />
+        )}
+      </Card>
 
       {trip.days.length > 0 ? (
         trip.days

@@ -1,5 +1,7 @@
 from collections.abc import AsyncGenerator
 
+from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -25,3 +27,13 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 async def init_db() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        if engine.dialect.name == "sqlite":
+            for statement in (
+                "ALTER TABLE trip_activities ADD COLUMN longitude FLOAT",
+                "ALTER TABLE trip_activities ADD COLUMN latitude FLOAT",
+            ):
+                try:
+                    await conn.execute(text(statement))
+                except OperationalError as exc:
+                    if "duplicate column" not in str(exc).lower():
+                        raise

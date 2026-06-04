@@ -113,6 +113,10 @@ WEATHER_API_KEY=xxx
 JWT_SECRET_KEY=your-secret-key
 JWT_EXPIRE_MINUTES=1440
 DATABASE_URL=sqlite:///./travel_assistant.db
+
+# frontend/.env
+VITE_AMAP_KEY=xxx
+VITE_AMAP_SECURITY_CODE=xxx
 ```
 
 ---
@@ -165,7 +169,7 @@ M12 → M2 → M11 → M3 → M7/M8/M9/M10（可并行） → M6 → M5 → M4 �
    - `ChatMessage`: id, session_id(FK), role, content, created_at
    - `Trip`: id, user_id(FK), title, destination, start_date, end_date, budget_total, budget_breakdown(JSON), created_at, updated_at
    - `TripDay`: id, trip_id(FK), day_index, date, weather
-   - `TripActivity`: id, trip_day_id(FK), order_index, spot_name, time_slot, transport, notes, estimated_cost
+   - `TripActivity`: id, trip_day_id(FK), order_index, spot_name, time_slot, transport, notes, estimated_cost, longitude, latitude
    - `SpotCache`: id, source, source_id, name, city, longitude, latitude, type_tags(JSON), description, images(JSON), rating, open_time, ticket_price, review_summary, cached_at
 4. 编写 Pydantic Schema（Create/Update/Out 三套）
 5. 实现 CRUD 函数（async）

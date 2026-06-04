@@ -1,0 +1,6494 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "136a0386f521af39de7dcb7b142b3f8b1a337ead",
+  "generatedAt": "2026-06-04T14:40:47.397Z",
+  "files": {
+    ".python-version": {
+      "filePath": ".python-version",
+      "contentHash": "7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    ".understand-anything/.understandignore": {
+      "filePath": ".understand-anything/.understandignore",
+      "contentHash": "56d4e962d7a6d6534718d44cf913cfeb0b1515fb8c73b8a57dfe3842fae4cb52",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": false
+    },
+    ".understand-anything/config.json": {
+      "filePath": ".understand-anything/config.json",
+      "contentHash": "49acdcdfe65b31ab61e62be0e283a27a49ddee05446197fa474062d87cf7fe70",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "backend/__init__.py": {
+      "filePath": "backend/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/agents/__init__.py": {
+      "filePath": "backend/agents/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/agents/budget_estimator.py": {
+      "filePath": "backend/agents/budget_estimator.py",
+      "contentHash": "09904e40e77c8bf9254e1c882a80e6c3d023df9ee4a08b0be42c6799d01b7f22",
+      "functions": [
+        {
+          "name": "estimate_budget_tool",
+          "params": [
+            "trip_days",
+            "ticket_prices",
+            "transport_mode",
+            "budget_limit"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "create_budget_estimator_agent",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "estimate_trip_budget",
+          "params": [
+            "trip_days",
+            "ticket_prices",
+            "transport_mode",
+            "budget_limit"
+          ],
+          "returnType": "BudgetResult",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [
+        {
+          "name": "BudgetEstimateInput",
+          "methods": [],
+          "properties": [
+            "trip_days",
+            "ticket_prices",
+            "transport_mode",
+            "budget_limit"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "langchain_core.tools",
+          "specifiers": [
+            "tool"
+          ]
+        },
+        {
+          "source": "langchain_openai",
+          "specifiers": [
+            "ChatOpenAI"
+          ]
+        },
+        {
+          "source": "langgraph.prebuilt",
+          "specifiers": [
+            "create_react_agent"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        },
+        {
+          "source": "backend.config",
+          "specifiers": [
+            "settings"
+          ]
+        },
+        {
+          "source": "backend.services.budget",
+          "specifiers": [
+            "BudgetResult",
+            "budget_estimate"
+          ]
+        }
+      ],
+      "exports": [
+        "BudgetEstimateInput",
+        "estimate_budget_tool",
+        "create_budget_estimator_agent",
+        "estimate_trip_budget"
+      ],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "backend/agents/planner.py": {
+      "filePath": "backend/agents/planner.py",
+      "contentHash": "0a9c772372afc9d6086c7160f49cb9a8ef67400d5ab0faf451c320a240cddd01",
+      "functions": [
+        {
+          "name": "find_spots_agent",
+          "params": [
+            "city",
+            "keyword"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "plan_route_agent",
+          "params": [
+            "spots_json",
+            "transport_preference",
+            "multi_route"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "check_weather_agent",
+          "params": [
+            "city",
+            "start_date",
+            "end_date"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "estimate_budget_agent",
+          "params": [
+            "trip_days",
+            "ticket_prices",
+            "transport_mode",
+            "budget_limit"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "get_current_time_tool",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "create_planner_agent",
+          "params": [],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "extract_trip_plan",
+          "params": [
+            "text"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "strip_trip_plan_json",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "plan_trip",
+          "params": [
+            "user_input",
+            "history",
+            "timeout"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "run_planner_stream",
+          "params": [
+            "user_message",
+            "history"
+          ],
+          "returnType": "AsyncGenerator[dict[str, Any], None]",
+          "exported": true,
+          "lineCount": 78
+        },
+        {
+          "name": "_chunk_text",
+          "params": [
+            "text",
+            "size"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [
+        {
+          "name": "FindSpotsInput",
+          "methods": [],
+          "properties": [
+            "city",
+            "keyword"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "PlanRouteInput",
+          "methods": [],
+          "properties": [
+            "spots_json",
+            "transport_preference",
+            "multi_route"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "CheckWeatherInput",
+          "methods": [],
+          "properties": [
+            "city",
+            "start_date",
+            "end_date"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "EstimateBudgetInput",
+          "methods": [],
+          "properties": [
+            "trip_days",
+            "ticket_prices",
+            "transport_mode",
+            "budget_limit"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "AsyncGenerator"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone",
+            "timedelta"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "langchain_core.messages",
+          "specifiers": [
+            "AIMessageChunk"
+          ]
+        },
+        {
+          "source": "langchain_core.tools",
+          "specifiers": [
+            "tool"
+          ]
+        },
+        {
+          "source": "langchain_openai",
+          "specifiers": [
+            "ChatOpenAI"
+          ]
+        },
+        {
+          "source": "langgraph.prebuilt",
+          "specifiers": [
+            "create_react_agent"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        },
+        {
+          "source": "backend.config",
+          "specifiers": [
+            "settings"
+          ]
+        }
+      ],
+      "exports": [
+        "FindSpotsInput",
+        "PlanRouteInput",
+        "CheckWeatherInput",
+        "EstimateBudgetInput",
+        "find_spots_agent",
+        "plan_route_agent",
+        "check_weather_agent",
+        "estimate_budget_agent",
+        "get_current_time_tool",
+        "create_planner_agent",
+        "extract_trip_plan",
+        "strip_trip_plan_json",
+        "plan_trip",
+        "run_planner_stream",
+        "_chunk_text"
+      ],
+      "totalLines": 428,
+      "hasStructuralAnalysis": true
+    },
+    "backend/agents/route_planner.py": {
+      "filePath": "backend/agents/route_planner.py",
+      "contentHash": "ee521a903a57c4b0c30e9fd6ddd28155c50d5e0076fbdcf45945aed02a33a9d2",
+      "functions": [
+        {
+          "name": "amap_route_plan_tool",
+          "params": [
+            "origin",
+            "destination",
+            "waypoints",
+            "strategy"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "create_route_planner_agent",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "plan_route",
+          "params": [
+            "spots",
+            "transport_preference",
+            "multi_route"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 39
+        }
+      ],
+      "classes": [
+        {
+          "name": "RoutePlanInput",
+          "methods": [],
+          "properties": [
+            "origin",
+            "destination",
+            "waypoints",
+            "strategy"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "asdict"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "langchain_core.tools",
+          "specifiers": [
+            "tool"
+          ]
+        },
+        {
+          "source": "langchain_openai",
+          "specifiers": [
+            "ChatOpenAI"
+          ]
+        },
+        {
+          "source": "langgraph.prebuilt",
+          "specifiers": [
+            "create_react_agent"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        },
+        {
+          "source": "backend.config",
+          "specifiers": [
+            "settings"
+          ]
+        },
+        {
+          "source": "backend.services.amap",
+          "specifiers": [
+            "amap_route_plan"
+          ]
+        }
+      ],
+      "exports": [
+        "RoutePlanInput",
+        "amap_route_plan_tool",
+        "create_route_planner_agent",
+        "plan_route"
+      ],
+      "totalLines": 111,
+      "hasStructuralAnalysis": true
+    },
+    "backend/agents/spot_finder.py": {
+      "filePath": "backend/agents/spot_finder.py",
+      "contentHash": "6a79a300888cabbb6284f9846ea3a9e09a50ec43dd4aefcb8f5ad0e9f9ce2c65",
+      "functions": [
+        {
+          "name": "amap_poi_search_tool",
+          "params": [
+            "keyword",
+            "city",
+            "type_code"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "spot_db_search_tool",
+          "params": [
+            "keyword",
+            "city"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "create_spot_finder_agent",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "find_spots",
+          "params": [
+            "city",
+            "keyword",
+            "type_code",
+            "count"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [
+        {
+          "name": "PoiSearchInput",
+          "methods": [],
+          "properties": [
+            "keyword",
+            "city",
+            "type_code"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "SpotDbSearchInput",
+          "methods": [],
+          "properties": [
+            "keyword",
+            "city"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "langchain_core.tools",
+          "specifiers": [
+            "tool"
+          ]
+        },
+        {
+          "source": "langchain_openai",
+          "specifiers": [
+            "ChatOpenAI"
+          ]
+        },
+        {
+          "source": "langgraph.prebuilt",
+          "specifiers": [
+            "create_react_agent"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        },
+        {
+          "source": "backend.config",
+          "specifiers": [
+            "settings"
+          ]
+        },
+        {
+          "source": "backend.services.amap",
+          "specifiers": [
+            "amap_poi_search"
+          ]
+        }
+      ],
+      "exports": [
+        "PoiSearchInput",
+        "SpotDbSearchInput",
+        "amap_poi_search_tool",
+        "spot_db_search_tool",
+        "create_spot_finder_agent",
+        "find_spots"
+      ],
+      "totalLines": 129,
+      "hasStructuralAnalysis": true
+    },
+    "backend/agents/weather_checker.py": {
+      "filePath": "backend/agents/weather_checker.py",
+      "contentHash": "831933ff90359cd5ac747fb7c80c428b6a81fc825c62facb3b05304c32dd9a71",
+      "functions": [
+        {
+          "name": "weather_query_tool",
+          "params": [
+            "city"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "create_weather_checker_agent",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "check_weather",
+          "params": [
+            "city",
+            "start_date",
+            "end_date"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 22
+        }
+      ],
+      "classes": [
+        {
+          "name": "WeatherQueryInput",
+          "methods": [],
+          "properties": [
+            "city"
+          ],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "asdict"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "langchain_core.tools",
+          "specifiers": [
+            "tool"
+          ]
+        },
+        {
+          "source": "langchain_openai",
+          "specifiers": [
+            "ChatOpenAI"
+          ]
+        },
+        {
+          "source": "langgraph.prebuilt",
+          "specifiers": [
+            "create_react_agent"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        },
+        {
+          "source": "backend.config",
+          "specifiers": [
+            "settings"
+          ]
+        },
+        {
+          "source": "backend.services.weather",
+          "specifiers": [
+            "weather_query"
+          ]
+        }
+      ],
+      "exports": [
+        "WeatherQueryInput",
+        "weather_query_tool",
+        "create_weather_checker_agent",
+        "check_weather"
+      ],
+      "totalLines": 83,
+      "hasStructuralAnalysis": true
+    },
+    "backend/api/__init__.py": {
+      "filePath": "backend/api/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/api/auth.py": {
+      "filePath": "backend/api/auth.py",
+      "contentHash": "4328279cd7d58f5c14ec585fac2109dd2019847ff9ae994b2de7088f6b90fa12",
+      "functions": [
+        {
+          "name": "register",
+          "params": [
+            "user_in",
+            "db"
+          ],
+          "returnType": "RegisterResponse",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "login",
+          "params": [
+            "login_data",
+            "db"
+          ],
+          "returnType": "LoginResponse",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "logout",
+          "params": [],
+          "returnType": "MessageResponse",
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [
+        {
+          "name": "RegisterResponse",
+          "methods": [],
+          "properties": [
+            "user_id",
+            "username"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "LoginRequest",
+          "methods": [],
+          "properties": [
+            "username",
+            "password"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "LoginResponse",
+          "methods": [],
+          "properties": [
+            "access_token",
+            "token_type"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "MessageResponse",
+          "methods": [],
+          "properties": [
+            "message"
+          ],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "status"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.crud.user",
+          "specifiers": [
+            "create_user",
+            "get_user_by_email",
+            "get_user_by_username"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.schemas.user",
+          "specifiers": [
+            "UserCreate"
+          ]
+        },
+        {
+          "source": "backend.utils.security",
+          "specifiers": [
+            "create_access_token",
+            "hash_password",
+            "verify_password"
+          ]
+        }
+      ],
+      "exports": [
+        "RegisterResponse",
+        "LoginRequest",
+        "LoginResponse",
+        "MessageResponse",
+        "register",
+        "login",
+        "logout"
+      ],
+      "totalLines": 69,
+      "hasStructuralAnalysis": true
+    },
+    "backend/api/chat.py": {
+      "filePath": "backend/api/chat.py",
+      "contentHash": "3c0c2875b6b39c9b767e73986a728a60f45f2930859b924c0299972d10fadac7",
+      "functions": [
+        {
+          "name": "create_session",
+          "params": [
+            "session_in",
+            "current_user",
+            "db"
+          ],
+          "returnType": "SessionCreateResponse",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "list_sessions",
+          "params": [
+            "current_user",
+            "db"
+          ],
+          "returnType": "SessionListResponse",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "get_history",
+          "params": [
+            "session_id",
+            "current_user",
+            "db"
+          ],
+          "returnType": "HistoryResponse",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "remove_session",
+          "params": [
+            "session_id",
+            "current_user",
+            "db"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "send_message",
+          "params": [
+            "msg",
+            "current_user",
+            "db"
+          ],
+          "returnType": "EventSourceResponse",
+          "exported": true,
+          "lineCount": 63
+        }
+      ],
+      "classes": [
+        {
+          "name": "SessionCreateResponse",
+          "methods": [],
+          "properties": [
+            "session_id"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "SessionListResponse",
+          "methods": [],
+          "properties": [
+            "sessions"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "HistoryResponse",
+          "methods": [],
+          "properties": [
+            "messages"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "MessageRequest",
+          "methods": [],
+          "properties": [
+            "session_id",
+            "content"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "imports": [
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "AsyncGenerator"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "status"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "sse_starlette.sse",
+          "specifiers": [
+            "EventSourceResponse"
+          ]
+        },
+        {
+          "source": "backend.agents.planner",
+          "specifiers": [
+            "run_planner_stream"
+          ]
+        },
+        {
+          "source": "backend.api.deps",
+          "specifiers": [
+            "get_current_user"
+          ]
+        },
+        {
+          "source": "backend.crud.chat",
+          "specifiers": [
+            "create_chat_message",
+            "create_chat_session",
+            "delete_chat_session",
+            "get_chat_session",
+            "get_messages_by_session",
+            "get_user_sessions"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.models.user",
+          "specifiers": [
+            "User"
+          ]
+        },
+        {
+          "source": "backend.schemas.chat",
+          "specifiers": [
+            "ChatMessageCreate",
+            "ChatMessageOut",
+            "ChatSessionCreate",
+            "ChatSessionOut"
+          ]
+        }
+      ],
+      "exports": [
+        "SessionCreateResponse",
+        "SessionListResponse",
+        "HistoryResponse",
+        "MessageRequest",
+        "create_session",
+        "list_sessions",
+        "get_history",
+        "remove_session",
+        "send_message"
+      ],
+      "totalLines": 177,
+      "hasStructuralAnalysis": true
+    },
+    "backend/api/deps.py": {
+      "filePath": "backend/api/deps.py",
+      "contentHash": "0bd2628e5d44be46111b035a0d55d3fba058e261b7dbfa5586ae2a91d6345298",
+      "functions": [
+        {
+          "name": "get_current_user",
+          "params": [
+            "credentials",
+            "db"
+          ],
+          "returnType": "User",
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "Depends",
+            "HTTPException",
+            "status"
+          ]
+        },
+        {
+          "source": "fastapi.security",
+          "specifiers": [
+            "HTTPAuthorizationCredentials",
+            "HTTPBearer"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.crud.user",
+          "specifiers": [
+            "get_user_by_id"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.models.user",
+          "specifiers": [
+            "User"
+          ]
+        },
+        {
+          "source": "backend.utils.security",
+          "specifiers": [
+            "decode_access_token"
+          ]
+        }
+      ],
+      "exports": [
+        "get_current_user"
+      ],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "backend/api/spots.py": {
+      "filePath": "backend/api/spots.py",
+      "contentHash": "f820af123fb8e8f9d74599620d4405ba0c5bd01f17404121d8c5fb1ad0c5a163",
+      "functions": [
+        {
+          "name": "_cache_amap_spots",
+          "params": [
+            "db",
+            "keyword",
+            "city",
+            "type_code",
+            "page",
+            "size"
+          ],
+          "returnType": "list[SpotCacheOut]",
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "search",
+          "params": [
+            "keyword",
+            "city",
+            "type",
+            "page",
+            "size",
+            "db"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "get_spot",
+          "params": [
+            "spot_id",
+            "db"
+          ],
+          "returnType": "SpotCacheOut",
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime",
+            "timedelta"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "Query"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.crud.spot_cache",
+          "specifiers": [
+            "create_spot_cache",
+            "get_spot_by_source_id",
+            "search_spots",
+            "update_spot_cache"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.schemas.spot",
+          "specifiers": [
+            "SpotCacheCreate",
+            "SpotCacheOut",
+            "SpotCacheUpdate"
+          ]
+        },
+        {
+          "source": "backend.services.amap",
+          "specifiers": [
+            "amap_poi_search"
+          ]
+        }
+      ],
+      "exports": [
+        "_cache_amap_spots",
+        "search",
+        "get_spot"
+      ],
+      "totalLines": 117,
+      "hasStructuralAnalysis": true
+    },
+    "backend/api/trips.py": {
+      "filePath": "backend/api/trips.py",
+      "contentHash": "f57428dacab694282092d73813ad26e8fea39d7879cfbb479e39efdb47c61a83",
+      "functions": [
+        {
+          "name": "_check_ownership",
+          "params": [
+            "trip",
+            "user"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "create_trip_endpoint",
+          "params": [
+            "trip_in",
+            "db",
+            "current_user"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "list_trips",
+          "params": [
+            "db",
+            "current_user"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "get_trip_detail",
+          "params": [
+            "trip_id",
+            "db",
+            "current_user"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "delete_trip_endpoint",
+          "params": [
+            "trip_id",
+            "db",
+            "current_user"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_build_pdf",
+          "params": [
+            "trip"
+          ],
+          "returnType": "bytes",
+          "exported": true,
+          "lineCount": 59
+        },
+        {
+          "name": "export_trip_pdf",
+          "params": [
+            "trip_id",
+            "db",
+            "current_user"
+          ],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "status"
+          ]
+        },
+        {
+          "source": "fastapi.responses",
+          "specifiers": [
+            "StreamingResponse"
+          ]
+        },
+        {
+          "source": "reportlab.lib.pagesizes",
+          "specifiers": [
+            "A4"
+          ]
+        },
+        {
+          "source": "reportlab.lib.styles",
+          "specifiers": [
+            "ParagraphStyle",
+            "getSampleStyleSheet"
+          ]
+        },
+        {
+          "source": "reportlab.lib.units",
+          "specifiers": [
+            "cm"
+          ]
+        },
+        {
+          "source": "reportlab.pdfbase",
+          "specifiers": [
+            "pdfmetrics"
+          ]
+        },
+        {
+          "source": "reportlab.pdfbase.ttfonts",
+          "specifiers": [
+            "TTFont"
+          ]
+        },
+        {
+          "source": "reportlab.platypus",
+          "specifiers": [
+            "Paragraph",
+            "SimpleDocTemplate",
+            "Spacer"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.api.deps",
+          "specifiers": [
+            "get_current_user"
+          ]
+        },
+        {
+          "source": "backend.crud.trip",
+          "specifiers": [
+            "create_trip",
+            "delete_trip",
+            "get_trip",
+            "get_user_trips"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.models.user",
+          "specifiers": [
+            "User"
+          ]
+        },
+        {
+          "source": "backend.schemas.trip",
+          "specifiers": [
+            "TripCreate",
+            "TripOut"
+          ]
+        }
+      ],
+      "exports": [
+        "_check_ownership",
+        "create_trip_endpoint",
+        "list_trips",
+        "get_trip_detail",
+        "delete_trip_endpoint",
+        "_build_pdf",
+        "export_trip_pdf"
+      ],
+      "totalLines": 161,
+      "hasStructuralAnalysis": true
+    },
+    "backend/api/user.py": {
+      "filePath": "backend/api/user.py",
+      "contentHash": "9e94d38e950102c710d6dae031accb4799ca2716a0429eea44406e1ff4276188",
+      "functions": [
+        {
+          "name": "get_profile",
+          "params": [
+            "current_user"
+          ],
+          "returnType": "User",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "update_profile",
+          "params": [
+            "user_in",
+            "current_user",
+            "db"
+          ],
+          "returnType": "User",
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "status"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.api.deps",
+          "specifiers": [
+            "get_current_user"
+          ]
+        },
+        {
+          "source": "backend.crud.user",
+          "specifiers": [
+            "get_user_by_email",
+            "get_user_by_username",
+            "update_user"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.models.user",
+          "specifiers": [
+            "User"
+          ]
+        },
+        {
+          "source": "backend.schemas.user",
+          "specifiers": [
+            "UserOut",
+            "UserUpdate"
+          ]
+        }
+      ],
+      "exports": [
+        "get_profile",
+        "update_profile"
+      ],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "backend/config.py": {
+      "filePath": "backend/config.py",
+      "contentHash": "c3de5bac509bf4d7963f72fc6226c1e343cc0f99987944218f730a44219fca81",
+      "functions": [],
+      "classes": [
+        {
+          "name": "Settings",
+          "methods": [],
+          "properties": [
+            "deepseek_api_key",
+            "deepseek_base_url",
+            "deepseek_model",
+            "amap_api_key",
+            "weather_api_key",
+            "jwt_secret_key",
+            "jwt_expire_minutes",
+            "database_url"
+          ],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "imports": [
+        {
+          "source": "pydantic_settings",
+          "specifiers": [
+            "BaseSettings"
+          ]
+        }
+      ],
+      "exports": [
+        "Settings"
+      ],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "backend/crud/__init__.py": {
+      "filePath": "backend/crud/__init__.py",
+      "contentHash": "65fe91e01556f91487456c0a6d0a4483b1a5a50083e1f5c0464293323d7d302b",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "backend.crud.chat",
+          "specifiers": [
+            "create_chat_message",
+            "create_chat_session",
+            "delete_chat_session",
+            "get_chat_session",
+            "get_messages_by_session",
+            "get_user_sessions",
+            "update_chat_session"
+          ]
+        },
+        {
+          "source": "backend.crud.spot_cache",
+          "specifiers": [
+            "create_spot_cache",
+            "get_spot_by_source_id",
+            "search_spots",
+            "update_spot_cache"
+          ]
+        },
+        {
+          "source": "backend.crud.trip",
+          "specifiers": [
+            "create_trip",
+            "delete_trip",
+            "get_trip",
+            "get_user_trips",
+            "update_trip"
+          ]
+        },
+        {
+          "source": "backend.crud.user",
+          "specifiers": [
+            "create_user",
+            "get_user_by_email",
+            "get_user_by_id",
+            "get_user_by_username",
+            "update_user"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    "backend/crud/chat.py": {
+      "filePath": "backend/crud/chat.py",
+      "contentHash": "8942165d7247c498a784b053152d8eeedd4974e84c807bad8be06ed7e3032cc5",
+      "functions": [
+        {
+          "name": "create_chat_session",
+          "params": [
+            "db",
+            "user_id",
+            "session_in"
+          ],
+          "returnType": "ChatSession",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "get_chat_session",
+          "params": [
+            "db",
+            "session_id"
+          ],
+          "returnType": "ChatSession | None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "get_user_sessions",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "list[ChatSession]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "update_chat_session",
+          "params": [
+            "db",
+            "session",
+            "session_in"
+          ],
+          "returnType": "ChatSession",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "delete_chat_session",
+          "params": [
+            "db",
+            "session"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "create_chat_message",
+          "params": [
+            "db",
+            "message_in"
+          ],
+          "returnType": "ChatMessage",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "get_messages_by_session",
+          "params": [
+            "db",
+            "session_id"
+          ],
+          "returnType": "list[ChatMessage]",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "sqlalchemy.orm",
+          "specifiers": [
+            "selectinload"
+          ]
+        },
+        {
+          "source": "backend.models.chat",
+          "specifiers": [
+            "ChatMessage",
+            "ChatSession"
+          ]
+        },
+        {
+          "source": "backend.schemas.chat",
+          "specifiers": [
+            "ChatMessageCreate",
+            "ChatSessionCreate",
+            "ChatSessionUpdate"
+          ]
+        }
+      ],
+      "exports": [
+        "create_chat_session",
+        "get_chat_session",
+        "get_user_sessions",
+        "update_chat_session",
+        "delete_chat_session",
+        "create_chat_message",
+        "get_messages_by_session"
+      ],
+      "totalLines": 76,
+      "hasStructuralAnalysis": true
+    },
+    "backend/crud/spot_cache.py": {
+      "filePath": "backend/crud/spot_cache.py",
+      "contentHash": "a243108922b9fbc2ac395b3a79486e4d9dbcd8fff51c4ddb6e8a79a4ec23a29f",
+      "functions": [
+        {
+          "name": "create_spot_cache",
+          "params": [
+            "db",
+            "spot_in"
+          ],
+          "returnType": "SpotCache",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "get_spot_by_source_id",
+          "params": [
+            "db",
+            "source",
+            "source_id"
+          ],
+          "returnType": "SpotCache | None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "search_spots",
+          "params": [
+            "db",
+            "keyword",
+            "city",
+            "type_tag",
+            "page",
+            "size",
+            "max_age_days"
+          ],
+          "returnType": "tuple[int, list[SpotCache]]",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "update_spot_cache",
+          "params": [
+            "db",
+            "spot",
+            "spot_in"
+          ],
+          "returnType": "SpotCache",
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime",
+            "timedelta"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.models.spot_cache",
+          "specifiers": [
+            "SpotCache"
+          ]
+        },
+        {
+          "source": "backend.schemas.spot",
+          "specifiers": [
+            "SpotCacheCreate",
+            "SpotCacheUpdate"
+          ]
+        }
+      ],
+      "exports": [
+        "create_spot_cache",
+        "get_spot_by_source_id",
+        "search_spots",
+        "update_spot_cache"
+      ],
+      "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    "backend/crud/trip.py": {
+      "filePath": "backend/crud/trip.py",
+      "contentHash": "3cabdc8a1eb2e6854114502d7415b92fc5fa771591e91e23ea84c4858d7d7659",
+      "functions": [
+        {
+          "name": "create_trip",
+          "params": [
+            "db",
+            "user_id",
+            "trip_in"
+          ],
+          "returnType": "Trip",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "get_trip",
+          "params": [
+            "db",
+            "trip_id"
+          ],
+          "returnType": "Trip | None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "get_user_trips",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "list[Trip]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "update_trip",
+          "params": [
+            "db",
+            "trip",
+            "trip_in"
+          ],
+          "returnType": "Trip",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "delete_trip",
+          "params": [
+            "db",
+            "trip"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "sqlalchemy.orm",
+          "specifiers": [
+            "selectinload"
+          ]
+        },
+        {
+          "source": "backend.models.trip",
+          "specifiers": [
+            "Trip",
+            "TripActivity",
+            "TripDay"
+          ]
+        },
+        {
+          "source": "backend.schemas.trip",
+          "specifiers": [
+            "TripCreate",
+            "TripUpdate"
+          ]
+        }
+      ],
+      "exports": [
+        "create_trip",
+        "get_trip",
+        "get_user_trips",
+        "update_trip",
+        "delete_trip"
+      ],
+      "totalLines": 81,
+      "hasStructuralAnalysis": true
+    },
+    "backend/crud/user.py": {
+      "filePath": "backend/crud/user.py",
+      "contentHash": "2361ba8d16c743c07b08e2bf6697171f0d6f1aebac6475cda7b871842a49963e",
+      "functions": [
+        {
+          "name": "create_user",
+          "params": [
+            "db",
+            "user_in",
+            "password_hash"
+          ],
+          "returnType": "User",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "get_user_by_id",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "User | None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "get_user_by_username",
+          "params": [
+            "db",
+            "username"
+          ],
+          "returnType": "User | None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "get_user_by_email",
+          "params": [
+            "db",
+            "email"
+          ],
+          "returnType": "User | None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "update_user",
+          "params": [
+            "db",
+            "user",
+            "user_in"
+          ],
+          "returnType": "User",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.models.user",
+          "specifiers": [
+            "User"
+          ]
+        },
+        {
+          "source": "backend.schemas.user",
+          "specifiers": [
+            "UserCreate",
+            "UserUpdate"
+          ]
+        }
+      ],
+      "exports": [
+        "create_user",
+        "get_user_by_id",
+        "get_user_by_username",
+        "get_user_by_email",
+        "update_user"
+      ],
+      "totalLines": 44,
+      "hasStructuralAnalysis": true
+    },
+    "backend/database.py": {
+      "filePath": "backend/database.py",
+      "contentHash": "af8be4fe42194a424a1f214f6b75c4c936f2832f7d91e9ec26a3b64fe99f155b",
+      "functions": [
+        {
+          "name": "get_db",
+          "params": [],
+          "returnType": "AsyncGenerator[AsyncSession, None]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "init_db",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "Base",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "AsyncGenerator"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession",
+            "async_sessionmaker",
+            "create_async_engine"
+          ]
+        },
+        {
+          "source": "sqlalchemy.orm",
+          "specifiers": [
+            "DeclarativeBase"
+          ]
+        },
+        {
+          "source": "backend.config",
+          "specifiers": [
+            "settings"
+          ]
+        }
+      ],
+      "exports": [
+        "Base",
+        "get_db",
+        "init_db"
+      ],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "backend/main.py": {
+      "filePath": "backend/main.py",
+      "contentHash": "81c48aeff180d1ea75fd7d4d0ea269e0976eb0fd70ad25ef73591e3a6974984c",
+      "functions": [
+        {
+          "name": "lifespan",
+          "params": [
+            "app"
+          ],
+          "returnType": "AsyncGenerator[None, None]",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "AsyncGenerator"
+          ]
+        },
+        {
+          "source": "contextlib",
+          "specifiers": [
+            "asynccontextmanager"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "FastAPI"
+          ]
+        },
+        {
+          "source": "fastapi.middleware.cors",
+          "specifiers": [
+            "CORSMiddleware"
+          ]
+        },
+        {
+          "source": "backend.api.auth",
+          "specifiers": [
+            "auth_router"
+          ]
+        },
+        {
+          "source": "backend.api.chat",
+          "specifiers": [
+            "chat_router"
+          ]
+        },
+        {
+          "source": "backend.api.spots",
+          "specifiers": [
+            "spots_router"
+          ]
+        },
+        {
+          "source": "backend.api.trips",
+          "specifiers": [
+            "trips_router"
+          ]
+        },
+        {
+          "source": "backend.api.user",
+          "specifiers": [
+            "user_router"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "init_db"
+          ]
+        }
+      ],
+      "exports": [
+        "lifespan"
+      ],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "backend/models/__init__.py": {
+      "filePath": "backend/models/__init__.py",
+      "contentHash": "2b0a3bc00f306eb4c82c45bc94e46fc629d91eade47bf41927725a3c39f1a0d5",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "backend.models.chat",
+          "specifiers": [
+            "ChatMessage",
+            "ChatSession"
+          ]
+        },
+        {
+          "source": "backend.models.spot_cache",
+          "specifiers": [
+            "SpotCache"
+          ]
+        },
+        {
+          "source": "backend.models.trip",
+          "specifiers": [
+            "Trip",
+            "TripActivity",
+            "TripDay"
+          ]
+        },
+        {
+          "source": "backend.models.user",
+          "specifiers": [
+            "User"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "backend/models/chat.py": {
+      "filePath": "backend/models/chat.py",
+      "contentHash": "d03a84f93fb4277efa0d5c009bceac4c3604689776ddf59eea35c54829798829",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ChatSession",
+          "methods": [],
+          "properties": [
+            "id",
+            "user_id",
+            "title",
+            "created_at",
+            "updated_at",
+            "user",
+            "messages"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "ChatMessage",
+          "methods": [],
+          "properties": [
+            "id",
+            "session_id",
+            "role",
+            "content",
+            "created_at",
+            "session"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "ForeignKey",
+            "String",
+            "Text",
+            "func"
+          ]
+        },
+        {
+          "source": "sqlalchemy.orm",
+          "specifiers": [
+            "Mapped",
+            "mapped_column",
+            "relationship"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "Base"
+          ]
+        }
+      ],
+      "exports": [
+        "ChatSession",
+        "ChatMessage"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "backend/models/spot_cache.py": {
+      "filePath": "backend/models/spot_cache.py",
+      "contentHash": "c69c95dad7fd7c3a79a80c0931a1af882d285969fa6eaa399b50ef4839b5bc8d",
+      "functions": [],
+      "classes": [
+        {
+          "name": "SpotCache",
+          "methods": [],
+          "properties": [
+            "id",
+            "source",
+            "source_id",
+            "name",
+            "city",
+            "longitude",
+            "latitude",
+            "type_tags",
+            "description",
+            "images",
+            "rating",
+            "open_time",
+            "ticket_price",
+            "review_summary",
+            "cached_at"
+          ],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "Float",
+            "String",
+            "Text",
+            "func"
+          ]
+        },
+        {
+          "source": "sqlalchemy.orm",
+          "specifiers": [
+            "Mapped",
+            "mapped_column"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "Base"
+          ]
+        }
+      ],
+      "exports": [
+        "SpotCache"
+      ],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "backend/models/trip.py": {
+      "filePath": "backend/models/trip.py",
+      "contentHash": "3138983717f0125d2a69cfcf761f1071150de6320fe083a08d0a720a188dc315",
+      "functions": [],
+      "classes": [
+        {
+          "name": "Trip",
+          "methods": [],
+          "properties": [
+            "id",
+            "user_id",
+            "title",
+            "destination",
+            "start_date",
+            "end_date",
+            "budget_total",
+            "budget_breakdown",
+            "created_at",
+            "updated_at",
+            "user",
+            "days"
+          ],
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "TripDay",
+          "methods": [],
+          "properties": [
+            "id",
+            "trip_id",
+            "day_index",
+            "date",
+            "weather",
+            "trip",
+            "activities"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "TripActivity",
+          "methods": [],
+          "properties": [
+            "id",
+            "trip_day_id",
+            "order_index",
+            "spot_name",
+            "time_slot",
+            "transport",
+            "notes",
+            "estimated_cost",
+            "trip_day"
+          ],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "Date",
+            "ForeignKey",
+            "String",
+            "Text",
+            "func"
+          ]
+        },
+        {
+          "source": "sqlalchemy.orm",
+          "specifiers": [
+            "Mapped",
+            "mapped_column",
+            "relationship"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "Base"
+          ]
+        }
+      ],
+      "exports": [
+        "Trip",
+        "TripDay",
+        "TripActivity"
+      ],
+      "totalLines": 61,
+      "hasStructuralAnalysis": true
+    },
+    "backend/models/user.py": {
+      "filePath": "backend/models/user.py",
+      "contentHash": "b93398a2283936f3f2aab2d6436179cface38c2e003efe16e9a50ceb8f540606",
+      "functions": [],
+      "classes": [
+        {
+          "name": "User",
+          "methods": [],
+          "properties": [
+            "id",
+            "username",
+            "password_hash",
+            "email",
+            "created_at",
+            "chat_sessions",
+            "trips"
+          ],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "String",
+            "func"
+          ]
+        },
+        {
+          "source": "sqlalchemy.orm",
+          "specifiers": [
+            "Mapped",
+            "mapped_column",
+            "relationship"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "Base"
+          ]
+        }
+      ],
+      "exports": [
+        "User"
+      ],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "backend/schemas/__init__.py": {
+      "filePath": "backend/schemas/__init__.py",
+      "contentHash": "192a4cf9893ba7011ec641bb083da81a9eb68ebd03633dfc4216e9727bed4feb",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "backend.schemas.chat",
+          "specifiers": [
+            "ChatMessageCreate",
+            "ChatMessageOut",
+            "ChatSessionCreate",
+            "ChatSessionOut",
+            "ChatSessionUpdate"
+          ]
+        },
+        {
+          "source": "backend.schemas.spot",
+          "specifiers": [
+            "SpotCacheCreate",
+            "SpotCacheOut",
+            "SpotCacheUpdate"
+          ]
+        },
+        {
+          "source": "backend.schemas.trip",
+          "specifiers": [
+            "TripActivityCreate",
+            "TripActivityOut",
+            "TripActivityUpdate",
+            "TripCreate",
+            "TripDayCreate",
+            "TripDayOut",
+            "TripDayUpdate",
+            "TripOut",
+            "TripUpdate"
+          ]
+        },
+        {
+          "source": "backend.schemas.user",
+          "specifiers": [
+            "UserCreate",
+            "UserOut",
+            "UserUpdate"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 44,
+      "hasStructuralAnalysis": true
+    },
+    "backend/schemas/chat.py": {
+      "filePath": "backend/schemas/chat.py",
+      "contentHash": "bf57cd93b673c1579d6eaec50291ad80a737b5875766aea739d4c9c78f0e5fbb",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ChatSessionCreate",
+          "methods": [],
+          "properties": [
+            "title"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "ChatSessionUpdate",
+          "methods": [],
+          "properties": [
+            "title"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "ChatSessionOut",
+          "methods": [],
+          "properties": [
+            "id",
+            "user_id",
+            "title",
+            "created_at",
+            "updated_at"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "ChatMessageCreate",
+          "methods": [],
+          "properties": [
+            "session_id",
+            "role",
+            "content"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "ChatMessageOut",
+          "methods": [],
+          "properties": [
+            "id",
+            "session_id",
+            "role",
+            "content",
+            "created_at"
+          ],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        }
+      ],
+      "exports": [
+        "ChatSessionCreate",
+        "ChatSessionUpdate",
+        "ChatSessionOut",
+        "ChatMessageCreate",
+        "ChatMessageOut"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "backend/schemas/spot.py": {
+      "filePath": "backend/schemas/spot.py",
+      "contentHash": "ff90e2ae1331b7cf12e118d95b317b4a20880194fefac7b4a0acfa04818e243b",
+      "functions": [],
+      "classes": [
+        {
+          "name": "SpotCacheCreate",
+          "methods": [],
+          "properties": [
+            "source",
+            "source_id",
+            "name",
+            "city",
+            "longitude",
+            "latitude",
+            "type_tags",
+            "description",
+            "images",
+            "rating",
+            "open_time",
+            "ticket_price",
+            "review_summary"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "SpotCacheUpdate",
+          "methods": [],
+          "properties": [
+            "description",
+            "images",
+            "rating",
+            "open_time",
+            "ticket_price",
+            "review_summary"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "SpotCacheOut",
+          "methods": [],
+          "properties": [
+            "id",
+            "source",
+            "source_id",
+            "name",
+            "city",
+            "longitude",
+            "latitude",
+            "type_tags",
+            "description",
+            "images",
+            "rating",
+            "open_time",
+            "ticket_price",
+            "review_summary",
+            "cached_at"
+          ],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        }
+      ],
+      "exports": [
+        "SpotCacheCreate",
+        "SpotCacheUpdate",
+        "SpotCacheOut"
+      ],
+      "totalLines": 49,
+      "hasStructuralAnalysis": true
+    },
+    "backend/schemas/trip.py": {
+      "filePath": "backend/schemas/trip.py",
+      "contentHash": "45869110604478ae4c0ce1ed98880d518acbc86a974fada7c48b4681e504b0cd",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TripActivityCreate",
+          "methods": [],
+          "properties": [
+            "order_index",
+            "spot_name",
+            "time_slot",
+            "transport",
+            "notes",
+            "estimated_cost"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "TripActivityUpdate",
+          "methods": [],
+          "properties": [
+            "order_index",
+            "spot_name",
+            "time_slot",
+            "transport",
+            "notes",
+            "estimated_cost"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "TripActivityOut",
+          "methods": [],
+          "properties": [
+            "id",
+            "trip_day_id",
+            "order_index",
+            "spot_name",
+            "time_slot",
+            "transport",
+            "notes",
+            "estimated_cost"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "TripDayCreate",
+          "methods": [],
+          "properties": [
+            "day_index",
+            "date",
+            "weather",
+            "activities"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "TripDayUpdate",
+          "methods": [],
+          "properties": [
+            "weather"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "TripDayOut",
+          "methods": [],
+          "properties": [
+            "id",
+            "trip_id",
+            "day_index",
+            "date",
+            "weather",
+            "activities"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "TripCreate",
+          "methods": [],
+          "properties": [
+            "title",
+            "destination",
+            "start_date",
+            "end_date",
+            "budget_total",
+            "budget_breakdown",
+            "days"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "TripUpdate",
+          "methods": [],
+          "properties": [
+            "title",
+            "destination",
+            "start_date",
+            "end_date",
+            "budget_total",
+            "budget_breakdown"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "TripOut",
+          "methods": [],
+          "properties": [
+            "id",
+            "user_id",
+            "title",
+            "destination",
+            "start_date",
+            "end_date",
+            "budget_total",
+            "budget_breakdown",
+            "created_at",
+            "updated_at",
+            "days"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "date",
+            "datetime"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field"
+          ]
+        }
+      ],
+      "exports": [
+        "TripActivityCreate",
+        "TripActivityUpdate",
+        "TripActivityOut",
+        "TripDayCreate",
+        "TripDayUpdate",
+        "TripDayOut",
+        "TripCreate",
+        "TripUpdate",
+        "TripOut"
+      ],
+      "totalLines": 92,
+      "hasStructuralAnalysis": true
+    },
+    "backend/schemas/user.py": {
+      "filePath": "backend/schemas/user.py",
+      "contentHash": "03b4be80d9ffd9f2f77058c79f6c30c27f2f8ba3921672ffc865add9b2338fac",
+      "functions": [],
+      "classes": [
+        {
+          "name": "UserCreate",
+          "methods": [],
+          "properties": [
+            "username",
+            "password",
+            "email"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "UserUpdate",
+          "methods": [],
+          "properties": [
+            "username",
+            "email"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "UserOut",
+          "methods": [],
+          "properties": [
+            "id",
+            "username",
+            "email",
+            "created_at"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "EmailStr",
+            "Field"
+          ]
+        }
+      ],
+      "exports": [
+        "UserCreate",
+        "UserUpdate",
+        "UserOut"
+      ],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "backend/services/__init__.py": {
+      "filePath": "backend/services/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/services/amap.py": {
+      "filePath": "backend/services/amap.py",
+      "contentHash": "b447b9e948b3b110d820a195a3a0cc679f47e0f367f132984177efb35a77a4af",
+      "functions": [
+        {
+          "name": "amap_poi_search",
+          "params": [
+            "keyword",
+            "city",
+            "type_code",
+            "page",
+            "size",
+            "client"
+          ],
+          "returnType": "list[Spot]",
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "amap_route_plan",
+          "params": [
+            "origin",
+            "destination",
+            "waypoints",
+            "strategy",
+            "client"
+          ],
+          "returnType": "Route",
+          "exported": true,
+          "lineCount": 54
+        }
+      ],
+      "classes": [
+        {
+          "name": "Spot",
+          "methods": [],
+          "properties": [
+            "name",
+            "source_id",
+            "city",
+            "longitude",
+            "latitude",
+            "type_tags",
+            "address",
+            "tel"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "RouteSegment",
+          "methods": [],
+          "properties": [
+            "origin",
+            "destination",
+            "distance",
+            "duration",
+            "steps"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "Route",
+          "methods": [],
+          "properties": [
+            "distance",
+            "duration",
+            "segments"
+          ],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "httpx"
+          ]
+        },
+        {
+          "source": "backend.config",
+          "specifiers": [
+            "settings"
+          ]
+        }
+      ],
+      "exports": [
+        "Spot",
+        "RouteSegment",
+        "Route",
+        "amap_poi_search",
+        "amap_route_plan"
+      ],
+      "totalLines": 145,
+      "hasStructuralAnalysis": true
+    },
+    "backend/services/budget.py": {
+      "filePath": "backend/services/budget.py",
+      "contentHash": "90fefcc8ad9b9bb9057408519227fb0fc7b36d787b92457277c5006b1d504028",
+      "functions": [
+        {
+          "name": "budget_estimate",
+          "params": [
+            "trip_days",
+            "ticket_prices",
+            "transport_mode",
+            "budget_limit"
+          ],
+          "returnType": "BudgetResult",
+          "exported": true,
+          "lineCount": 37
+        }
+      ],
+      "classes": [
+        {
+          "name": "BudgetBreakdown",
+          "methods": [],
+          "properties": [
+            "accommodation",
+            "meals",
+            "transport",
+            "tickets",
+            "other"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "BudgetResult",
+          "methods": [],
+          "properties": [
+            "total",
+            "breakdown",
+            "over_budget",
+            "suggestions"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        }
+      ],
+      "exports": [
+        "BudgetBreakdown",
+        "BudgetResult",
+        "budget_estimate"
+      ],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    "backend/services/weather.py": {
+      "filePath": "backend/services/weather.py",
+      "contentHash": "f7d906c3151f2e8e686d4380f7bb62a31c984e5429babf015b91ac140768df5f",
+      "functions": [
+        {
+          "name": "weather_query",
+          "params": [
+            "city",
+            "client"
+          ],
+          "returnType": "list[WeatherForecast]",
+          "exported": true,
+          "lineCount": 44
+        }
+      ],
+      "classes": [
+        {
+          "name": "WeatherForecast",
+          "methods": [],
+          "properties": [
+            "date",
+            "dayweather",
+            "nightweather",
+            "daytemp",
+            "nighttemp",
+            "daywind",
+            "nightwind",
+            "daypower",
+            "nightpower"
+          ],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "httpx"
+          ]
+        },
+        {
+          "source": "backend.config",
+          "specifiers": [
+            "settings"
+          ]
+        }
+      ],
+      "exports": [
+        "WeatherForecast",
+        "weather_query"
+      ],
+      "totalLines": 67,
+      "hasStructuralAnalysis": true
+    },
+    "backend/utils/__init__.py": {
+      "filePath": "backend/utils/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/utils/security.py": {
+      "filePath": "backend/utils/security.py",
+      "contentHash": "1f103206e86fa0f0c1fb33b8bc742b1819e4ed8b5752b3173548db050254214b",
+      "functions": [
+        {
+          "name": "hash_password",
+          "params": [
+            "password"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "verify_password",
+          "params": [
+            "plain_password",
+            "hashed_password"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "create_access_token",
+          "params": [
+            "data",
+            "expires_delta"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "decode_access_token",
+          "params": [
+            "token"
+          ],
+          "returnType": "dict[str, str | int] | None",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime",
+            "timedelta"
+          ]
+        },
+        {
+          "source": "jose",
+          "specifiers": [
+            "JWTError",
+            "jwt"
+          ]
+        },
+        {
+          "source": "passlib.context",
+          "specifiers": [
+            "CryptContext"
+          ]
+        },
+        {
+          "source": "backend.config",
+          "specifiers": [
+            "settings"
+          ]
+        }
+      ],
+      "exports": [
+        "hash_password",
+        "verify_password",
+        "create_access_token",
+        "decode_access_token"
+      ],
+      "totalLines": 41,
+      "hasStructuralAnalysis": true
+    },
+    "doc/high-level-design.md": {
+      "filePath": "doc/high-level-design.md",
+      "contentHash": "a23a57938e8daa74bf65dda4ef1247e7a3db455b6596ab94fd6ac14419538cb4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 665,
+      "hasStructuralAnalysis": true
+    },
+    "doc/prompt.md": {
+      "filePath": "doc/prompt.md",
+      "contentHash": "1525b4722979723ad745a297ebbec013328602b4190788b9f256626c6de5e959",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 490,
+      "hasStructuralAnalysis": true
+    },
+    "doc/proposal.md": {
+      "filePath": "doc/proposal.md",
+      "contentHash": "7d52e66852fa3568f1320c67e16b5894b5a6908963399e92b126b4dc483fa9b5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 303,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M01-frontend.md": {
+      "filePath": "doc/tasks/M01-frontend.md",
+      "contentHash": "2955eabba730728f153e83ffaad5b72f79b70bd9b25706ff075740a6b3f01b66",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 74,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M02-user-management.md": {
+      "filePath": "doc/tasks/M02-user-management.md",
+      "contentHash": "25672f96b7d81fac1120922267ae944a9cffefd2e9dc2dc3dc95feffd93aa125",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 41,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M03-spot-query.md": {
+      "filePath": "doc/tasks/M03-spot-query.md",
+      "contentHash": "ad8cbbe9ee19269e2a2233de1c92718ff271d0ab40e2c16128082cdcccbd406b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M04-trip-management.md": {
+      "filePath": "doc/tasks/M04-trip-management.md",
+      "contentHash": "e702e5a10d9365b17f4c4734947eb9f4e4a82da9558837628db973a482e9b92d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M05-agent-orchestration.md": {
+      "filePath": "doc/tasks/M05-agent-orchestration.md",
+      "contentHash": "e4c17a127c4d1f809d46a8965c8b08d5c831a01aea02f083d6bb93721843893d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M06-planner-agent.md": {
+      "filePath": "doc/tasks/M06-planner-agent.md",
+      "contentHash": "e406788001d74f2a976112594f6a92d2190f0ebfe84e4e96c152b8c5e0913db9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 44,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M07-spot-agent.md": {
+      "filePath": "doc/tasks/M07-spot-agent.md",
+      "contentHash": "385cf935357d1cfca49eb0170779eea480f1a54e15aee0823db07b7703844af0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M08-route-agent.md": {
+      "filePath": "doc/tasks/M08-route-agent.md",
+      "contentHash": "6c383bee70dbc2134d2a3f032c1d2d9179bebd71c4d10108fa6d25dafff8b897",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M09-weather-agent.md": {
+      "filePath": "doc/tasks/M09-weather-agent.md",
+      "contentHash": "42ee78484e7a1f49a0314e41014537f636d365f6a61df927883d18865322a813",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M10-budget-agent.md": {
+      "filePath": "doc/tasks/M10-budget-agent.md",
+      "contentHash": "c92e9e8b26640b364afa26f5f916981d017cf7e86a7e12e9884a3f874b6eb4f1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M11-external-services.md": {
+      "filePath": "doc/tasks/M11-external-services.md",
+      "contentHash": "4211b4ba2628b497ac3097041fdc6a810a7bb424286622d76d8b681c69d9996c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 52,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/M12-data-access.md": {
+      "filePath": "doc/tasks/M12-data-access.md",
+      "contentHash": "a2057254939289dc77180164bafbee76b215e62ec08566bc005d730b0b3efc70",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 47,
+      "hasStructuralAnalysis": true
+    },
+    "doc/tasks/progress.md": {
+      "filePath": "doc/tasks/progress.md",
+      "contentHash": "ebfc2234b7f84bfd8f1dcd0b03403113be3d9cbc0cfa7a4d4217f4cc89c0a25c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/eslint.config.js": {
+      "filePath": "frontend/eslint.config.js",
+      "contentHash": "a11bb2edb7514e39fabdd377030f60d1e9496fdb9061cc8f87609332624dc789",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@eslint/js",
+          "specifiers": [
+            "js"
+          ]
+        },
+        {
+          "source": "typescript-eslint",
+          "specifiers": [
+            "tseslint"
+          ]
+        },
+        {
+          "source": "globals",
+          "specifiers": [
+            "globals"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/index.html": {
+      "filePath": "frontend/index.html",
+      "contentHash": "655e06c308b131f934713a56bf808c78bdd5e2969531178dd6e1ccd376e71048",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/package.json": {
+      "filePath": "frontend/package.json",
+      "contentHash": "9958f8f00ee8130b8b2534eb8e00d8d6b6af24aa4f37012405cfb49ae623e0a2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/api/auth.ts": {
+      "filePath": "frontend/src/api/auth.ts",
+      "contentHash": "021e58c31083565cf635ca8551aaa9d839d7489ba2a4815bb262d7a087fc2742",
+      "functions": [
+        {
+          "name": "register",
+          "params": [
+            "data"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "login",
+          "params": [
+            "data"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "logout",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./client",
+          "specifiers": [
+            "client"
+          ]
+        }
+      ],
+      "exports": [
+        "register",
+        "login",
+        "logout"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/api/chat.ts": {
+      "filePath": "frontend/src/api/chat.ts",
+      "contentHash": "b353e6c69549516eda999d824cc030d2a4ae0b9d1b3fcaf578682e7e306fe8e7",
+      "functions": [
+        {
+          "name": "createSession",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getSessions",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getHistory",
+          "params": [
+            "sessionId"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "sendMessage",
+          "params": [
+            "sessionId",
+            "content",
+            "onEvent"
+          ],
+          "exported": true,
+          "lineCount": 58
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./client",
+          "specifiers": [
+            "client"
+          ]
+        }
+      ],
+      "exports": [
+        "createSession",
+        "getSessions",
+        "getHistory",
+        "sendMessage"
+      ],
+      "totalLines": 90,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/api/client.ts": {
+      "filePath": "frontend/src/api/client.ts",
+      "contentHash": "fab3111d6124c28341ef9a43ad90382f15ca91f5df6b20c98ddef70b5af20693",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "axios",
+          "specifiers": [
+            "axios"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/api/spots.ts": {
+      "filePath": "frontend/src/api/spots.ts",
+      "contentHash": "d44e4bf802dc5e0111b59c2bddf9392a9f7cb4294fe5a6b10a17b1027f79e73e",
+      "functions": [
+        {
+          "name": "searchSpots",
+          "params": [
+            "params"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getSpot",
+          "params": [
+            "id"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./client",
+          "specifiers": [
+            "client"
+          ]
+        }
+      ],
+      "exports": [
+        "searchSpots",
+        "getSpot"
+      ],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/api/trips.ts": {
+      "filePath": "frontend/src/api/trips.ts",
+      "contentHash": "fff2cd0d5de732d0b6d3d06621ee6927322eacae622322a8cd76f8cf28aa88b9",
+      "functions": [
+        {
+          "name": "createTrip",
+          "params": [
+            "data"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getTrips",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getTrip",
+          "params": [
+            "id"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "deleteTrip",
+          "params": [
+            "id"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "exportTripPdf",
+          "params": [
+            "id"
+          ],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./client",
+          "specifiers": [
+            "client"
+          ]
+        }
+      ],
+      "exports": [
+        "createTrip",
+        "getTrips",
+        "getTrip",
+        "deleteTrip",
+        "exportTripPdf"
+      ],
+      "totalLines": 62,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/api/user.ts": {
+      "filePath": "frontend/src/api/user.ts",
+      "contentHash": "52bed11252c8f5513d49ecad64a7d34372a63e66e17469edb4ce0dce09b714e6",
+      "functions": [
+        {
+          "name": "getProfile",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "updateProfile",
+          "params": [
+            "data"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./client",
+          "specifiers": [
+            "client"
+          ]
+        }
+      ],
+      "exports": [
+        "getProfile",
+        "updateProfile"
+      ],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/App.tsx": {
+      "filePath": "frontend/src/App.tsx",
+      "contentHash": "0369e1fd7a0f7202933d406a8b1b513520cd9f4c41b58bee3d8c3ad74ff1bf51",
+      "functions": [
+        {
+          "name": "App",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "antd",
+          "specifiers": [
+            "ConfigProvider"
+          ]
+        },
+        {
+          "source": "antd/locale/zh_CN",
+          "specifiers": [
+            "zhCN"
+          ]
+        },
+        {
+          "source": "@/store/AuthContext",
+          "specifiers": [
+            "AuthProvider"
+          ]
+        },
+        {
+          "source": "@/router",
+          "specifiers": [
+            "AppRouter"
+          ]
+        }
+      ],
+      "exports": [
+        "App"
+      ],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/index.css": {
+      "filePath": "frontend/src/index.css",
+      "contentHash": "15fdd356b6cfd501150d95fc61362b8d641a9b3c567e25835ac494e2b144063b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 84,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/src/layouts/MainLayout.tsx": {
+      "filePath": "frontend/src/layouts/MainLayout.tsx",
+      "contentHash": "9186a7970197169001748553f74ba7f6c26c80e982d290a13bb42bbc3441d683",
+      "functions": [
+        {
+          "name": "MainLayout",
+          "params": [],
+          "exported": true,
+          "lineCount": 80
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Outlet",
+            "useNavigate",
+            "useLocation",
+            "Navigate"
+          ]
+        },
+        {
+          "source": "antd",
+          "specifiers": [
+            "Layout",
+            "Menu",
+            "Button",
+            "Avatar",
+            "Dropdown",
+            "Spin"
+          ]
+        },
+        {
+          "source": "@ant-design/icons",
+          "specifiers": [
+            "MessageOutlined",
+            "SearchOutlined",
+            "ScheduleOutlined",
+            "UserOutlined",
+            "LogoutOutlined",
+            "MenuFoldOutlined",
+            "MenuUnfoldOutlined"
+          ]
+        },
+        {
+          "source": "@/store/AuthContext",
+          "specifiers": [
+            "useAuth"
+          ]
+        }
+      ],
+      "exports": [
+        "MainLayout"
+      ],
+      "totalLines": 104,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/main.tsx": {
+      "filePath": "frontend/src/main.tsx",
+      "contentHash": "7311ee2d8db9e0d29ccc257345d25cfe846f0736199ba93e5f420444ea277c44",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React"
+          ]
+        },
+        {
+          "source": "react-dom/client",
+          "specifiers": [
+            "ReactDOM"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "BrowserRouter"
+          ]
+        },
+        {
+          "source": "./App",
+          "specifiers": [
+            "App"
+          ]
+        },
+        {
+          "source": "./index.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Chat.tsx": {
+      "filePath": "frontend/src/pages/Chat.tsx",
+      "contentHash": "d4b2364b5655c3084449274b3b326d3c9afa893e8674c659127a453e65f9a995",
+      "functions": [
+        {
+          "name": "Chat",
+          "params": [],
+          "exported": true,
+          "lineCount": 335
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect",
+            "useRef",
+            "useCallback"
+          ]
+        },
+        {
+          "source": "antd",
+          "specifiers": [
+            "Button",
+            "Input",
+            "List",
+            "Typography",
+            "Spin",
+            "Collapse",
+            "Card",
+            "Empty",
+            "Tag",
+            "message"
+          ]
+        },
+        {
+          "source": "@ant-design/icons",
+          "specifiers": [
+            "PlusOutlined",
+            "SendOutlined",
+            "RobotOutlined",
+            "UserOutlined",
+            "BulbOutlined",
+            "SaveOutlined"
+          ]
+        },
+        {
+          "source": "react-markdown",
+          "specifiers": [
+            "ReactMarkdown"
+          ]
+        },
+        {
+          "source": "remark-gfm",
+          "specifiers": [
+            "remarkGfm"
+          ]
+        },
+        {
+          "source": "@/api/chat",
+          "specifiers": [
+            "createSession",
+            "getSessions",
+            "getHistory",
+            "sendMessage",
+            "Session",
+            "SSEEvent"
+          ]
+        },
+        {
+          "source": "@/api/trips",
+          "specifiers": [
+            "createTrip",
+            "TripPlanData"
+          ]
+        }
+      ],
+      "exports": [
+        "Chat"
+      ],
+      "totalLines": 354,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Login.tsx": {
+      "filePath": "frontend/src/pages/Login.tsx",
+      "contentHash": "addd7e1540d139dfefd78bfd740cd418fb2311117b44d60097a1545b349b328e",
+      "functions": [
+        {
+          "name": "Login",
+          "params": [],
+          "exported": true,
+          "lineCount": 49
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "antd",
+          "specifiers": [
+            "Form",
+            "Input",
+            "Button",
+            "Card",
+            "message",
+            "Typography"
+          ]
+        },
+        {
+          "source": "@ant-design/icons",
+          "specifiers": [
+            "UserOutlined",
+            "LockOutlined"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate",
+            "Link"
+          ]
+        },
+        {
+          "source": "@/api/auth",
+          "specifiers": [
+            "login"
+          ]
+        },
+        {
+          "source": "@/store/AuthContext",
+          "specifiers": [
+            "useAuth"
+          ]
+        }
+      ],
+      "exports": [
+        "Login"
+      ],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Profile.tsx": {
+      "filePath": "frontend/src/pages/Profile.tsx",
+      "contentHash": "12f487126b013370f868e368c5f1559f1d8fcfb75053725002e04d57fd817c60",
+      "functions": [
+        {
+          "name": "Profile",
+          "params": [],
+          "exported": true,
+          "lineCount": 65
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "antd",
+          "specifiers": [
+            "Card",
+            "Form",
+            "Input",
+            "Button",
+            "Descriptions",
+            "Spin",
+            "Typography",
+            "message"
+          ]
+        },
+        {
+          "source": "@ant-design/icons",
+          "specifiers": [
+            "UserOutlined",
+            "MailOutlined"
+          ]
+        },
+        {
+          "source": "@/store/AuthContext",
+          "specifiers": [
+            "useAuth"
+          ]
+        },
+        {
+          "source": "@/api/user",
+          "specifiers": [
+            "updateProfile"
+          ]
+        }
+      ],
+      "exports": [
+        "Profile"
+      ],
+      "totalLines": 74,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Register.tsx": {
+      "filePath": "frontend/src/pages/Register.tsx",
+      "contentHash": "96176ea3caa4a2c95954000cc330f666b0ad663bdbac6a001833a8e6eb9681d9",
+      "functions": [
+        {
+          "name": "Register",
+          "params": [],
+          "exported": true,
+          "lineCount": 65
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "antd",
+          "specifiers": [
+            "Form",
+            "Input",
+            "Button",
+            "Card",
+            "message",
+            "Typography"
+          ]
+        },
+        {
+          "source": "@ant-design/icons",
+          "specifiers": [
+            "UserOutlined",
+            "LockOutlined",
+            "MailOutlined"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate",
+            "Link"
+          ]
+        },
+        {
+          "source": "@/api/auth",
+          "specifiers": [
+            "register"
+          ]
+        }
+      ],
+      "exports": [
+        "Register"
+      ],
+      "totalLines": 74,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Spots.tsx": {
+      "filePath": "frontend/src/pages/Spots.tsx",
+      "contentHash": "821bf92f74fa14f3bd507920e2b8dfbb96c70a9bae23e2fdfe1540b15197328a",
+      "functions": [
+        {
+          "name": "Spots",
+          "params": [],
+          "exported": true,
+          "lineCount": 99
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "antd",
+          "specifiers": [
+            "Form",
+            "Input",
+            "Select",
+            "Button",
+            "Card",
+            "Row",
+            "Col",
+            "Pagination",
+            "Rate",
+            "Empty",
+            "Spin",
+            "message"
+          ]
+        },
+        {
+          "source": "@ant-design/icons",
+          "specifiers": [
+            "SearchOutlined",
+            "EnvironmentOutlined"
+          ]
+        },
+        {
+          "source": "@/api/spots",
+          "specifiers": [
+            "searchSpots",
+            "Spot"
+          ]
+        },
+        {
+          "source": "@/components/AMapView",
+          "specifiers": [
+            "AMapView",
+            "MapSpot"
+          ]
+        }
+      ],
+      "exports": [
+        "Spots"
+      ],
+      "totalLines": 117,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/TripDetail.tsx": {
+      "filePath": "frontend/src/pages/TripDetail.tsx",
+      "contentHash": "f0df698ba6b1c63492b0c830f369b9156a74ca821b6e00037a4d4d4c2524c06f",
+      "functions": [
+        {
+          "name": "TripDetail",
+          "params": [],
+          "exported": true,
+          "lineCount": 104
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useParams",
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "antd",
+          "specifiers": [
+            "Typography",
+            "Timeline",
+            "Card",
+            "Spin",
+            "Button",
+            "Statistic",
+            "Row",
+            "Col",
+            "Empty",
+            "Tag",
+            "message"
+          ]
+        },
+        {
+          "source": "@ant-design/icons",
+          "specifiers": [
+            "ArrowLeftOutlined",
+            "DollarOutlined",
+            "CalendarOutlined",
+            "EnvironmentOutlined",
+            "FilePdfOutlined"
+          ]
+        },
+        {
+          "source": "@/api/trips",
+          "specifiers": [
+            "getTrip",
+            "exportTripPdf"
+          ]
+        },
+        {
+          "source": "@/components/AMapView",
+          "specifiers": [
+            "AMapView",
+            "MapSpot"
+          ]
+        },
+        {
+          "source": "@/components/WeatherCard",
+          "specifiers": [
+            "WeatherCard"
+          ]
+        },
+        {
+          "source": "@/components/BudgetBreakdown",
+          "specifiers": [
+            "BudgetBreakdown"
+          ]
+        }
+      ],
+      "exports": [
+        "TripDetail"
+      ],
+      "totalLines": 145,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/Trips.tsx": {
+      "filePath": "frontend/src/pages/Trips.tsx",
+      "contentHash": "553c19bf9d3210fe36994d098c9431f63c2489f8b6dc57dd1ef85aa70b922fa2",
+      "functions": [
+        {
+          "name": "Trips",
+          "params": [],
+          "exported": true,
+          "lineCount": 81
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "antd",
+          "specifiers": [
+            "Card",
+            "Row",
+            "Col",
+            "Button",
+            "Empty",
+            "Spin",
+            "Popconfirm",
+            "Typography",
+            "message"
+          ]
+        },
+        {
+          "source": "@ant-design/icons",
+          "specifiers": [
+            "DeleteOutlined",
+            "EyeOutlined",
+            "FilePdfOutlined",
+            "EnvironmentOutlined",
+            "CalendarOutlined"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "useNavigate"
+          ]
+        },
+        {
+          "source": "@/api/trips",
+          "specifiers": [
+            "getTrips",
+            "deleteTrip",
+            "exportTripPdf",
+            "TripSummary"
+          ]
+        }
+      ],
+      "exports": [
+        "Trips"
+      ],
+      "totalLines": 90,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/router.tsx": {
+      "filePath": "frontend/src/router.tsx",
+      "contentHash": "a21f7c89cbfc7bbf77ad9c3f8febd18ae2c806cb94d6c3181d799d2630f71e48",
+      "functions": [
+        {
+          "name": "AppRouter",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Routes",
+            "Route",
+            "Navigate"
+          ]
+        },
+        {
+          "source": "@/layouts/MainLayout",
+          "specifiers": [
+            "MainLayout"
+          ]
+        },
+        {
+          "source": "@/pages/Login",
+          "specifiers": [
+            "Login"
+          ]
+        },
+        {
+          "source": "@/pages/Register",
+          "specifiers": [
+            "Register"
+          ]
+        },
+        {
+          "source": "@/pages/Chat",
+          "specifiers": [
+            "Chat"
+          ]
+        },
+        {
+          "source": "@/pages/Spots",
+          "specifiers": [
+            "Spots"
+          ]
+        },
+        {
+          "source": "@/pages/SpotDetail",
+          "specifiers": [
+            "SpotDetail"
+          ]
+        },
+        {
+          "source": "@/pages/Trips",
+          "specifiers": [
+            "Trips"
+          ]
+        },
+        {
+          "source": "@/pages/TripDetail",
+          "specifiers": [
+            "TripDetail"
+          ]
+        },
+        {
+          "source": "@/pages/Profile",
+          "specifiers": [
+            "Profile"
+          ]
+        }
+      ],
+      "exports": [
+        "AppRouter"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/store/AuthContext.tsx": {
+      "filePath": "frontend/src/store/AuthContext.tsx",
+      "contentHash": "e3e6a62c7049f7dc68b6ce560439d2ece2be5a72a5a1fb4187d8508d854ba249",
+      "functions": [
+        {
+          "name": "AuthProvider",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "useAuth",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "createContext",
+            "useContext",
+            "useState",
+            "useEffect",
+            "useCallback",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "@/api/user",
+          "specifiers": [
+            "getProfile",
+            "UserProfile"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthProvider",
+        "useAuth"
+      ],
+      "totalLines": 66,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/vite-env.d.ts": {
+      "filePath": "frontend/src/vite-env.d.ts",
+      "contentHash": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/tsconfig.json": {
+      "filePath": "frontend/tsconfig.json",
+      "contentHash": "6c3672a69e14ce2e4003c83a32ebc24326fdb1c382e79ad952087bf4a835d213",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/vite.config.ts": {
+      "filePath": "frontend/vite.config.ts",
+      "contentHash": "ee40e07abf48e100ec2f980cd7a215cd19fecae21efefd84254ea49016b3ce62",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@vitejs/plugin-react",
+          "specifiers": [
+            "react"
+          ]
+        },
+        {
+          "source": "path",
+          "specifiers": [
+            "resolve"
+          ]
+        },
+        {
+          "source": "vite",
+          "specifiers": [
+            "defineConfig"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "pyproject.toml": {
+      "filePath": "pyproject.toml",
+      "contentHash": "e18d2732a98bec2533769bd97d5ddcd1c3851ce607ca315036427296050d9a50",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "tests/__init__.py": {
+      "filePath": "tests/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "tests/conftest.py": {
+      "filePath": "tests/conftest.py",
+      "contentHash": "e61830947e3d4d172454e5ed6358613dce286e9828a255c8c15e28b06612ec49",
+      "functions": [
+        {
+          "name": "db",
+          "params": [],
+          "returnType": "AsyncGenerator[AsyncSession, None]",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "AsyncGenerator"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession",
+            "async_sessionmaker",
+            "create_async_engine"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "Base"
+          ]
+        }
+      ],
+      "exports": [
+        "db"
+      ],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_agents/__init__.py": {
+      "filePath": "tests/test_agents/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_agents/test_budget_estimator.py": {
+      "filePath": "tests/test_agents/test_budget_estimator.py",
+      "contentHash": "88f5094df5b241b70785cfb17404810738b54f88c6c02f3145a2c01ab870a22a",
+      "functions": [
+        {
+          "name": "test_estimate_budget_tool",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_estimate_budget_tool_over_budget",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "backend.agents.budget_estimator",
+          "specifiers": [
+            "estimate_budget_tool"
+          ]
+        }
+      ],
+      "exports": [
+        "test_estimate_budget_tool",
+        "test_estimate_budget_tool_over_budget"
+      ],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_agents/test_planner.py": {
+      "filePath": "tests/test_agents/test_planner.py",
+      "contentHash": "30a1b3ea9d50b087155b5854480fcab0718f1a7c32e58813f111c42ef4553b43",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TestExtractTripPlan",
+          "methods": [
+            "test_json_code_block",
+            "test_plain_code_block",
+            "test_no_json",
+            "test_invalid_json",
+            "test_json_with_surrounding_text"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "TestToolRegistration",
+          "methods": [
+            "test_tools_count",
+            "test_tool_names"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "TestCreatePlannerAgent",
+          "methods": [
+            "test_build_returns_runnable"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "TestPlanTrip",
+          "methods": [
+            "test_returns_text_and_plan",
+            "test_no_json_in_output",
+            "test_empty_messages",
+            "test_with_history",
+            "test_timeout_handling"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 75
+        },
+        {
+          "name": "TestRunPlannerStream",
+          "methods": [
+            "test_stream_events_sequence",
+            "test_stream_no_plan",
+            "test_stream_error_handling"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 81
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "AsyncMock",
+            "MagicMock",
+            "patch"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "backend.agents.planner",
+          "specifiers": [
+            "TOOLS",
+            "create_planner_agent",
+            "extract_trip_plan",
+            "plan_trip",
+            "run_planner_stream"
+          ]
+        }
+      ],
+      "exports": [
+        "TestExtractTripPlan",
+        "TestToolRegistration",
+        "TestCreatePlannerAgent",
+        "TestPlanTrip",
+        "TestRunPlannerStream"
+      ],
+      "totalLines": 278,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_agents/test_route_planner.py": {
+      "filePath": "tests/test_agents/test_route_planner.py",
+      "contentHash": "ab6995894d922f09f1a2d636a3223e190bc358a521e5749c999205bb6d5fbaa4",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TestInputSchema",
+          "methods": [
+            "test_route_plan_input_defaults",
+            "test_route_plan_input_full"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "TestAmapRoutePlanTool",
+          "methods": [
+            "sample_route",
+            "test_tool_returns_json",
+            "test_tool_empty_route"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "TestToolRegistration",
+          "methods": [
+            "test_tools_list"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "TestAgentBuild",
+          "methods": [
+            "test_build_agent_returns_graph"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "TestPlanRoute",
+          "methods": [
+            "sample_spots",
+            "test_plan_route_returns_dict",
+            "test_plan_route_handles_non_json",
+            "test_plan_route_with_transport_preference"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 47
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "AsyncMock",
+            "MagicMock",
+            "patch"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "backend.agents.route_planner",
+          "specifiers": [
+            "RoutePlanInput",
+            "amap_route_plan_tool",
+            "plan_route",
+            "_build_agent",
+            "TOOLS"
+          ]
+        },
+        {
+          "source": "backend.services.amap",
+          "specifiers": [
+            "Route",
+            "RouteSegment"
+          ]
+        }
+      ],
+      "exports": [
+        "TestInputSchema",
+        "TestAmapRoutePlanTool",
+        "TestToolRegistration",
+        "TestAgentBuild",
+        "TestPlanRoute"
+      ],
+      "totalLines": 149,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_agents/test_spot_finder.py": {
+      "filePath": "tests/test_agents/test_spot_finder.py",
+      "contentHash": "3288cdea388e649399c085b06ca25489d0f91435f740a640b3c005240fcabb0f",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TestInputSchemas",
+          "methods": [
+            "test_poi_search_input_required_fields",
+            "test_poi_search_input_with_type_code",
+            "test_spot_db_search_input"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "TestAmapPoiSearchTool",
+          "methods": [
+            "sample_spots",
+            "test_tool_returns_json",
+            "test_tool_empty_result"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "TestToolRegistration",
+          "methods": [
+            "test_tools_list_has_two_tools"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "TestAgentBuild",
+          "methods": [
+            "test_build_agent_returns_graph"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "TestFindSpots",
+          "methods": [
+            "test_find_spots_returns_list",
+            "test_find_spots_handles_non_json",
+            "test_find_spots_with_all_params"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 40
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "AsyncMock",
+            "MagicMock",
+            "patch"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "backend.agents.spot_finder",
+          "specifiers": [
+            "PoiSearchInput",
+            "SpotDbSearchInput",
+            "amap_poi_search_tool",
+            "find_spots",
+            "_build_agent",
+            "TOOLS"
+          ]
+        },
+        {
+          "source": "backend.services.amap",
+          "specifiers": [
+            "Spot"
+          ]
+        }
+      ],
+      "exports": [
+        "TestInputSchemas",
+        "TestAmapPoiSearchTool",
+        "TestToolRegistration",
+        "TestAgentBuild",
+        "TestFindSpots"
+      ],
+      "totalLines": 143,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_agents/test_weather_checker.py": {
+      "filePath": "tests/test_agents/test_weather_checker.py",
+      "contentHash": "da88a91c007caca7c38dac69c9178bd950c55ea3f8dd36d281482175912058fb",
+      "functions": [],
+      "classes": [
+        {
+          "name": "TestInputSchema",
+          "methods": [
+            "test_weather_query_input"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "TestWeatherQueryTool",
+          "methods": [
+            "sample_forecasts",
+            "test_tool_returns_json",
+            "test_tool_empty_result"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "TestToolRegistration",
+          "methods": [
+            "test_tools_list"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "TestAgentBuild",
+          "methods": [
+            "test_build_agent_returns_graph"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "TestCheckWeather",
+          "methods": [
+            "test_check_weather_returns_dict",
+            "test_check_weather_handles_non_json"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 31
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "AsyncMock",
+            "MagicMock",
+            "patch"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "backend.agents.weather_checker",
+          "specifiers": [
+            "WeatherQueryInput",
+            "weather_query_tool",
+            "check_weather",
+            "_build_agent",
+            "TOOLS"
+          ]
+        },
+        {
+          "source": "backend.services.weather",
+          "specifiers": [
+            "WeatherForecast"
+          ]
+        }
+      ],
+      "exports": [
+        "TestInputSchema",
+        "TestWeatherQueryTool",
+        "TestToolRegistration",
+        "TestAgentBuild",
+        "TestCheckWeather"
+      ],
+      "totalLines": 129,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_api/__init__.py": {
+      "filePath": "tests/test_api/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_api/test_auth.py": {
+      "filePath": "tests/test_api/test_auth.py",
+      "contentHash": "58cedb5a604a5735a5685d3f08f82c63f8e5607366d283cd2597436fde50fb3b",
+      "functions": [
+        {
+          "name": "client",
+          "params": [],
+          "returnType": "AsyncGenerator[AsyncClient, None]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "test_register_success",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_register_duplicate_username",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_register_duplicate_email",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_register_invalid_email",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_register_short_password",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_login_success",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_login_wrong_password",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_login_nonexistent_user",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_profile_with_token",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_profile_without_token",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_update_profile",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "AsyncGenerator"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "ASGITransport",
+            "AsyncClient"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession",
+            "async_sessionmaker",
+            "create_async_engine"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "Base",
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.main",
+          "specifiers": [
+            "app"
+          ]
+        }
+      ],
+      "exports": [
+        "client",
+        "test_register_success",
+        "test_register_duplicate_username",
+        "test_register_duplicate_email",
+        "test_register_invalid_email",
+        "test_register_short_password",
+        "test_login_success",
+        "test_login_wrong_password",
+        "test_login_nonexistent_user",
+        "test_profile_with_token",
+        "test_profile_without_token",
+        "test_update_profile"
+      ],
+      "totalLines": 164,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_api/test_chat.py": {
+      "filePath": "tests/test_api/test_chat.py",
+      "contentHash": "c1308d97638817f2079ca85a839c233b73ed3b25ff0a2e07a9fdaeea6996f801",
+      "functions": [
+        {
+          "name": "client",
+          "params": [],
+          "returnType": "AsyncGenerator[AsyncClient, None]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_register_and_login",
+          "params": [
+            "client",
+            "username"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_auth",
+          "params": [
+            "token"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_make_fake_stream",
+          "params": [
+            "events"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [
+        {
+          "name": "TestSessionCRUD",
+          "methods": [
+            "test_create_session",
+            "test_create_session_default_title",
+            "test_list_sessions",
+            "test_list_sessions_empty",
+            "test_delete_session",
+            "test_delete_nonexistent_session",
+            "test_session_isolation",
+            "test_unauthenticated_session"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 73
+        },
+        {
+          "name": "TestHistory",
+          "methods": [
+            "test_get_empty_history",
+            "test_history_not_found",
+            "test_history_isolation"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "TestSSEMessage",
+          "methods": [
+            "test_sse_token_events",
+            "test_sse_tool_events",
+            "test_sse_trip_plan_event",
+            "test_sse_error_event",
+            "test_message_saves_to_history",
+            "test_message_invalid_session",
+            "test_message_unauthenticated"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 149
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "AsyncGenerator"
+          ]
+        },
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "AsyncMock",
+            "patch"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "ASGITransport",
+            "AsyncClient"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession",
+            "async_sessionmaker",
+            "create_async_engine"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "Base",
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.main",
+          "specifiers": [
+            "app"
+          ]
+        }
+      ],
+      "exports": [
+        "client",
+        "_register_and_login",
+        "_auth",
+        "TestSessionCRUD",
+        "TestHistory",
+        "_make_fake_stream",
+        "TestSSEMessage"
+      ],
+      "totalLines": 342,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_api/test_spots.py": {
+      "filePath": "tests/test_api/test_spots.py",
+      "contentHash": "546b7d05972f6810ec43e57f2ad5f26527e407ea407544883e6bba74c29fab76",
+      "functions": [
+        {
+          "name": "client",
+          "params": [],
+          "returnType": "AsyncGenerator[AsyncClient, None]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_make_amap_spots",
+          "params": [
+            "count",
+            "city"
+          ],
+          "returnType": "list[Spot]",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [
+        {
+          "name": "TestSpotSearch",
+          "methods": [
+            "test_cache_miss_fetches_from_amap",
+            "test_cache_hit_skips_amap",
+            "test_search_no_params_returns_empty",
+            "test_pagination",
+            "test_filter_by_type"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 99
+        },
+        {
+          "name": "TestSpotDetail",
+          "methods": [
+            "test_get_existing_spot",
+            "test_get_nonexistent_spot"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 22
+        }
+      ],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "AsyncGenerator"
+          ]
+        },
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "AsyncMock",
+            "patch"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "ASGITransport",
+            "AsyncClient"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession",
+            "async_sessionmaker",
+            "create_async_engine"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "Base",
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.main",
+          "specifiers": [
+            "app"
+          ]
+        },
+        {
+          "source": "backend.services.amap",
+          "specifiers": [
+            "Spot"
+          ]
+        }
+      ],
+      "exports": [
+        "client",
+        "_make_amap_spots",
+        "TestSpotSearch",
+        "TestSpotDetail"
+      ],
+      "totalLines": 178,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_api/test_trips.py": {
+      "filePath": "tests/test_api/test_trips.py",
+      "contentHash": "3f54a160a6bf1d3c3a640f564dd4b1dd90f3c0f5bae23af924481bb260a76f2d",
+      "functions": [
+        {
+          "name": "client",
+          "params": [],
+          "returnType": "AsyncGenerator[AsyncClient, None]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_register_and_login",
+          "params": [
+            "client",
+            "username"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_auth_headers",
+          "params": [
+            "token"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_create_trip",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_list_trips",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_get_trip_detail",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_delete_trip",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_trip_access_forbidden",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_export_pdf",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_create_trip_unauthenticated",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_list_trips_empty",
+          "params": [
+            "client"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "AsyncGenerator"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "ASGITransport",
+            "AsyncClient"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession",
+            "async_sessionmaker",
+            "create_async_engine"
+          ]
+        },
+        {
+          "source": "backend.database",
+          "specifiers": [
+            "Base",
+            "get_db"
+          ]
+        },
+        {
+          "source": "backend.main",
+          "specifiers": [
+            "app"
+          ]
+        }
+      ],
+      "exports": [
+        "client",
+        "_register_and_login",
+        "_auth_headers",
+        "test_create_trip",
+        "test_list_trips",
+        "test_get_trip_detail",
+        "test_delete_trip",
+        "test_trip_access_forbidden",
+        "test_export_pdf",
+        "test_create_trip_unauthenticated",
+        "test_list_trips_empty"
+      ],
+      "totalLines": 186,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_crud/__init__.py": {
+      "filePath": "tests/test_crud/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_crud/test_chat_crud.py": {
+      "filePath": "tests/test_crud/test_chat_crud.py",
+      "contentHash": "e9bec0018f06087936b24983b0944a99db6ccc25a3fd87602f83750696fa6fb8",
+      "functions": [
+        {
+          "name": "user_id",
+          "params": [
+            "db"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_create_session",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_get_session",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_get_user_sessions",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_update_session",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_delete_session",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_create_and_get_messages",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_cascade_delete_messages",
+          "params": [
+            "db",
+            "user_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.crud.chat",
+          "specifiers": [
+            "create_chat_message",
+            "create_chat_session",
+            "delete_chat_session",
+            "get_chat_session",
+            "get_messages_by_session",
+            "get_user_sessions",
+            "update_chat_session"
+          ]
+        },
+        {
+          "source": "backend.crud.user",
+          "specifiers": [
+            "create_user"
+          ]
+        },
+        {
+          "source": "backend.schemas.chat",
+          "specifiers": [
+            "ChatMessageCreate",
+            "ChatSessionCreate",
+            "ChatSessionUpdate"
+          ]
+        },
+        {
+          "source": "backend.schemas.user",
+          "specifiers": [
+            "UserCreate"
+          ]
+        }
+      ],
+      "exports": [
+        "user_id",
+        "test_create_session",
+        "test_get_session",
+        "test_get_user_sessions",
+        "test_update_session",
+        "test_delete_session",
+        "test_create_and_get_messages",
+        "test_cascade_delete_messages"
+      ],
+      "totalLines": 99,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_crud/test_spot_cache_crud.py": {
+      "filePath": "tests/test_crud/test_spot_cache_crud.py",
+      "contentHash": "fb7f204ffc524175699eef252cba9eb668ecfadcd411ea09b8e0b8a718499b2d",
+      "functions": [
+        {
+          "name": "spot_data",
+          "params": [],
+          "returnType": "SpotCacheCreate",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_create_spot_cache",
+          "params": [
+            "db",
+            "spot_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_get_spot_by_source_id",
+          "params": [
+            "db",
+            "spot_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_get_spot_by_source_id_not_found",
+          "params": [
+            "db"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_search_spots_by_keyword",
+          "params": [
+            "db",
+            "spot_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_search_spots_by_city",
+          "params": [
+            "db",
+            "spot_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_search_spots_pagination",
+          "params": [
+            "db"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "test_update_spot_cache",
+          "params": [
+            "db",
+            "spot_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.crud.spot_cache",
+          "specifiers": [
+            "create_spot_cache",
+            "get_spot_by_source_id",
+            "search_spots",
+            "update_spot_cache"
+          ]
+        },
+        {
+          "source": "backend.schemas.spot",
+          "specifiers": [
+            "SpotCacheCreate",
+            "SpotCacheUpdate"
+          ]
+        }
+      ],
+      "exports": [
+        "spot_data",
+        "test_create_spot_cache",
+        "test_get_spot_by_source_id",
+        "test_get_spot_by_source_id_not_found",
+        "test_search_spots_by_keyword",
+        "test_search_spots_by_city",
+        "test_search_spots_pagination",
+        "test_update_spot_cache"
+      ],
+      "totalLines": 100,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_crud/test_trip_crud.py": {
+      "filePath": "tests/test_crud/test_trip_crud.py",
+      "contentHash": "08c4456442bb35f0546fd907103f5ae17cfcd8560f684c780cfcf05dc83d8a3f",
+      "functions": [
+        {
+          "name": "user_id",
+          "params": [
+            "db"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "trip_data",
+          "params": [],
+          "returnType": "TripCreate",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "test_create_trip",
+          "params": [
+            "db",
+            "user_id",
+            "trip_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_get_trip_with_days_and_activities",
+          "params": [
+            "db",
+            "user_id",
+            "trip_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_get_trip_not_found",
+          "params": [
+            "db"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_get_user_trips",
+          "params": [
+            "db",
+            "user_id",
+            "trip_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_update_trip",
+          "params": [
+            "db",
+            "user_id",
+            "trip_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_delete_trip",
+          "params": [
+            "db",
+            "user_id",
+            "trip_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "date"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.crud.trip",
+          "specifiers": [
+            "create_trip",
+            "delete_trip",
+            "get_trip",
+            "get_user_trips",
+            "update_trip"
+          ]
+        },
+        {
+          "source": "backend.crud.user",
+          "specifiers": [
+            "create_user"
+          ]
+        },
+        {
+          "source": "backend.schemas.trip",
+          "specifiers": [
+            "TripActivityCreate",
+            "TripCreate",
+            "TripDayCreate",
+            "TripUpdate"
+          ]
+        },
+        {
+          "source": "backend.schemas.user",
+          "specifiers": [
+            "UserCreate"
+          ]
+        }
+      ],
+      "exports": [
+        "user_id",
+        "trip_data",
+        "test_create_trip",
+        "test_get_trip_with_days_and_activities",
+        "test_get_trip_not_found",
+        "test_get_user_trips",
+        "test_update_trip",
+        "test_delete_trip"
+      ],
+      "totalLines": 112,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_crud/test_user_crud.py": {
+      "filePath": "tests/test_crud/test_user_crud.py",
+      "contentHash": "35558f2094e5224bbb2c874c7b16bc283cc30697fd2cd7fdf6dd2893509e48d2",
+      "functions": [
+        {
+          "name": "user_data",
+          "params": [],
+          "returnType": "UserCreate",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_create_user",
+          "params": [
+            "db",
+            "user_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_get_user_by_id",
+          "params": [
+            "db",
+            "user_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_get_user_by_id_not_found",
+          "params": [
+            "db"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_get_user_by_username",
+          "params": [
+            "db",
+            "user_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_get_user_by_email",
+          "params": [
+            "db",
+            "user_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_update_user",
+          "params": [
+            "db",
+            "user_data"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "backend.crud.user",
+          "specifiers": [
+            "create_user",
+            "get_user_by_email",
+            "get_user_by_id",
+            "get_user_by_username",
+            "update_user"
+          ]
+        },
+        {
+          "source": "backend.schemas.user",
+          "specifiers": [
+            "UserCreate",
+            "UserUpdate"
+          ]
+        }
+      ],
+      "exports": [
+        "user_data",
+        "test_create_user",
+        "test_get_user_by_id",
+        "test_get_user_by_id_not_found",
+        "test_get_user_by_username",
+        "test_get_user_by_email",
+        "test_update_user"
+      ],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_services/__init__.py": {
+      "filePath": "tests/test_services/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_services/test_amap.py": {
+      "filePath": "tests/test_services/test_amap.py",
+      "contentHash": "8d2f29916502da9b288f7a6896f3a52144e4974364733967548e8c1b1435db4f",
+      "functions": [
+        {
+          "name": "test_poi_search_success",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "test_poi_search_api_error",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_poi_search_http_error",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_route_plan_success",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "test_route_plan_api_error",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "httpx",
+          "specifiers": [
+            "httpx"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "respx",
+          "specifiers": [
+            "respx"
+          ]
+        },
+        {
+          "source": "backend.services.amap",
+          "specifiers": [
+            "amap_poi_search",
+            "amap_route_plan"
+          ]
+        }
+      ],
+      "exports": [
+        "test_poi_search_success",
+        "test_poi_search_api_error",
+        "test_poi_search_http_error",
+        "test_route_plan_success",
+        "test_route_plan_api_error"
+      ],
+      "totalLines": 112,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_services/test_budget.py": {
+      "filePath": "tests/test_services/test_budget.py",
+      "contentHash": "f403c0194b6ad059caee0ea3d3c4fdaa73d150fbedfcd6ba9b40fb34b5ce72f6",
+      "functions": [
+        {
+          "name": "test_budget_basic",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_budget_one_day",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_budget_over_limit",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_budget_taxi_mode",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_budget_no_tickets",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "backend.services.budget",
+          "specifiers": [
+            "budget_estimate"
+          ]
+        }
+      ],
+      "exports": [
+        "test_budget_basic",
+        "test_budget_one_day",
+        "test_budget_over_limit",
+        "test_budget_taxi_mode",
+        "test_budget_no_tickets"
+      ],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_services/test_weather.py": {
+      "filePath": "tests/test_services/test_weather.py",
+      "contentHash": "c7e2e44db221f9c49842570706ffa2502a5f6585426784d3bb4685fd7fc75c0e",
+      "functions": [
+        {
+          "name": "test_weather_query_success",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "test_weather_query_api_error",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "httpx",
+          "specifiers": [
+            "httpx"
+          ]
+        },
+        {
+          "source": "respx",
+          "specifiers": [
+            "respx"
+          ]
+        },
+        {
+          "source": "backend.services.weather",
+          "specifiers": [
+            "weather_query"
+          ]
+        }
+      ],
+      "exports": [
+        "test_weather_query_success",
+        "test_weather_query_api_error"
+      ],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

@@ -38,6 +38,8 @@ async def create_trip(db: AsyncSession, user_id: int, trip_in: TripCreate) -> Tr
                 transport=activity_in.transport,
                 notes=activity_in.notes,
                 estimated_cost=activity_in.estimated_cost,
+                longitude=activity_in.longitude,
+                latitude=activity_in.latitude,
             )
             db.add(activity)
 

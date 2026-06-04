@@ -10,6 +10,8 @@ class TripActivityCreate(BaseModel):
     transport: str | None = None
     notes: str | None = None
     estimated_cost: float | None = None
+    longitude: float | None = None
+    latitude: float | None = None
 
 
 class TripActivityUpdate(BaseModel):
@@ -19,6 +21,8 @@ class TripActivityUpdate(BaseModel):
     transport: str | None = None
     notes: str | None = None
     estimated_cost: float | None = None
+    longitude: float | None = None
+    latitude: float | None = None
 
 
 class TripActivityOut(BaseModel):
@@ -30,6 +34,8 @@ class TripActivityOut(BaseModel):
     transport: str | None
     notes: str | None
     estimated_cost: float | None
+    longitude: float | None
+    latitude: float | None
 
     model_config = {"from_attributes": True}
 

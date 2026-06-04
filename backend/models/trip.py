@@ -1,6 +1,6 @@
 from datetime import UTC, date, datetime
 
-from sqlalchemy import Date, ForeignKey, String, Text, func
+from sqlalchemy import Date, Float, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database import Base
@@ -56,5 +56,7 @@ class TripActivity(Base):
     transport: Mapped[str | None] = mapped_column(String(50), default=None)
     notes: Mapped[str | None] = mapped_column(Text, default=None)
     estimated_cost: Mapped[float | None] = mapped_column(default=None)
+    longitude: Mapped[float | None] = mapped_column(Float, default=None)
+    latitude: Mapped[float | None] = mapped_column(Float, default=None)
 
     trip_day: Mapped["TripDay"] = relationship(back_populates="activities")

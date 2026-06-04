@@ -11,7 +11,7 @@ import asyncio
 import json
 import re
 from collections.abc import AsyncGenerator
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from langchain_core.messages import AIMessageChunk
@@ -94,7 +94,9 @@ PLANNER_SYSTEM_PROMPT = """\
           "time_slot": "09:00-12:00",
           "transport": "步行/公交/地铁/打车",
           "notes": "游玩建议或备注",
-          "estimated_cost": 数字
+          "estimated_cost": 数字,
+          "longitude": 经度数字,
+          "latitude": 纬度数字
         }
       ]
     }
@@ -105,6 +107,7 @@ PLANNER_SYSTEM_PROMPT = """\
 ## 注意事项
 - 每天安排 2-4 个景点，避免行程过于紧凑
 - 考虑景点之间的距离和交通时间
+- 每个活动尽量从景点搜索结果中带上 longitude 和 latitude，便于前端展示路线地图
 - 根据天气情况灵活调整室内外活动
 - 预算估算要包含交通、住宿、餐饮、门票等各项费用
 - budget_breakdown 字段务必填写费用分类明细

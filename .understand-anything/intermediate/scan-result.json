@@ -1,0 +1,780 @@
+{
+  "name": "travel-assistant",
+  "description": "智能旅游助手 - 基于 LangChain 多 Agent 协作的旅游规划服务。后端采用 FastAPI + LangChain 实现多智能体协作（规划、路线、景点、天气、预算），前端基于 React + Vite + Ant Design 构建，支持 SSE 实时流式对话。 Note: this project has over 100 source files; consider scoping analysis to a subdirectory for faster results.",
+  "languages": [
+    "css",
+    "html",
+    "javascript",
+    "json",
+    "markdown",
+    "python",
+    "toml",
+    "typescript",
+    "unknown"
+  ],
+  "frameworks": [
+    "FastAPI",
+    "Uvicorn",
+    "SQLAlchemy",
+    "Pydantic",
+    "LangChain",
+    "SSE Starlette",
+    "Pytest",
+    "Ruff",
+    "Mypy",
+    "React",
+    "Vite",
+    "Ant Design",
+    "React Router",
+    "Axios"
+  ],
+  "files": [
+    {
+      "path": ".python-version",
+      "language": "unknown",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".understand-anything/.understandignore",
+      "language": "unknown",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".understand-anything/config.json",
+      "language": "json",
+      "sizeLines": 3,
+      "fileCategory": "config"
+    },
+    {
+      "path": "backend/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/agents/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/agents/budget_estimator.py",
+      "language": "python",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/agents/planner.py",
+      "language": "python",
+      "sizeLines": 404,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/agents/route_planner.py",
+      "language": "python",
+      "sizeLines": 84,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/agents/spot_finder.py",
+      "language": "python",
+      "sizeLines": 119,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/agents/weather_checker.py",
+      "language": "python",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/api/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/api/auth.py",
+      "language": "python",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/api/chat.py",
+      "language": "python",
+      "sizeLines": 176,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/api/deps.py",
+      "language": "python",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/api/spots.py",
+      "language": "python",
+      "sizeLines": 116,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/api/trips.py",
+      "language": "python",
+      "sizeLines": 160,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/api/user.py",
+      "language": "python",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/config.py",
+      "language": "python",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/crud/__init__.py",
+      "language": "python",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/crud/chat.py",
+      "language": "python",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/crud/spot_cache.py",
+      "language": "python",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/crud/trip.py",
+      "language": "python",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/crud/user.py",
+      "language": "python",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/database.py",
+      "language": "python",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/main.py",
+      "language": "python",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/models/__init__.py",
+      "language": "python",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/models/chat.py",
+      "language": "python",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/models/spot_cache.py",
+      "language": "python",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/models/trip.py",
+      "language": "python",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/models/user.py",
+      "language": "python",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/schemas/__init__.py",
+      "language": "python",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/schemas/chat.py",
+      "language": "python",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/schemas/spot.py",
+      "language": "python",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/schemas/trip.py",
+      "language": "python",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/schemas/user.py",
+      "language": "python",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/services/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/services/amap.py",
+      "language": "python",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/services/budget.py",
+      "language": "python",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/services/weather.py",
+      "language": "python",
+      "sizeLines": 66,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/utils/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "backend/utils/security.py",
+      "language": "python",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "doc/high-level-design.md",
+      "language": "markdown",
+      "sizeLines": 664,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/prompt.md",
+      "language": "markdown",
+      "sizeLines": 489,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/proposal.md",
+      "language": "markdown",
+      "sizeLines": 302,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M01-frontend.md",
+      "language": "markdown",
+      "sizeLines": 73,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M02-user-management.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M03-spot-query.md",
+      "language": "markdown",
+      "sizeLines": 30,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M04-trip-management.md",
+      "language": "markdown",
+      "sizeLines": 42,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M05-agent-orchestration.md",
+      "language": "markdown",
+      "sizeLines": 38,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M06-planner-agent.md",
+      "language": "markdown",
+      "sizeLines": 43,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M07-spot-agent.md",
+      "language": "markdown",
+      "sizeLines": 31,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M08-route-agent.md",
+      "language": "markdown",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M09-weather-agent.md",
+      "language": "markdown",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M10-budget-agent.md",
+      "language": "markdown",
+      "sizeLines": 28,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M11-external-services.md",
+      "language": "markdown",
+      "sizeLines": 51,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/M12-data-access.md",
+      "language": "markdown",
+      "sizeLines": 46,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "doc/tasks/progress.md",
+      "language": "markdown",
+      "sizeLines": 32,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "frontend/eslint.config.js",
+      "language": "javascript",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/index.html",
+      "language": "html",
+      "sizeLines": 12,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "frontend/package.json",
+      "language": "json",
+      "sizeLines": 37,
+      "fileCategory": "config"
+    },
+    {
+      "path": "frontend/src/api/auth.ts",
+      "language": "typescript",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/api/chat.ts",
+      "language": "typescript",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/api/client.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/api/spots.ts",
+      "language": "typescript",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/api/trips.ts",
+      "language": "typescript",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/api/user.ts",
+      "language": "typescript",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/App.tsx",
+      "language": "typescript",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/index.css",
+      "language": "css",
+      "sizeLines": 83,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "frontend/src/layouts/MainLayout.tsx",
+      "language": "typescript",
+      "sizeLines": 103,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "language": "typescript",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Chat.tsx",
+      "language": "typescript",
+      "sizeLines": 348,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Login.tsx",
+      "language": "typescript",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Profile.tsx",
+      "language": "typescript",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Register.tsx",
+      "language": "typescript",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Spots.tsx",
+      "language": "typescript",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/TripDetail.tsx",
+      "language": "typescript",
+      "sizeLines": 114,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/pages/Trips.tsx",
+      "language": "typescript",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/router.tsx",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/store/AuthContext.tsx",
+      "language": "typescript",
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/src/vite-env.d.ts",
+      "language": "typescript",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "frontend/tsconfig.json",
+      "language": "json",
+      "sizeLines": 26,
+      "fileCategory": "config"
+    },
+    {
+      "path": "frontend/vite.config.ts",
+      "language": "typescript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "pyproject.toml",
+      "language": "toml",
+      "sizeLines": 53,
+      "fileCategory": "config"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 0,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tests/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/conftest.py",
+      "language": "python",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_agents/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_agents/test_budget_estimator.py",
+      "language": "python",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_agents/test_planner.py",
+      "language": "python",
+      "sizeLines": 277,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_agents/test_route_planner.py",
+      "language": "python",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_agents/test_spot_finder.py",
+      "language": "python",
+      "sizeLines": 142,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_agents/test_weather_checker.py",
+      "language": "python",
+      "sizeLines": 128,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_api/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_api/test_auth.py",
+      "language": "python",
+      "sizeLines": 163,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_api/test_chat.py",
+      "language": "python",
+      "sizeLines": 341,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_api/test_spots.py",
+      "language": "python",
+      "sizeLines": 177,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_api/test_trips.py",
+      "language": "python",
+      "sizeLines": 185,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_crud/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_crud/test_chat_crud.py",
+      "language": "python",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_crud/test_spot_cache_crud.py",
+      "language": "python",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_crud/test_trip_crud.py",
+      "language": "python",
+      "sizeLines": 111,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_crud/test_user_crud.py",
+      "language": "python",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_services/__init__.py",
+      "language": "python",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_services/test_amap.py",
+      "language": "python",
+      "sizeLines": 111,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_services/test_budget.py",
+      "language": "python",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/test_services/test_weather.py",
+      "language": "python",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    }
+  ],
+  "totalFiles": 106,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "moderate",
+  "importMap": {
+    ".python-version": [],
+    ".understand-anything/.understandignore": [],
+    ".understand-anything/config.json": [],
+    "backend/__init__.py": [],
+    "backend/agents/__init__.py": [],
+    "backend/agents/budget_estimator.py": [],
+    "backend/agents/planner.py": [],
+    "backend/agents/route_planner.py": [],
+    "backend/agents/spot_finder.py": [],
+    "backend/agents/weather_checker.py": [],
+    "backend/api/__init__.py": [],
+    "backend/api/auth.py": [],
+    "backend/api/chat.py": [],
+    "backend/api/deps.py": [],
+    "backend/api/spots.py": [],
+    "backend/api/trips.py": [],
+    "backend/api/user.py": [],
+    "backend/config.py": [],
+    "backend/crud/__init__.py": [],
+    "backend/crud/chat.py": [],
+    "backend/crud/spot_cache.py": [],
+    "backend/crud/trip.py": [],
+    "backend/crud/user.py": [],
+    "backend/database.py": [],
+    "backend/main.py": [],
+    "backend/models/__init__.py": [],
+    "backend/models/chat.py": [],
+    "backend/models/spot_cache.py": [],
+    "backend/models/trip.py": [],
+    "backend/models/user.py": [],
+    "backend/schemas/__init__.py": [],
+    "backend/schemas/chat.py": [],
+    "backend/schemas/spot.py": [],
+    "backend/schemas/trip.py": [],
+    "backend/schemas/user.py": [],
+    "backend/services/__init__.py": [],
+    "backend/services/amap.py": [],
+    "backend/services/budget.py": [],
+    "backend/services/weather.py": [],
+    "backend/utils/__init__.py": [],
+    "backend/utils/security.py": [],
+    "doc/high-level-design.md": [],
+    "doc/prompt.md": [],
+    "doc/proposal.md": [],
+    "doc/tasks/M01-frontend.md": [],
+    "doc/tasks/M02-user-management.md": [],
+    "doc/tasks/M03-spot-query.md": [],
+    "doc/tasks/M04-trip-management.md": [],
+    "doc/tasks/M05-agent-orchestration.md": [],
+    "doc/tasks/M06-planner-agent.md": [],
+    "doc/tasks/M07-spot-agent.md": [],
+    "doc/tasks/M08-route-agent.md": [],
+    "doc/tasks/M09-weather-agent.md": [],
+    "doc/tasks/M10-budget-agent.md": [],
+    "doc/tasks/M11-external-services.md": [],
+    "doc/tasks/M12-data-access.md": [],
+    "doc/tasks/progress.md": [],
+    "frontend/eslint.config.js": [],
+    "frontend/index.html": [],
+    "frontend/package.json": [],
+    "frontend/src/api/auth.ts": [],
+    "frontend/src/api/chat.ts": [],
+    "frontend/src/api/client.ts": [],
+    "frontend/src/api/spots.ts": [],
+    "frontend/src/api/trips.ts": [],
+    "frontend/src/api/user.ts": [],
+    "frontend/src/App.tsx": [],
+    "frontend/src/index.css": [],
+    "frontend/src/layouts/MainLayout.tsx": [],
+    "frontend/src/main.tsx": [],
+    "frontend/src/pages/Chat.tsx": [],
+    "frontend/src/pages/Login.tsx": [],
+    "frontend/src/pages/Profile.tsx": [],
+    "frontend/src/pages/Register.tsx": [],
+    "frontend/src/pages/Spots.tsx": [],
+    "frontend/src/pages/TripDetail.tsx": [],
+    "frontend/src/pages/Trips.tsx": [],
+    "frontend/src/router.tsx": [],
+    "frontend/src/store/AuthContext.tsx": [],
+    "frontend/src/vite-env.d.ts": [],
+    "frontend/tsconfig.json": [],
+    "frontend/vite.config.ts": [],
+    "pyproject.toml": [],
+    "README.md": [],
+    "tests/__init__.py": [],
+    "tests/conftest.py": [],
+    "tests/test_agents/__init__.py": [],
+    "tests/test_agents/test_budget_estimator.py": [],
+    "tests/test_agents/test_planner.py": [],
+    "tests/test_agents/test_route_planner.py": [],
+    "tests/test_agents/test_spot_finder.py": [],
+    "tests/test_agents/test_weather_checker.py": [],
+    "tests/test_api/__init__.py": [],
+    "tests/test_api/test_auth.py": [],
+    "tests/test_api/test_chat.py": [],
+    "tests/test_api/test_spots.py": [],
+    "tests/test_api/test_trips.py": [],
+    "tests/test_crud/__init__.py": [],
+    "tests/test_crud/test_chat_crud.py": [],
+    "tests/test_crud/test_spot_cache_crud.py": [],
+    "tests/test_crud/test_trip_crud.py": [],
+    "tests/test_crud/test_user_crud.py": [],
+    "tests/test_services/__init__.py": [],
+    "tests/test_services/test_amap.py": [],
+    "tests/test_services/test_budget.py": [],
+    "tests/test_services/test_weather.py": []
+  }
+}

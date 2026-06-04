@@ -55,3 +55,23 @@ M12 → M2 → M11 → M3 → M7/M8/M9/M10（可并行） → M6 → M5 → M4 �
 | 预算明细展示 | B-03 | ✅ 完成 | `BudgetBreakdown.tsx` — 分类进度条、费用占比 |
 | 行程导出 PDF | E-03 | ✅ 完成 | `GET /api/trips/{id}/export` 已实现 |
 | 对话中修改行程 | P-02 | ✅ 完成 | Planner System Prompt 增加行程调整指引 |
+
+### 遗留问题修复记录（2026-06-04）
+
+| 问题 | 状态 | 修复说明 |
+|------|------|----------|
+| 行程详情页地图未真正展示 | ✅ 完成 | `TripActivity` 增加可选经纬度字段并在 SQLite 初始化时补齐旧库列；保存行程时持久化坐标；`TripDetail.tsx` 使用真实坐标渲染 `AMapView` 和路线 |
+| 前端构建可能被未使用变量阻断 | ✅ 完成 | `TripDetail.tsx` 中地图导入和坐标集合已用于页面渲染，不再保留未使用变量 |
+| 地图安全密钥配置不完整 | ✅ 完成 | `AMapView.tsx` 支持 `VITE_AMAP_SECURITY_CODE`；新增 `frontend/.env.example` 说明配置项 |
+| PDF 中文字体存在降级风险 | ✅ 完成 | PDF 导出优先使用系统宋体，缺失时降级到 ReportLab 内置 `STSong-Light` 中文 CID 字体；字体名缓存避免同进程重复导出失败 |
+| 真实外部服务联调仍需验证 | ⚠️ 待本地执行 | 新增 `doc/integration-checklist.md` 固化真实 Key、DeepSeek、高德、天气、保存行程、地图和 PDF 的端到端验收路径 |
+
+### 验证记录（2026-06-04）
+
+| 检查项 | 状态 | 说明 |
+|--------|------|------|
+| `uv run pytest tests/test_crud/test_trip_crud.py tests/test_api/test_trips.py -v` | ⚠️ 未能确认 | 当前 Shell 工具持续无法返回退出状态，不能可靠判断测试结果 |
+| `uv run pytest tests/ -v --tb=short` | ⚠️ 未能确认 | 同上 |
+| `uv run mypy backend/ --strict` | ⚠️ 未能确认 | 同上 |
+| `uv run ruff check .` / `uv run ruff format --check .` | ⚠️ 未能确认 | 同上 |
+| `npm run build` | ⚠️ 未能确认 | 同上 |

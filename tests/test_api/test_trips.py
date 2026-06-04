@@ -31,6 +31,8 @@ TRIP_PAYLOAD = {
                     "transport": "地铁",
                     "notes": "早起避开人流",
                     "estimated_cost": 500.0,
+                    "longitude": 139.7967,
+                    "latitude": 35.7148,
                 },
                 {
                     "order_index": 2,
@@ -39,6 +41,8 @@ TRIP_PAYLOAD = {
                     "transport": "步行",
                     "notes": None,
                     "estimated_cost": 1200.0,
+                    "longitude": 139.7454,
+                    "latitude": 35.6586,
                 },
             ],
         },
@@ -54,6 +58,8 @@ TRIP_PAYLOAD = {
                     "transport": "电车",
                     "notes": "买手办",
                     "estimated_cost": 3000.0,
+                    "longitude": 139.7731,
+                    "latitude": 35.6984,
                 }
             ],
         },
@@ -133,6 +139,9 @@ async def test_get_trip_detail(client: AsyncClient) -> None:
     assert data["destination"] == "东京"
     assert len(data["days"]) == 2
     assert len(data["days"][0]["activities"]) == 2
+    first_activity = data["days"][0]["activities"][0]
+    assert first_activity["longitude"] == 139.7967
+    assert first_activity["latitude"] == 35.7148
 
 
 async def test_delete_trip(client: AsyncClient) -> None:
@@ -171,6 +180,26 @@ async def test_export_pdf(client: AsyncClient) -> None:
     assert resp.status_code == 200
     assert resp.headers["content-type"] == "application/pdf"
     assert resp.content[:4] == b"%PDF"
+
+
+async def test_export_pdf_twice(client: AsyncClient) -> None:
+    token = await _register_and_login(client)
+    create_resp = await client.post(
+        "/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token)
+    )
+    trip_id = create_resp.json()["trip_id"]
+
+    first_resp = await client.get(
+        f"/api/trips/{trip_id}/export", headers=_auth_headers(token)
+    )
+    second_resp = await client.get(
+        f"/api/trips/{trip_id}/export", headers=_auth_headers(token)
+    )
+
+    assert first_resp.status_code == 200
+    assert second_resp.status_code == 200
+    assert first_resp.content[:4] == b"%PDF"
+    assert second_resp.content[:4] == b"%PDF"
 
 
 async def test_create_trip_unauthenticated(client: AsyncClient) -> None:

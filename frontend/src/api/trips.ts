@@ -7,6 +7,8 @@ export interface TripActivity {
   transport?: string;
   notes?: string;
   estimated_cost?: number;
+  longitude?: number;
+  latitude?: number;
 }
 
 export interface TripDay {

@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
     "preview": "vite preview"
   },
   "devDependencies": {

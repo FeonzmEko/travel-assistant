@@ -48,6 +48,8 @@ def trip_data() -> TripCreate:
                         spot_name="故宫",
                         time_slot="09:00-12:00",
                         estimated_cost=60.0,
+                        longitude=116.397026,
+                        latitude=39.918058,
                     ),
                     TripActivityCreate(
                         order_index=2,
@@ -79,6 +81,8 @@ async def test_get_trip_with_days_and_activities(
     assert len(found.days) == 1
     assert len(found.days[0].activities) == 2
     assert found.days[0].activities[0].spot_name == "故宫"
+    assert found.days[0].activities[0].longitude == 116.397026
+    assert found.days[0].activities[0].latitude == 39.918058
 
 
 async def test_get_trip_not_found(db: AsyncSession) -> None:
