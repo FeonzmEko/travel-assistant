@@ -123,6 +123,11 @@ export default function Chat() {
     plan_route_tool: '🗺️ 路线规划',
     check_weather_tool: '🌤️ 天气查询',
     estimate_budget_tool: '💰 预算估算',
+    find_spots_agent: '🔍 景点搜索 Agent',
+    plan_route_agent: '🗺️ 路线规划 Agent',
+    check_weather_agent: '🌤️ 天气查询 Agent',
+    estimate_budget_agent: '💰 预算估算 Agent',
+    get_current_time_tool: '🕐 获取当前时间',
   };
 
   const [savingTrip, setSavingTrip] = useState(false);

@@ -3,6 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Typography, Timeline, Card, Spin, Button, Statistic, Row, Col, Empty, Tag, message } from 'antd';
 import { ArrowLeftOutlined, DollarOutlined, CalendarOutlined, EnvironmentOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { getTrip, exportTripPdf } from '@/api/trips';
+import AMapView, { type MapSpot } from '@/components/AMapView';
+import WeatherCard from '@/components/WeatherCard';
+import BudgetBreakdown from '@/components/BudgetBreakdown';
 
 const { Title, Text } = Typography;
 
@@ -57,6 +60,24 @@ export default function TripDetail() {
   const totalCost = trip.days.reduce((sum, day) =>
     sum + day.activities.reduce((s, a) => s + (a.estimated_cost ?? 0), 0), 0);
 
+  const weatherItems = trip.days
+    .filter((d) => d.weather)
+    .map((d) => ({
+      date: d.date,
+      weather: d.weather!,
+    }));
+
+  const allSpots: MapSpot[] = [];
+  const spotNameSet = new Set<string>();
+  for (const day of trip.days) {
+    for (const act of day.activities) {
+      if (!spotNameSet.has(act.spot_name)) {
+        spotNameSet.add(act.spot_name);
+        allSpots.push({ name: act.spot_name, longitude: 0, latitude: 0 });
+      }
+    }
+  }
+
   return (
     <div style={{ padding: 24 }}>
       {contextHolder}
@@ -72,6 +93,15 @@ export default function TripDetail() {
         <Col><Statistic title="日期" value={`${trip.start_date} ~ ${trip.end_date}`} prefix={<CalendarOutlined />} /></Col>
         <Col><Statistic title="预估总费用" value={trip.budget_total ?? totalCost} prefix={<DollarOutlined />} suffix="元" /></Col>
       </Row>
+
+      {weatherItems.length > 0 && (
+        <WeatherCard items={weatherItems} />
+      )}
+
+      <BudgetBreakdown
+        breakdownStr={trip.budget_breakdown}
+        total={trip.budget_total ?? totalCost}
+      />
 
       {trip.days.length > 0 ? (
         trip.days

@@ -1,13 +1,17 @@
-"""景点搜索 Agent — M7"""
+"""景点搜索 Agent — M7
+
+专门负责景点搜索与筛选，拥有独立的 LLM 推理能力。
+可用工具：高德 POI 搜索、本地景点数据库检索。
+"""
 
 from __future__ import annotations
 
 import json
 from typing import Any
 
-from langchain.agents import create_agent
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
+from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from backend.config import settings
@@ -87,13 +91,15 @@ SYSTEM_PROMPT = (
 TOOLS = [amap_poi_search_tool, spot_db_search_tool]
 
 
-def _build_agent():
+def create_spot_finder_agent():  # type: ignore[no-untyped-def]
+    """构建景点搜索 Agent（基于 LangGraph create_react_agent）。"""
     llm = ChatOpenAI(
         model=settings.deepseek_model,
         api_key=settings.deepseek_api_key,
         base_url=settings.deepseek_base_url,
+        temperature=0.1,
     )
-    return create_agent(model=llm, tools=TOOLS, system_prompt=SYSTEM_PROMPT)
+    return create_react_agent(llm, TOOLS, prompt=SYSTEM_PROMPT)
 
 
 async def find_spots(
@@ -103,7 +109,7 @@ async def find_spots(
     count: int = 10,
 ) -> list[dict[str, Any]]:
     """景点搜索入口：返回结构化景点列表。"""
-    graph = _build_agent()
+    graph = create_spot_finder_agent()
     query = f"请在{city}搜索"
     if keyword:
         query += f"与'{keyword}'相关的"
@@ -111,7 +117,10 @@ async def find_spots(
         query += f"（类型编码 {type_code}）"
     query += f"景点，最多返回 {count} 个结果。"
 
-    result = await graph.ainvoke({"messages": [{"role": "user", "content": query}]})
+    result = await graph.ainvoke(
+        {"messages": [{"role": "user", "content": query}]},
+        config={"recursion_limit": 15},
+    )
     output = result["messages"][-1].content
     try:
         return json.loads(output)  # type: ignore[no-any-return]

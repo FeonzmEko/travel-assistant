@@ -11,6 +11,9 @@ export interface Spot {
   image_url?: string;
   latitude?: number;
   longitude?: number;
+  open_time?: string;
+  ticket_price?: number;
+  tel?: string;
 }
 
 export interface SpotSearchParams {

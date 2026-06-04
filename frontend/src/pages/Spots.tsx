@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Form, Input, Select, Button, Card, Row, Col, Pagination, Modal, Rate, Empty, Spin, Typography, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Form, Input, Select, Button, Card, Row, Col, Pagination, Rate, Empty, Spin, message } from 'antd';
 import { SearchOutlined, EnvironmentOutlined } from '@ant-design/icons';
-import { searchSpots, getSpot, type Spot } from '@/api/spots';
+import { searchSpots, type Spot } from '@/api/spots';
+import AMapView, { type MapSpot } from '@/components/AMapView';
 
 const { Meta } = Card;
-const { Paragraph } = Typography;
 
 const spotTypes = [
   { value: '', label: '全部类型' },
@@ -15,13 +16,12 @@ const spotTypes = [
 ];
 
 export default function Spots() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<Spot[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useState<{ keyword?: string; city?: string; type?: string }>({});
-  const [detail, setDetail] = useState<Spot | null>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const doSearch = async (params: typeof searchParams, p = 1) => {
@@ -36,18 +36,6 @@ export default function Spots() {
       messageApi.error('搜索失败');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const showDetail = async (id: string) => {
-    setDetailLoading(true);
-    try {
-      const res = await getSpot(id);
-      setDetail(res.data);
-    } catch {
-      messageApi.error('获取详情失败');
-    } finally {
-      setDetailLoading(false);
     }
   };
 
@@ -69,6 +57,23 @@ export default function Spots() {
         </Form.Item>
       </Form>
 
+      {items.length > 0 && items.some((s) => s.latitude && s.longitude) && (
+        <div style={{ marginBottom: 24 }}>
+          <AMapView
+            spots={items.filter((s): s is Spot & { latitude: number; longitude: number } => !!(s.latitude && s.longitude)).map((s) => ({
+              name: s.name,
+              longitude: s.longitude,
+              latitude: s.latitude,
+            } as MapSpot))}
+            style={{ width: '100%', height: 300, borderRadius: 8 }}
+            onSpotClick={(ms) => {
+              const found = items.find((s) => s.name === ms.name);
+              if (found) navigate(`/spots/${found.id}`);
+            }}
+          />
+        </div>
+      )}
+
       <Spin spinning={loading}>
         {items.length === 0 && !loading ? (
           <Empty description="搜索景点、美食、酒店..." />
@@ -84,7 +89,7 @@ export default function Spots() {
                         ? <img alt={spot.name} src={spot.image_url} style={{ height: 180, objectFit: 'cover' }} />
                         : <div style={{ height: 180, background: '#f0f5ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>🏞️</div>
                     }
-                    onClick={() => showDetail(spot.id)}
+                    onClick={() => navigate(`/spots/${spot.id}`)}
                   >
                     <Meta
                       title={spot.name}
@@ -106,24 +111,6 @@ export default function Spots() {
         )}
       </Spin>
 
-      <Modal
-        open={!!detail}
-        onCancel={() => setDetail(null)}
-        footer={null}
-        title={detail?.name}
-        width={600}
-        loading={detailLoading}
-      >
-        {detail && (
-          <div>
-            {detail.image_url && <img src={detail.image_url} alt={detail.name} style={{ width: '100%', borderRadius: 8, marginBottom: 16 }} />}
-            {detail.address && <Paragraph><EnvironmentOutlined /> {detail.address}</Paragraph>}
-            {detail.rating != null && <Paragraph>评分：<Rate disabled value={detail.rating} allowHalf /></Paragraph>}
-            {detail.type && <Paragraph>类型：{detail.type}</Paragraph>}
-            {detail.description && <Paragraph>{detail.description}</Paragraph>}
-          </div>
-        )}
-      </Modal>
     </div>
   );
 }

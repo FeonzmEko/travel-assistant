@@ -4,6 +4,7 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Chat from '@/pages/Chat';
 import Spots from '@/pages/Spots';
+import SpotDetail from '@/pages/SpotDetail';
 import Trips from '@/pages/Trips';
 import TripDetail from '@/pages/TripDetail';
 import Profile from '@/pages/Profile';
@@ -17,6 +18,7 @@ export default function AppRouter() {
         <Route index element={<Navigate to="/chat" replace />} />
         <Route path="chat" element={<Chat />} />
         <Route path="spots" element={<Spots />} />
+        <Route path="spots/:id" element={<SpotDetail />} />
         <Route path="trips" element={<Trips />} />
         <Route path="trips/:id" element={<TripDetail />} />
         <Route path="profile" element={<Profile />} />

@@ -1,4 +1,8 @@
-"""天气查询 Agent — M9"""
+"""天气查询 Agent — M9
+
+专门负责天气查询与影响评估，拥有独立的 LLM 推理能力。
+可用工具：高德天气 API。
+"""
 
 from __future__ import annotations
 
@@ -6,9 +10,9 @@ import json
 from dataclasses import asdict
 from typing import Any
 
-from langchain.agents import create_agent
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
+from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from backend.config import settings
@@ -43,13 +47,15 @@ SYSTEM_PROMPT = (
 TOOLS = [weather_query_tool]
 
 
-def _build_agent():
+def create_weather_checker_agent():  # type: ignore[no-untyped-def]
+    """构建天气查询 Agent（基于 LangGraph create_react_agent）。"""
     llm = ChatOpenAI(
         model=settings.deepseek_model,
         api_key=settings.deepseek_api_key,
         base_url=settings.deepseek_base_url,
+        temperature=0.1,
     )
-    return create_agent(model=llm, tools=TOOLS, system_prompt=SYSTEM_PROMPT)
+    return create_react_agent(llm, TOOLS, prompt=SYSTEM_PROMPT)
 
 
 async def check_weather(
@@ -58,14 +64,17 @@ async def check_weather(
     end_date: str,
 ) -> dict[str, Any]:
     """天气查询入口：返回天气预报、影响评估和建议。"""
-    graph = _build_agent()
+    graph = create_weather_checker_agent()
     query = (
         f"请查询 {city} 从 {start_date} 到 {end_date} 的天气预报，"
         "并评估天气对旅行的影响，给出穿衣和出行建议。"
         "请以 JSON 格式返回结果，包含 forecasts（天气预报列表）、impact（影响评估）、suggestions（建议列表）。"
     )
 
-    result = await graph.ainvoke({"messages": [{"role": "user", "content": query}]})
+    result = await graph.ainvoke(
+        {"messages": [{"role": "user", "content": query}]},
+        config={"recursion_limit": 15},
+    )
     output = result["messages"][-1].content
     try:
         return json.loads(output)  # type: ignore[no-any-return]

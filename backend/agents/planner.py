@@ -1,7 +1,8 @@
 """规划 Agent 核心 — M6
 
-接收用户旅游需求，通过 ReAct 推理调度子 Agent（景点搜索、路线规划、
-天气查询、预算估算），汇总生成完整行程方案。
+作为顶层调度者，通过 ReAct 推理调度子 Agent（景点搜索、路线规划、
+天气查询、预算估算），每个子 Agent 拥有独立的 LLM 推理能力和专属工具。
+Planner 负责需求拆解、子任务调度和结果汇总。
 """
 
 from __future__ import annotations
@@ -10,6 +11,7 @@ import asyncio
 import json
 import re
 from collections.abc import AsyncGenerator
+from datetime import datetime, timezone, timedelta
 from typing import Any
 
 from langchain_core.messages import AIMessageChunk
@@ -19,12 +21,18 @@ from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from backend.config import settings
-from backend.services.amap import amap_poi_search, amap_route_plan
-from backend.services.budget import budget_estimate
-from backend.services.weather import weather_query
 
 PLANNER_SYSTEM_PROMPT = """\
 你是一位资深的旅游规划师，擅长为用户量身定制旅行方案。请用中文与用户交流。
+
+## 架构说明
+你是规划 Agent（Planner），负责接收用户需求、拆解子任务，并调度以下子 Agent：
+- **景点搜索 Agent**（find_spots_agent）：搜索和筛选景点信息
+- **路线规划 Agent**（plan_route_agent）：规划最优游览路线和交通方式
+- **天气查询 Agent**（check_weather_agent）：查询天气预报并评估影响
+- **预算估算 Agent**（estimate_budget_agent）：估算行程费用
+
+每个子 Agent 拥有独立的 LLM 推理能力和专属工具，你只需要将任务分发给它们。
 
 ## 核心原则：先了解需求，再做规划
 
@@ -44,15 +52,21 @@ PLANNER_SYSTEM_PROMPT = """\
 ### 第二步：确认理解
 当信息收集充分后，简要复述你对用户需求的理解，让用户确认。
 
-### 第三步：调用工具并规划
-用户确认后，再调用工具搜索景点、查天气、规划路线、估算预算，生成完整方案。
+### 第三步：调度子 Agent 并规划
+用户确认后，按以下流程调度子 Agent：
+1. 先调用 get_current_time_tool 获取当前日期
+2. 调用 find_spots_agent 搜索目的地景点
+3. 调用 check_weather_agent 查询天气
+4. 根据景点信息调用 plan_route_agent 规划路线
+5. 调用 estimate_budget_agent 估算预算
+6. 汇总所有子 Agent 的结果，生成完整行程方案
 
-## 你的能力
-你可以调用以下工具来收集信息：
-- find_spots_tool：搜索目的地的旅游景点
-- plan_route_tool：规划景点之间的交通路线
-- check_weather_tool：查询目的地天气预报
-- estimate_budget_tool：估算旅行预算
+### 行程调整（P-02）
+当用户要求修改已生成的行程时：
+- 理解用户的修改意图（增减景点、调整顺序、更换日期等）
+- 仅针对变更部分重新调用相关子 Agent
+- 保留未变更部分，在原行程基础上增量修改
+- 重新生成完整的 TripPlan JSON
 
 ## 输出行程方案时的要求
 - 用自然语言详细描述行程方案，包括每日安排、交通建议、美食推荐、注意事项
@@ -67,6 +81,7 @@ PLANNER_SYSTEM_PROMPT = """\
   "start_date": "YYYY-MM-DD",
   "end_date": "YYYY-MM-DD",
   "budget_total": 数字,
+  "budget_breakdown": "住宿:X元,餐饮:X元,交通:X元,门票:X元",
   "days": [
     {
       "day_index": 1,
@@ -92,98 +107,151 @@ PLANNER_SYSTEM_PROMPT = """\
 - 考虑景点之间的距离和交通时间
 - 根据天气情况灵活调整室内外活动
 - 预算估算要包含交通、住宿、餐饮、门票等各项费用
+- budget_breakdown 字段务必填写费用分类明细
 """
 
 MAX_ITERATIONS = 25
 
 
-# --------------- Tool Input Schemas ---------------
+# --------------- Sub-Agent Tool Input Schemas ---------------
 
-class PoiSearchInput(BaseModel):
-    keyword: str = Field(description="搜索关键词")
+class FindSpotsInput(BaseModel):
     city: str = Field(description="城市名称")
+    keyword: str = Field(default="景点", description="搜索关键词")
 
 
-class RouteInput(BaseModel):
-    origin: str = Field(description="起点坐标 经度,纬度")
-    destination: str = Field(description="终点坐标 经度,纬度")
+class PlanRouteInput(BaseModel):
+    spots_json: str = Field(description="景点列表 JSON 字符串，每个景点包含 name, longitude, latitude")
+    transport_preference: str = Field(default="driving", description="交通方式偏好")
+    multi_route: bool = Field(default=False, description="是否返回多条备选路线进行对比")
 
 
-class WeatherInput(BaseModel):
+class CheckWeatherInput(BaseModel):
     city: str = Field(description="城市名称")
+    start_date: str = Field(description="开始日期 YYYY-MM-DD")
+    end_date: str = Field(description="结束日期 YYYY-MM-DD")
 
 
-class BudgetInput(BaseModel):
+class EstimateBudgetInput(BaseModel):
     trip_days: int = Field(description="行程天数")
     ticket_prices: list[float] | None = Field(default=None, description="门票价格列表")
+    transport_mode: str = Field(default="public", description="交通方式：public 或 taxi")
     budget_limit: float | None = Field(default=None, description="预算上限")
 
 
-# --------------- Tools ---------------
+# --------------- Sub-Agent Tools ---------------
+# 每个工具内部调用对应的子 Agent，子 Agent 拥有独立的 LLM 推理能力
 
-@tool(args_schema=PoiSearchInput)
-async def find_spots_tool(keyword: str, city: str) -> str:
-    """搜索旅游景点，返回景点名称、坐标等信息。"""
-    spots = await amap_poi_search(keyword, city)
-    return json.dumps(
-        [{"name": s.name, "id": s.source_id, "city": s.city,
-          "lng": s.longitude, "lat": s.latitude}
-         for s in spots[:10]],
-        ensure_ascii=False,
-    )
-
-
-@tool(args_schema=RouteInput)
-async def plan_route_tool(origin: str, destination: str) -> str:
-    """规划两点之间的驾车路线，返回距离和时长。"""
-    route = await amap_route_plan(origin, destination)
-    return json.dumps(
-        {"distance_km": route.distance / 1000, "duration_min": route.duration / 60},
-        ensure_ascii=False,
-    )
+@tool(args_schema=FindSpotsInput)
+async def find_spots_agent(city: str, keyword: str = "景点") -> str:
+    """调用景点搜索 Agent：搜索指定城市的旅游景点，返回结构化景点列表。
+    景点 Agent 会自动搜索本地数据库和高德地图 API，并整合去重。"""
+    from backend.agents.spot_finder import find_spots
+    try:
+        spots = await find_spots(city=city, keyword=keyword)
+        return json.dumps(spots, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"error": f"景点搜索 Agent 执行失败: {e}"}, ensure_ascii=False)
 
 
-@tool(args_schema=WeatherInput)
-async def check_weather_tool(city: str) -> str:
-    """查询城市未来几天的天气预报。"""
-    forecasts = await weather_query(city)
-    return json.dumps(
-        [{"date": f.date, "day": f.dayweather, "temp": f"{f.nighttemp}~{f.daytemp}℃"}
-         for f in forecasts],
-        ensure_ascii=False,
-    )
+@tool(args_schema=PlanRouteInput)
+async def plan_route_agent(
+    spots_json: str,
+    transport_preference: str = "driving",
+    multi_route: bool = False,
+) -> str:
+    """调用路线规划 Agent：根据景点列表规划游览路线。
+    路线 Agent 会调用高德路线规划 API 计算最优路线。
+    设置 multi_route=true 可获得多条备选路线进行对比。"""
+    from backend.agents.route_planner import plan_route
+    try:
+        spots = json.loads(spots_json)
+        result = await plan_route(
+            spots=spots,
+            transport_preference=transport_preference,
+            multi_route=multi_route,
+        )
+        return json.dumps(result, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"error": f"路线规划 Agent 执行失败: {e}"}, ensure_ascii=False)
 
 
-@tool(args_schema=BudgetInput)
-def estimate_budget_tool(
+@tool(args_schema=CheckWeatherInput)
+async def check_weather_agent(city: str, start_date: str, end_date: str) -> str:
+    """调用天气查询 Agent：查询目的地天气预报并评估对旅行的影响。
+    天气 Agent 会查询天气 API 并给出穿衣和出行建议。"""
+    from backend.agents.weather_checker import check_weather
+    try:
+        result = await check_weather(city=city, start_date=start_date, end_date=end_date)
+        return json.dumps(result, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"error": f"天气查询 Agent 执行失败: {e}"}, ensure_ascii=False)
+
+
+@tool(args_schema=EstimateBudgetInput)
+async def estimate_budget_agent(
     trip_days: int,
     ticket_prices: list[float] | None = None,
+    transport_mode: str = "public",
     budget_limit: float | None = None,
 ) -> str:
-    """估算旅行预算，包含住宿、餐饮、交通、门票等各项费用。"""
-    result = budget_estimate(
-        trip_days=trip_days, ticket_prices=ticket_prices, budget_limit=budget_limit
-    )
+    """调用预算估算 Agent：估算旅行预算，包含住宿、餐饮、交通、门票等各项费用。
+    预算 Agent 会计算费用明细并给出预算建议。"""
+    from backend.agents.budget_estimator import estimate_trip_budget
+    try:
+        result = await estimate_trip_budget(
+            trip_days=trip_days,
+            ticket_prices=ticket_prices,
+            transport_mode=transport_mode,
+            budget_limit=budget_limit,
+        )
+        return json.dumps({
+            "total": result.total,
+            "breakdown": {
+                "accommodation": result.breakdown.accommodation,
+                "meals": result.breakdown.meals,
+                "transport": result.breakdown.transport,
+                "tickets": result.breakdown.tickets,
+            },
+            "over_budget": result.over_budget,
+            "suggestions": result.suggestions,
+        }, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"error": f"预算估算 Agent 执行失败: {e}"}, ensure_ascii=False)
+
+
+@tool
+def get_current_time_tool() -> str:
+    """获取当前的确切日期和时间（北京时间），用于确定用户所说的"最近""这周末"等相对时间。"""
+    tz_cn = timezone(timedelta(hours=8))
+    now = datetime.now(tz_cn)
+    weekday_names = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
     return json.dumps({
-        "total": result.total,
-        "breakdown": {
-            "accommodation": result.breakdown.accommodation,
-            "meals": result.breakdown.meals,
-            "transport": result.breakdown.transport,
-            "tickets": result.breakdown.tickets,
-        },
-        "over_budget": result.over_budget,
-        "suggestions": result.suggestions,
+        "datetime": now.strftime("%Y-%m-%d %H:%M:%S"),
+        "date": now.strftime("%Y-%m-%d"),
+        "time": now.strftime("%H:%M:%S"),
+        "weekday": weekday_names[now.weekday()],
+        "timestamp": int(now.timestamp()),
     }, ensure_ascii=False)
 
 
-TOOLS = [find_spots_tool, plan_route_tool, check_weather_tool, estimate_budget_tool]
+TOOLS = [
+    get_current_time_tool,
+    find_spots_agent,
+    plan_route_agent,
+    check_weather_agent,
+    estimate_budget_agent,
+]
 
 
 # --------------- Agent Construction ---------------
 
 def create_planner_agent():  # type: ignore[no-untyped-def]
-    """构建规划 Agent（基于 LangGraph create_react_agent）。"""
+    """构建规划 Agent（基于 LangGraph create_react_agent）。
+
+    Planner Agent 通过调用子 Agent Tool 来完成任务，
+    每个子 Agent 内部拥有独立的 LLM 推理能力和专属工具。
+    """
     llm = ChatOpenAI(
         model=settings.deepseek_model,
         api_key=settings.deepseek_api_key,
@@ -238,16 +306,7 @@ async def plan_trip(
     history: list[dict[str, str]] | None = None,
     timeout: float = 120.0,
 ) -> dict[str, Any]:
-    """规划旅行方案（非流式），返回文本描述和结构化 TripPlan。
-
-    Args:
-        user_input: 用户输入的旅游需求
-        history: 可选的对话历史 [{"role": "user"/"assistant", "content": "..."}]
-        timeout: 超时时间（秒）
-
-    Returns:
-        {"text": str, "trip_plan": dict | None}
-    """
+    """规划旅行方案（非流式），返回文本描述和结构化 TripPlan。"""
     agent = create_planner_agent()
 
     messages: list[dict[str, str]] = []
@@ -284,8 +343,6 @@ async def run_planner_stream(
     事件类型: thinking, token, tool_call, tool_result, trip_plan, done, error
 
     中间推理输出为 thinking 事件，最终回答为 token 事件。
-    通过跟踪每段 LLM 输出和 tool 调用来判断：
-    最后一段（后面没有 tool 调用的）LLM 输出才是 token。
     """
     agent = create_planner_agent()
     full_text = ""
@@ -358,10 +415,7 @@ async def run_planner_stream(
 
 
 def _chunk_text(text: str, size: int) -> list[str]:
-    """将文本按固定大小分块，用于模拟流式输出。
-
-    换行符单独作为一个 chunk 发送，避免被 SSE 协议当作行分隔符而丢失。
-    """
+    """将文本按固定大小分块，用于模拟流式输出。"""
     if not text:
         return []
     chunks: list[str] = []

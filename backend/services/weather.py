@@ -43,7 +43,10 @@ async def weather_query(
             return []
 
         forecasts: list[WeatherForecast] = []
-        for cast in data.get("forecasts", [{}])[0].get("casts", []):
+        forecast_list = data.get("forecasts", [])
+        if not forecast_list:
+            return []
+        for cast in forecast_list[0].get("casts", []):
             forecasts.append(
                 WeatherForecast(
                     date=cast.get("date", ""),
