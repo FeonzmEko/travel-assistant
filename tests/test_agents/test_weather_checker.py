@@ -8,16 +8,16 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from backend.agents.weather_checker import (
-    WeatherQueryInput,
-    weather_query_tool,
-    check_weather,
-    _build_agent,
     TOOLS,
+    WeatherQueryInput,
+    check_weather,
+    create_weather_checker_agent,
+    weather_query_tool,
 )
 from backend.services.weather import WeatherForecast
 
-
 # --------------- Schema 验证 ---------------
+
 
 class TestInputSchema:
     def test_weather_query_input(self):
@@ -26,6 +26,7 @@ class TestInputSchema:
 
 
 # --------------- Tool 直接调用测试 ---------------
+
 
 class TestWeatherQueryTool:
     @pytest.fixture
@@ -75,6 +76,7 @@ class TestWeatherQueryTool:
 
 # --------------- Tool 注册验证 ---------------
 
+
 class TestToolRegistration:
     def test_tools_list(self):
         assert len(TOOLS) == 1
@@ -83,20 +85,22 @@ class TestToolRegistration:
 
 # --------------- Agent 构建测试 ---------------
 
+
 class TestAgentBuild:
     @patch("backend.agents.weather_checker.settings")
-    def test_build_agent_returns_graph(self, mock_settings):
+    def testcreate_weather_checker_agent_returns_graph(self, mock_settings):
         mock_settings.deepseek_model = "deepseek-chat"
         mock_settings.deepseek_api_key = "test-key"
         mock_settings.deepseek_base_url = "https://api.test.com/v1"
-        graph = _build_agent()
+        graph = create_weather_checker_agent()
         assert hasattr(graph, "ainvoke")
 
 
 # --------------- check_weather 集成测试（Mock LLM） ---------------
 
+
 class TestCheckWeather:
-    @patch("backend.agents.weather_checker._build_agent")
+    @patch("backend.agents.weather_checker.create_weather_checker_agent")
     async def test_check_weather_returns_dict(self, mock_build):
         expected = {
             "forecasts": [{"date": "2025-06-01", "dayweather": "晴"}],
@@ -109,14 +113,16 @@ class TestCheckWeather:
         mock_graph.ainvoke.return_value = {"messages": [mock_msg]}
         mock_build.return_value = mock_graph
 
-        result = await check_weather(city="北京", start_date="2025-06-01", end_date="2025-06-03")
+        result = await check_weather(
+            city="北京", start_date="2025-06-01", end_date="2025-06-03"
+        )
         assert result == expected
         call_args = mock_graph.ainvoke.call_args[0][0]
         user_msg = call_args["messages"][0]["content"]
         assert "北京" in user_msg
         assert "2025-06-01" in user_msg
 
-    @patch("backend.agents.weather_checker._build_agent")
+    @patch("backend.agents.weather_checker.create_weather_checker_agent")
     async def test_check_weather_handles_non_json(self, mock_build):
         mock_msg = MagicMock()
         mock_msg.content = "天气查询异常"
@@ -124,5 +130,7 @@ class TestCheckWeather:
         mock_graph.ainvoke.return_value = {"messages": [mock_msg]}
         mock_build.return_value = mock_graph
 
-        result = await check_weather(city="北京", start_date="2025-06-01", end_date="2025-06-02")
+        result = await check_weather(
+            city="北京", start_date="2025-06-01", end_date="2025-06-02"
+        )
         assert "raw_response" in result

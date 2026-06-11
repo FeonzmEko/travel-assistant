@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database import Base
+
+if TYPE_CHECKING:
+    from backend.models.chat import ChatSession
+    from backend.models.trip import Trip
 
 
 class User(Base):
@@ -15,9 +22,9 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
-    chat_sessions: Mapped[list["ChatSession"]] = relationship(  # noqa: F821
+    chat_sessions: Mapped[list[ChatSession]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
-    trips: Mapped[list["Trip"]] = relationship(  # noqa: F821
+    trips: Mapped[list[Trip]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )

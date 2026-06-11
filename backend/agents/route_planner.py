@@ -10,25 +10,31 @@ import json
 from dataclasses import asdict
 from typing import Any
 
+from langchain.agents import create_agent
+from langchain_core.runnables import Runnable
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from backend.config import settings
 from backend.services.amap import amap_route_plan
 
-
 # --------------- Tool input schema ---------------
+
 
 class RoutePlanInput(BaseModel):
     origin: str = Field(description="起点经纬度，格式 '经度,纬度'")
     destination: str = Field(description="终点经纬度，格式 '经度,纬度'")
-    waypoints: list[str] | None = Field(default=None, description="途经点列表，每个格式 '经度,纬度'")
-    strategy: int = Field(default=0, description="路线策略：0-速度优先，1-费用优先，2-距离优先")
+    waypoints: list[str] | None = Field(
+        default=None, description="途经点列表，每个格式 '经度,纬度'"
+    )
+    strategy: int = Field(
+        default=0, description="路线策略：0-速度优先，1-费用优先，2-距离优先"
+    )
 
 
 # --------------- Tool ---------------
+
 
 @tool(args_schema=RoutePlanInput)
 async def amap_route_plan_tool(
@@ -58,15 +64,15 @@ SYSTEM_PROMPT = (
 TOOLS = [amap_route_plan_tool]
 
 
-def create_route_planner_agent():  # type: ignore[no-untyped-def]
-    """构建路线规划 Agent（基于 LangGraph create_react_agent）。"""
+def create_route_planner_agent() -> Runnable[Any, Any]:
+    """构建路线规划 Agent（基于 LangChain create_agent）。"""
     llm = ChatOpenAI(
         model=settings.deepseek_model,
         api_key=settings.deepseek_api_key,
         base_url=settings.deepseek_base_url,
         temperature=0.1,
     )
-    return create_react_agent(llm, TOOLS, prompt=SYSTEM_PROMPT)
+    return create_agent(llm, TOOLS, system_prompt=SYSTEM_PROMPT)
 
 
 async def plan_route(

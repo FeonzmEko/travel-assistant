@@ -94,7 +94,11 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 async def _register_and_login(client: AsyncClient, username: str = "user1") -> str:
     await client.post(
         "/api/auth/register",
-        json={"username": username, "password": "password123", "email": f"{username}@example.com"},
+        json={
+            "username": username,
+            "password": "password123",
+            "email": f"{username}@example.com",
+        },
     )
     resp = await client.post(
         "/api/auth/login",
@@ -109,7 +113,9 @@ def _auth_headers(token: str) -> dict:
 
 async def test_create_trip(client: AsyncClient) -> None:
     token = await _register_and_login(client)
-    resp = await client.post("/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token))
+    resp = await client.post(
+        "/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token)
+    )
     assert resp.status_code == 201
     data = resp.json()
     assert "trip_id" in data
@@ -129,7 +135,9 @@ async def test_list_trips(client: AsyncClient) -> None:
 
 async def test_get_trip_detail(client: AsyncClient) -> None:
     token = await _register_and_login(client)
-    create_resp = await client.post("/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token))
+    create_resp = await client.post(
+        "/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token)
+    )
     trip_id = create_resp.json()["trip_id"]
 
     resp = await client.get(f"/api/trips/{trip_id}", headers=_auth_headers(token))
@@ -146,7 +154,9 @@ async def test_get_trip_detail(client: AsyncClient) -> None:
 
 async def test_delete_trip(client: AsyncClient) -> None:
     token = await _register_and_login(client)
-    create_resp = await client.post("/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token))
+    create_resp = await client.post(
+        "/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token)
+    )
     trip_id = create_resp.json()["trip_id"]
 
     resp = await client.delete(f"/api/trips/{trip_id}", headers=_auth_headers(token))
@@ -161,7 +171,9 @@ async def test_trip_access_forbidden(client: AsyncClient) -> None:
     token1 = await _register_and_login(client, "owner")
     token2 = await _register_and_login(client, "other")
 
-    create_resp = await client.post("/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token1))
+    create_resp = await client.post(
+        "/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token1)
+    )
     trip_id = create_resp.json()["trip_id"]
 
     resp = await client.get(f"/api/trips/{trip_id}", headers=_auth_headers(token2))
@@ -173,10 +185,14 @@ async def test_trip_access_forbidden(client: AsyncClient) -> None:
 
 async def test_export_pdf(client: AsyncClient) -> None:
     token = await _register_and_login(client)
-    create_resp = await client.post("/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token))
+    create_resp = await client.post(
+        "/api/trips", json=TRIP_PAYLOAD, headers=_auth_headers(token)
+    )
     trip_id = create_resp.json()["trip_id"]
 
-    resp = await client.get(f"/api/trips/{trip_id}/export", headers=_auth_headers(token))
+    resp = await client.get(
+        f"/api/trips/{trip_id}/export", headers=_auth_headers(token)
+    )
     assert resp.status_code == 200
     assert resp.headers["content-type"] == "application/pdf"
     assert resp.content[:4] == b"%PDF"

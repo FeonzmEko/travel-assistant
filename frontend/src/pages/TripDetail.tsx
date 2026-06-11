@@ -144,7 +144,7 @@ export default function TripDetail() {
               title={
                 <span>
                   第 {day.day_index} 天 · {day.date}
-                  {day.weather && <Tag color="blue" style={{ marginLeft: 8 }}>{day.weather}</Tag>}
+                  {day.weather && <Tag color="cyan" style={{ marginLeft: 8 }}>{day.weather}</Tag>}
                 </span>
               }
               style={{ marginBottom: 16 }}

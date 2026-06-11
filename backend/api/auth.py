@@ -37,14 +37,10 @@ async def register(
 ) -> RegisterResponse:
     existing = await get_user_by_username(db, user_in.username)
     if existing:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="用户名已存在"
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="用户名已存在")
     existing_email = await get_user_by_email(db, user_in.email)
     if existing_email:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="邮箱已被注册"
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="邮箱已被注册")
     hashed = hash_password(user_in.password)
     user = await create_user(db, user_in, password_hash=hashed)
     return RegisterResponse(user_id=user.id, username=user.username)

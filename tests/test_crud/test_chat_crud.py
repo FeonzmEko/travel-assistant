@@ -19,7 +19,9 @@ from backend.schemas.user import UserCreate
 async def user_id(db: AsyncSession) -> int:
     user = await create_user(
         db,
-        UserCreate(username="chatuser", password="password123", email="chat@example.com"),
+        UserCreate(
+            username="chatuser", password="password123", email="chat@example.com"
+        ),
         password_hash="hashed",
     )
     return user.id
@@ -35,9 +37,7 @@ async def test_create_session(db: AsyncSession, user_id: int) -> None:
 
 
 async def test_get_session(db: AsyncSession, user_id: int) -> None:
-    session = await create_chat_session(
-        db, user_id, ChatSessionCreate(title="测试")
-    )
+    session = await create_chat_session(db, user_id, ChatSessionCreate(title="测试"))
     found = await get_chat_session(db, session.id)
     assert found is not None
     assert found.title == "测试"
@@ -51,12 +51,8 @@ async def test_get_user_sessions(db: AsyncSession, user_id: int) -> None:
 
 
 async def test_update_session(db: AsyncSession, user_id: int) -> None:
-    session = await create_chat_session(
-        db, user_id, ChatSessionCreate(title="旧标题")
-    )
-    updated = await update_chat_session(
-        db, session, ChatSessionUpdate(title="新标题")
-    )
+    session = await create_chat_session(db, user_id, ChatSessionCreate(title="旧标题"))
+    updated = await update_chat_session(db, session, ChatSessionUpdate(title="新标题"))
     assert updated.title == "新标题"
 
 

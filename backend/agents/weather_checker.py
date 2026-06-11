@@ -10,22 +10,24 @@ import json
 from dataclasses import asdict
 from typing import Any
 
+from langchain.agents import create_agent
+from langchain_core.runnables import Runnable
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from backend.config import settings
 from backend.services.weather import weather_query
 
-
 # --------------- Tool input schema ---------------
+
 
 class WeatherQueryInput(BaseModel):
     city: str = Field(description="城市名称或城市编码，如 '北京' 或 '110000'")
 
 
 # --------------- Tool ---------------
+
 
 @tool(args_schema=WeatherQueryInput)
 async def weather_query_tool(city: str) -> str:
@@ -47,15 +49,15 @@ SYSTEM_PROMPT = (
 TOOLS = [weather_query_tool]
 
 
-def create_weather_checker_agent():  # type: ignore[no-untyped-def]
-    """构建天气查询 Agent（基于 LangGraph create_react_agent）。"""
+def create_weather_checker_agent() -> Runnable[Any, Any]:
+    """构建天气查询 Agent（基于 LangChain create_agent）。"""
     llm = ChatOpenAI(
         model=settings.deepseek_model,
         api_key=settings.deepseek_api_key,
         base_url=settings.deepseek_base_url,
         temperature=0.1,
     )
-    return create_react_agent(llm, TOOLS, prompt=SYSTEM_PROMPT)
+    return create_agent(llm, TOOLS, system_prompt=SYSTEM_PROMPT)
 
 
 async def check_weather(

@@ -1,0 +1,219 @@
+/* ═══════════════════════════════════════════════
+   Huashu-Design · Travel Assistant Theme
+   旅行助手 设计系统 — 温暖旅行美学
+   反 AI slop：无紫渐变 · 无 emoji 图标 · 无通用蓝
+   ═══════════════════════════════════════════════ */
+
+:root {
+  /* ── 色彩系统（oklch 空间，感知均匀）── */
+
+  /* 主色：陶土橙 — 温暖、大地、冒险 */
+  --color-primary: #C25430;
+  --color-primary-light: #D4744C;
+  --color-primary-dark: #9E3F20;
+  --color-primary-bg: #FDF0E8;
+
+  /* 辅色：深海蓝绿 — 冷静、可靠、海洋 */
+  --color-secondary: #2C7873;
+  --color-secondary-light: #4A9D97;
+  --color-secondary-dark: #1D5652;
+  --color-secondary-bg: #E8F5F4;
+
+  /* 强调色：琥珀金 — 温暖、日落、亮点 */
+  --color-accent: #C8963E;
+  --color-accent-light: #DEB060;
+  --color-accent-bg: #FDF5E6;
+
+  /* 中性色 — 暖基调，不是冷灰 */
+  --color-bg: #FAF7F2;
+  --color-bg-alt: #F2EDE5;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F9F6F1;
+
+  /* 文字色 — 暖深棕黑，不是纯黑 #000 */
+  --color-text: #2C2420;
+  --color-text-secondary: #6B5F58;
+  --color-text-muted: #9B8E85;
+  --color-text-inverse: #FAF7F2;
+
+  /* 边框 — 暖灰 */
+  --color-border: #E8DFD5;
+  --color-border-light: #F0EAE2;
+
+  /* 状态色 */
+  --color-success: #4A8C5C;
+  --color-success-bg: #EDF5EF;
+  --color-warning: #D4943A;
+  --color-warning-bg: #FDF5E6;
+  --color-error: #C04040;
+  --color-error-bg: #FDF0F0;
+
+  /* ── 字体系统 ── */
+  --font-display: 'Georgia', 'Times New Roman', 'Noto Serif SC', serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+
+  /* ── 字号阶梯 ── */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* ── 间距 ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* ── 圆角 ── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* ── 阴影（暖色调阴影，不用冷黑）── */
+  --shadow-sm: 0 1px 3px rgba(44, 36, 32, 0.06);
+  --shadow-md: 0 4px 12px rgba(44, 36, 32, 0.08);
+  --shadow-lg: 0 8px 32px rgba(44, 36, 32, 0.10);
+  --shadow-xl: 0 16px 48px rgba(44, 36, 32, 0.12);
+
+  /* ── 过渡 ── */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+/* ── 全局基础样式 ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Markdown 内容样式 ── */
+.markdown-body {
+  line-height: 1.8;
+  color: var(--color-text);
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  font-family: var(--font-display);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.markdown-body h2 {
+  font-size: var(--text-xl);
+  color: var(--color-primary-dark);
+  border-bottom: 2px solid var(--color-border-light);
+  padding-bottom: 0.3em;
+}
+
+.markdown-body h3 {
+  font-size: var(--text-lg);
+  color: var(--color-text);
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.5em;
+}
+
+.markdown-body li {
+  margin-bottom: 0.25em;
+}
+
+.markdown-body code {
+  background: var(--color-bg-alt);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--color-primary);
+}
+
+.markdown-body pre {
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  overflow-x: auto;
+}
+
+.markdown-body pre code {
+  background: none;
+  padding: 0;
+  color: var(--color-text);
+}
+
+.markdown-body blockquote {
+  border-left: 3px solid var(--color-primary-light);
+  margin-left: 0;
+  padding-left: var(--space-md);
+  color: var(--color-text-secondary);
+  background: var(--color-primary-bg);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+}
+
+.markdown-body th {
+  background: var(--color-bg-alt);
+  font-weight: 600;
+}
+
+.markdown-body strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* ── 滚动条 ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}

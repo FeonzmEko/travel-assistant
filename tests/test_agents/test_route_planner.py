@@ -8,16 +8,16 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from backend.agents.route_planner import (
+    TOOLS,
     RoutePlanInput,
     amap_route_plan_tool,
+    create_route_planner_agent,
     plan_route,
-    _build_agent,
-    TOOLS,
 )
 from backend.services.amap import Route, RouteSegment
 
-
 # --------------- Schema 验证 ---------------
+
 
 class TestInputSchema:
     def test_route_plan_input_defaults(self):
@@ -37,6 +37,7 @@ class TestInputSchema:
 
 
 # --------------- Tool 直接调用测试 ---------------
+
 
 class TestAmapRoutePlanTool:
     @pytest.fixture
@@ -79,6 +80,7 @@ class TestAmapRoutePlanTool:
 
 # --------------- Tool 注册验证 ---------------
 
+
 class TestToolRegistration:
     def test_tools_list(self):
         assert len(TOOLS) == 1
@@ -87,17 +89,19 @@ class TestToolRegistration:
 
 # --------------- Agent 构建测试 ---------------
 
+
 class TestAgentBuild:
     @patch("backend.agents.route_planner.settings")
-    def test_build_agent_returns_graph(self, mock_settings):
+    def testcreate_route_planner_agent_returns_graph(self, mock_settings):
         mock_settings.deepseek_model = "deepseek-chat"
         mock_settings.deepseek_api_key = "test-key"
         mock_settings.deepseek_base_url = "https://api.test.com/v1"
-        graph = _build_agent()
+        graph = create_route_planner_agent()
         assert hasattr(graph, "ainvoke")
 
 
 # --------------- plan_route 集成测试（Mock LLM） ---------------
+
 
 class TestPlanRoute:
     @pytest.fixture
@@ -107,7 +111,7 @@ class TestPlanRoute:
             {"name": "天坛", "longitude": 116.410, "latitude": 39.882},
         ]
 
-    @patch("backend.agents.route_planner._build_agent")
+    @patch("backend.agents.route_planner.create_route_planner_agent")
     async def test_plan_route_returns_dict(self, mock_build, sample_spots):
         expected = {
             "distance": 5000,
@@ -123,7 +127,7 @@ class TestPlanRoute:
         result = await plan_route(spots=sample_spots)
         assert result == expected
 
-    @patch("backend.agents.route_planner._build_agent")
+    @patch("backend.agents.route_planner.create_route_planner_agent")
     async def test_plan_route_handles_non_json(self, mock_build, sample_spots):
         mock_msg = MagicMock()
         mock_msg.content = "路线规划失败"
@@ -134,7 +138,7 @@ class TestPlanRoute:
         result = await plan_route(spots=sample_spots)
         assert "raw_response" in result
 
-    @patch("backend.agents.route_planner._build_agent")
+    @patch("backend.agents.route_planner.create_route_planner_agent")
     async def test_plan_route_with_transport_preference(self, mock_build, sample_spots):
         mock_msg = MagicMock()
         mock_msg.content = "{}"

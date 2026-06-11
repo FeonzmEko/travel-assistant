@@ -11,20 +11,20 @@
 
 ### 3.1 景点搜索接口
 
-- [ ] 创建 `GET /api/spots/search` 路由
-- [ ] 入参：`keyword`、`city`、`type`、`page`、`size`
-- [ ] 先查本地缓存（M12 `search_spots_by_keyword`），再调高德 POI（M11 `amap_poi_search`）
-- [ ] 合并去重，将新数据写入缓存
-- [ ] 返回分页的景点列表
+- [x] 创建 `GET /api/spots/search` 路由
+- [x] 入参：`keyword`、`city`、`type`、`page`、`size`
+- [x] 先查本地缓存（M12 `search_spots_by_keyword`），再调高德 POI（M11 `amap_poi_search`）
+- [x] 合并去重，将新数据写入缓存
+- [x] 返回分页的景点列表
 
 ### 3.2 景点详情接口
 
-- [ ] 创建 `GET /api/spots/{id}` 路由
-- [ ] 从缓存中读取景点详细信息
-- [ ] 若缓存过期或不存在，重新从高德获取并更新缓存
-- [ ] 返回完整 `Spot` 数据
+- [x] 创建 `GET /api/spots/{id}` 路由
+- [x] 从缓存中读取景点详细信息
+- [x] 若缓存过期或不存在，重新从高德获取并更新缓存
+- [x] 返回完整 `Spot` 数据
 
 ### 3.3 景点数据标准化
 
-- [ ] 确保高德 POI 数据与 `SpotCache` 字段一一映射
-- [ ] 处理缺失字段的默认值填充
+- [x] 确保高德 POI 数据与 `SpotCache` 字段一一映射
+- [x] 处理缺失字段的默认值填充

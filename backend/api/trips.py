@@ -3,13 +3,20 @@ from xml.sax.saxutils import escape
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.lib.units import cm
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.cidfonts import UnicodeCIDFont
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+from reportlab.lib.pagesizes import A4  # type: ignore[import-untyped]
+from reportlab.lib.styles import (  # type: ignore[import-untyped]
+    ParagraphStyle,
+    getSampleStyleSheet,
+)
+from reportlab.lib.units import cm  # type: ignore[import-untyped]
+from reportlab.pdfbase import pdfmetrics  # type: ignore[import-untyped]
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont  # type: ignore[import-untyped]
+from reportlab.pdfbase.ttfonts import TTFont  # type: ignore[import-untyped]
+from reportlab.platypus import (  # type: ignore[import-untyped]
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.api.deps import get_current_user
@@ -48,13 +55,15 @@ async def list_trips(
     trips = await get_user_trips(db, current_user.id)
     items = []
     for t in trips:
-        items.append({
-            "id": t.id,
-            "title": t.title,
-            "destination": t.destination,
-            "start_date": t.start_date.isoformat(),
-            "end_date": t.end_date.isoformat(),
-        })
+        items.append(
+            {
+                "id": t.id,
+                "title": t.title,
+                "destination": t.destination,
+                "start_date": t.start_date.isoformat(),
+                "end_date": t.end_date.isoformat(),
+            }
+        )
     return {"total": len(items), "items": items}
 
 
@@ -115,7 +124,9 @@ def _build_pdf(trip: Trip) -> bytes:
     if trip.budget_total is not None:
         elements.append(Paragraph(f"预算：{trip.budget_total}", body_style))
     if trip.budget_breakdown:
-        elements.append(Paragraph(f"预算明细：{_pdf_text(trip.budget_breakdown)}", body_style))
+        elements.append(
+            Paragraph(f"预算明细：{_pdf_text(trip.budget_breakdown)}", body_style)
+        )
     elements.append(Spacer(1, 0.8 * cm))
 
     for day in sorted(trip.days, key=lambda d: d.day_index):
@@ -134,7 +145,9 @@ def _build_pdf(trip: Trip) -> bytes:
                 line += f" - 费用：{act.estimated_cost}"
             elements.append(Paragraph(line, body_style))
             if act.notes:
-                elements.append(Paragraph(f"     备注：{_pdf_text(act.notes)}", body_style))
+                elements.append(
+                    Paragraph(f"     备注：{_pdf_text(act.notes)}", body_style)
+                )
         elements.append(Spacer(1, 0.4 * cm))
 
     doc.build(elements)

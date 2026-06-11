@@ -14,10 +14,11 @@ from collections.abc import AsyncGenerator
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+from langchain.agents import create_agent
 from langchain_core.messages import AIMessageChunk
+from langchain_core.runnables import Runnable
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from backend.config import settings
@@ -118,13 +119,16 @@ MAX_ITERATIONS = 25
 
 # --------------- Sub-Agent Tool Input Schemas ---------------
 
+
 class FindSpotsInput(BaseModel):
     city: str = Field(description="城市名称")
     keyword: str = Field(default="景点", description="搜索关键词")
 
 
 class PlanRouteInput(BaseModel):
-    spots_json: str = Field(description="景点列表 JSON 字符串，每个景点包含 name, longitude, latitude")
+    spots_json: str = Field(
+        description="景点列表 JSON 字符串，每个景点包含 name, longitude, latitude"
+    )
     transport_preference: str = Field(default="driving", description="交通方式偏好")
     multi_route: bool = Field(default=False, description="是否返回多条备选路线进行对比")
 
@@ -138,23 +142,29 @@ class CheckWeatherInput(BaseModel):
 class EstimateBudgetInput(BaseModel):
     trip_days: int = Field(description="行程天数")
     ticket_prices: list[float] | None = Field(default=None, description="门票价格列表")
-    transport_mode: str = Field(default="public", description="交通方式：public 或 taxi")
+    transport_mode: str = Field(
+        default="public", description="交通方式：public 或 taxi"
+    )
     budget_limit: float | None = Field(default=None, description="预算上限")
 
 
 # --------------- Sub-Agent Tools ---------------
 # 每个工具内部调用对应的子 Agent，子 Agent 拥有独立的 LLM 推理能力
 
+
 @tool(args_schema=FindSpotsInput)
 async def find_spots_agent(city: str, keyword: str = "景点") -> str:
     """调用景点搜索 Agent：搜索指定城市的旅游景点，返回结构化景点列表。
     景点 Agent 会自动搜索本地数据库和高德地图 API，并整合去重。"""
     from backend.agents.spot_finder import find_spots
+
     try:
         spots = await find_spots(city=city, keyword=keyword)
         return json.dumps(spots, ensure_ascii=False)
     except Exception as e:
-        return json.dumps({"error": f"景点搜索 Agent 执行失败: {e}"}, ensure_ascii=False)
+        return json.dumps(
+            {"error": f"景点搜索 Agent 执行失败: {e}"}, ensure_ascii=False
+        )
 
 
 @tool(args_schema=PlanRouteInput)
@@ -167,6 +177,7 @@ async def plan_route_agent(
     路线 Agent 会调用高德路线规划 API 计算最优路线。
     设置 multi_route=true 可获得多条备选路线进行对比。"""
     from backend.agents.route_planner import plan_route
+
     try:
         spots = json.loads(spots_json)
         result = await plan_route(
@@ -176,7 +187,9 @@ async def plan_route_agent(
         )
         return json.dumps(result, ensure_ascii=False)
     except Exception as e:
-        return json.dumps({"error": f"路线规划 Agent 执行失败: {e}"}, ensure_ascii=False)
+        return json.dumps(
+            {"error": f"路线规划 Agent 执行失败: {e}"}, ensure_ascii=False
+        )
 
 
 @tool(args_schema=CheckWeatherInput)
@@ -184,11 +197,16 @@ async def check_weather_agent(city: str, start_date: str, end_date: str) -> str:
     """调用天气查询 Agent：查询目的地天气预报并评估对旅行的影响。
     天气 Agent 会查询天气 API 并给出穿衣和出行建议。"""
     from backend.agents.weather_checker import check_weather
+
     try:
-        result = await check_weather(city=city, start_date=start_date, end_date=end_date)
+        result = await check_weather(
+            city=city, start_date=start_date, end_date=end_date
+        )
         return json.dumps(result, ensure_ascii=False)
     except Exception as e:
-        return json.dumps({"error": f"天气查询 Agent 执行失败: {e}"}, ensure_ascii=False)
+        return json.dumps(
+            {"error": f"天气查询 Agent 执行失败: {e}"}, ensure_ascii=False
+        )
 
 
 @tool(args_schema=EstimateBudgetInput)
@@ -201,6 +219,7 @@ async def estimate_budget_agent(
     """调用预算估算 Agent：估算旅行预算，包含住宿、餐饮、交通、门票等各项费用。
     预算 Agent 会计算费用明细并给出预算建议。"""
     from backend.agents.budget_estimator import estimate_trip_budget
+
     try:
         result = await estimate_trip_budget(
             trip_days=trip_days,
@@ -208,19 +227,24 @@ async def estimate_budget_agent(
             transport_mode=transport_mode,
             budget_limit=budget_limit,
         )
-        return json.dumps({
-            "total": result.total,
-            "breakdown": {
-                "accommodation": result.breakdown.accommodation,
-                "meals": result.breakdown.meals,
-                "transport": result.breakdown.transport,
-                "tickets": result.breakdown.tickets,
+        return json.dumps(
+            {
+                "total": result.total,
+                "breakdown": {
+                    "accommodation": result.breakdown.accommodation,
+                    "meals": result.breakdown.meals,
+                    "transport": result.breakdown.transport,
+                    "tickets": result.breakdown.tickets,
+                },
+                "over_budget": result.over_budget,
+                "suggestions": result.suggestions,
             },
-            "over_budget": result.over_budget,
-            "suggestions": result.suggestions,
-        }, ensure_ascii=False)
+            ensure_ascii=False,
+        )
     except Exception as e:
-        return json.dumps({"error": f"预算估算 Agent 执行失败: {e}"}, ensure_ascii=False)
+        return json.dumps(
+            {"error": f"预算估算 Agent 执行失败: {e}"}, ensure_ascii=False
+        )
 
 
 @tool
@@ -228,14 +252,25 @@ def get_current_time_tool() -> str:
     """获取当前的确切日期和时间（北京时间），用于确定用户所说的"最近""这周末"等相对时间。"""
     tz_cn = timezone(timedelta(hours=8))
     now = datetime.now(tz_cn)
-    weekday_names = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
-    return json.dumps({
-        "datetime": now.strftime("%Y-%m-%d %H:%M:%S"),
-        "date": now.strftime("%Y-%m-%d"),
-        "time": now.strftime("%H:%M:%S"),
-        "weekday": weekday_names[now.weekday()],
-        "timestamp": int(now.timestamp()),
-    }, ensure_ascii=False)
+    weekday_names = [
+        "星期一",
+        "星期二",
+        "星期三",
+        "星期四",
+        "星期五",
+        "星期六",
+        "星期日",
+    ]
+    return json.dumps(
+        {
+            "datetime": now.strftime("%Y-%m-%d %H:%M:%S"),
+            "date": now.strftime("%Y-%m-%d"),
+            "time": now.strftime("%H:%M:%S"),
+            "weekday": weekday_names[now.weekday()],
+            "timestamp": int(now.timestamp()),
+        },
+        ensure_ascii=False,
+    )
 
 
 TOOLS = [
@@ -249,8 +284,9 @@ TOOLS = [
 
 # --------------- Agent Construction ---------------
 
-def create_planner_agent():  # type: ignore[no-untyped-def]
-    """构建规划 Agent（基于 LangGraph create_react_agent）。
+
+def create_planner_agent() -> Runnable[Any, Any]:
+    """构建规划 Agent（基于 LangChain create_agent）。
 
     Planner Agent 通过调用子 Agent Tool 来完成任务，
     每个子 Agent 内部拥有独立的 LLM 推理能力和专属工具。
@@ -260,11 +296,78 @@ def create_planner_agent():  # type: ignore[no-untyped-def]
         api_key=settings.deepseek_api_key,
         base_url=settings.deepseek_base_url,
         temperature=0.3,
+        streaming=True,
     )
-    return create_react_agent(llm, TOOLS, prompt=PLANNER_SYSTEM_PROMPT)
+    return create_agent(llm, TOOLS, system_prompt=PLANNER_SYSTEM_PROMPT)
+
+
+# --------------- Text Cleaning ---------------
+
+
+def normalize_cjk_spacing(text: str) -> str:
+    """移除中文字符之间的异常空格，修复"布 达 拉 宫"→"布达拉宫"。 """
+    # CJK 字符之间的空格
+    text = re.sub(r'(?<=[一-鿿])\s+(?=[一-鿿])', '', text)
+    # CJK 字符与中文标点之间的空格
+    text = re.sub(r'(?<=[一-鿿])\s+(?=[，。！？、；：""''（）【】《》])', '', text)
+    text = re.sub(r'(?<=[，。！？、；：""''（）【】《》])\s+(?=[一-鿿])', '', text)
+    # 中文标点之间的空格
+    text = re.sub(r'(?<=[，。！？、；：""''（）【】《》])\s+(?=[，。！？、；：""''（）【】《》])', '', text)
+    return text
+
+
+def _strip_react_artifacts(text: str) -> str:
+    """移除 ReAct 推理过程中残留的 Thought / Action / Observation 等内部标记。"""
+    # 如果存在 Final Answer 标记，只保留其后的内容
+    fa_match = re.search(r'Final Answer:\s*', text)
+    if fa_match:
+        text = text[fa_match.end():]
+
+    # 移除 Thought: ... 行（含多行模式直到下一个标记）
+    text = re.sub(r'\n*Thought:\s*.*?(?=\n*(?:Action|Final Answer|Observation|$))', '', text, flags=re.DOTALL)
+    # 移除 Action: xxx 行
+    text = re.sub(r'\n*Action:\s*\w+.*?(?=\n|$)', '', text)
+    # 移除 Action Input: {...} 块
+    text = re.sub(r'\n*Action Input:\s*\{.*?\}', '', text, flags=re.DOTALL)
+    # 移除 Observation: {...} 块
+    text = re.sub(r'\n*Observation:\s*.*?(?=\n*(?:Thought|Action|Final Answer|$))', '', text, flags=re.DOTALL)
+
+    # 移除残留的 ```json / ``` 围栏标记（不含内容，内容已被 strip_trip_plan_json 处理）
+    text = re.sub(r'```json\s*', '', text)
+    text = re.sub(r'```\s*', '', text)
+
+    return text.strip()
+
+
+def clean_display_text(text: str) -> str:
+    """综合清洗：去 JSON 代码块 → 去 ReAct 残留 → 修复中文空格 → 压缩空行。"""
+    cleaned = text
+
+    # 1. 移除 TripPlan JSON 代码块
+    json_patterns = [
+        r"```json\s*\{.*?\}\s*```",
+        r"```\s*\{\"title\".*?\}\s*```",
+    ]
+    for pattern in json_patterns:
+        cleaned = re.sub(pattern, "", cleaned, flags=re.DOTALL)
+
+    # 2. 移除非 JSON 的 ``` 代码块（如子 Agent 返回的原始 JSON）
+    cleaned = re.sub(r'```(?:json)?\s*[\{\[].*?[\}\]]\s*```', '', cleaned, flags=re.DOTALL)
+
+    # 3. 移除 ReAct 内部标记
+    cleaned = _strip_react_artifacts(cleaned)
+
+    # 4. 修复中文空格
+    cleaned = normalize_cjk_spacing(cleaned)
+
+    # 5. 压缩多余空行
+    cleaned = re.sub(r'\n{3,}', '\n\n', cleaned).strip()
+
+    return cleaned
 
 
 # --------------- JSON Extraction ---------------
+
 
 def extract_trip_plan(text: str) -> dict[str, Any] | None:
     """从 Agent 输出文本中提取 TripPlan JSON。
@@ -298,11 +401,12 @@ def strip_trip_plan_json(text: str) -> str:
     cleaned = text
     for pattern in patterns:
         cleaned = re.sub(pattern, "", cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r'\n{3,}', '\n\n', cleaned).strip()
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip()
     return cleaned
 
 
 # --------------- Public API ---------------
+
 
 async def plan_trip(
     user_input: str,
@@ -325,7 +429,7 @@ async def plan_trip(
             ),
             timeout=timeout,
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return {"text": "抱歉，规划超时，请缩小需求范围后重试。", "trip_plan": None}
 
     agent_messages = result.get("messages", [])
@@ -343,21 +447,22 @@ async def run_planner_stream(
 ) -> AsyncGenerator[dict[str, Any], None]:
     """流式规划旅行方案，逐步产出 SSE 事件。
 
-    事件类型: thinking, token, tool_call, tool_result, trip_plan, done, error
+    事件类型: token, tool_call, tool_result, trip_plan, done, error
 
-    中间推理输出为 thinking 事件，最终回答为 token 事件。
+    核心改进：按 LLM turn 缓冲，过滤 ReAct 推理轮次，只将最终回复轮次的
+    人类可读内容以 token 事件推送。彻底杜绝 JSON 原始数据、内部推理步骤、
+    多 Agent 输出穿插等问题。
     """
     agent = create_planner_agent()
     full_text = ""
-    current_segment = ""
-    pending_segments: list[str] = []
+    turn_buffer = ""
+    # 当前 LLM 轮次是否包含 tool_call（通过 AIMessageChunk.tool_call_chunks 检测）
+    turn_has_tool_calls = False
 
     messages: list[dict[str, str]] = []
     if history:
         messages.extend(history)
     messages.append({"role": "user", "content": user_message})
-
-    collected_events: list[dict[str, Any]] = []
 
     try:
         async for event in agent.astream_events(
@@ -367,64 +472,48 @@ async def run_planner_stream(
         ):
             kind = event.get("event", "")
 
-            if kind == "on_chat_model_stream":
+            if kind == "on_chat_model_start":
+                turn_buffer = ""
+                turn_has_tool_calls = False
+
+            elif kind == "on_chat_model_stream":
                 chunk = event.get("data", {}).get("chunk")
-                if isinstance(chunk, AIMessageChunk) and chunk.content:
-                    current_segment += chunk.content
-                    collected_events.append({"type": "_token", "data": chunk.content})
+                if isinstance(chunk, AIMessageChunk):
+                    # 检测流式 tool_call：tool_call_chunks（增量）或 tool_calls（完整）
+                    if chunk.tool_call_chunks or chunk.tool_calls:
+                        turn_has_tool_calls = True
+                    if chunk.content and isinstance(chunk.content, str):
+                        full_text += chunk.content
+                        turn_buffer += chunk.content
+
+            elif kind == "on_chat_model_end":
+                # 含 tool_call 的轮次 = LLM 内部推理，抑制不推送
+                # 不含 tool_call 的轮次 = 最终回复，清洗后推送
+                if turn_buffer and not turn_has_tool_calls:
+                    clean = clean_display_text(turn_buffer)
+                    if clean:
+                        yield {"type": "token", "data": clean}
 
             elif kind == "on_tool_start":
-                if current_segment.strip():
-                    pending_segments.append(current_segment)
-                    current_segment = ""
                 tool_name = event.get("name", "")
-                collected_events.append({"type": "tool_call", "data": {"tool": tool_name}})
+                yield {"type": "tool_call", "data": {"tool": tool_name}}
 
             elif kind == "on_tool_end":
                 tool_output = event.get("data", {}).get("output", "")
-                collected_events.append({"type": "tool_result", "data": {"output": str(tool_output)[:500]}})
+                yield {
+                    "type": "tool_result",
+                    "data": {"output": str(tool_output)[:500]},
+                }
 
     except Exception as e:
         yield {"type": "error", "data": str(e)}
         return
 
-    if current_segment.strip():
-        pending_segments.append(current_segment)
-
-    final_segment = pending_segments[-1] if pending_segments else ""
-    thinking_segments = pending_segments[:-1] if len(pending_segments) > 1 else []
-    full_text = final_segment
-
-    if thinking_segments:
-        yield {"type": "thinking", "data": "\n".join(s.strip() for s in thinking_segments)}
-
-    for evt in collected_events:
-        if evt["type"] == "tool_call":
-            yield evt
-        elif evt["type"] == "tool_result":
-            yield evt
-
+    # 综合清洗全文：去 JSON 代码块 → 去 ReAct 残留 → 修复中文空格
     trip_plan = extract_trip_plan(full_text)
-
-    display_text = strip_trip_plan_json(full_text) if trip_plan else full_text
-
-    for char_batch in _chunk_text(display_text, 20):
-        yield {"type": "token", "data": char_batch}
+    display_text = clean_display_text(full_text)
 
     if trip_plan:
         yield {"type": "trip_plan", "data": trip_plan}
 
     yield {"type": "done", "data": {"text": display_text}}
-
-
-def _chunk_text(text: str, size: int) -> list[str]:
-    """将文本按固定大小分块，用于模拟流式输出。"""
-    if not text:
-        return []
-    chunks: list[str] = []
-    for line_idx, line in enumerate(text.split("\n")):
-        if line_idx > 0:
-            chunks.append("\n")
-        if line:
-            chunks.extend(line[i : i + size] for i in range(0, len(line), size))
-    return chunks

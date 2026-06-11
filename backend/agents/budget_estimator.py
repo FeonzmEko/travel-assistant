@@ -1,8 +1,10 @@
 import json
+from typing import Any
 
+from langchain.agents import create_agent
+from langchain_core.runnables import Runnable
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from backend.config import settings
@@ -32,27 +34,31 @@ def estimate_budget_tool(
         transport_mode=transport_mode,
         budget_limit=budget_limit,
     )
-    return json.dumps({
-        "total": result.total,
-        "breakdown": {
-            "accommodation": result.breakdown.accommodation,
-            "meals": result.breakdown.meals,
-            "transport": result.breakdown.transport,
-            "tickets": result.breakdown.tickets,
+    return json.dumps(
+        {
+            "total": result.total,
+            "breakdown": {
+                "accommodation": result.breakdown.accommodation,
+                "meals": result.breakdown.meals,
+                "transport": result.breakdown.transport,
+                "tickets": result.breakdown.tickets,
+            },
+            "over_budget": result.over_budget,
+            "suggestions": result.suggestions,
         },
-        "over_budget": result.over_budget,
-        "suggestions": result.suggestions,
-    }, ensure_ascii=False)
+        ensure_ascii=False,
+    )
 
 
-def create_budget_estimator_agent():  # type: ignore[no-untyped-def]
+def create_budget_estimator_agent() -> Runnable[Any, Any]:
+    """构建预算估算 Agent（基于 LangChain create_agent）。"""
     llm = ChatOpenAI(
         model=settings.deepseek_model,
         api_key=settings.deepseek_api_key,
         base_url=settings.deepseek_base_url,
         temperature=0,
     )
-    return create_react_agent(llm, [estimate_budget_tool], prompt=SYSTEM_PROMPT)
+    return create_agent(llm, [estimate_budget_tool], system_prompt=SYSTEM_PROMPT)
 
 
 async def estimate_trip_budget(

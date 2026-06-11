@@ -30,6 +30,10 @@ export interface SSEEvent {
   data: string;
 }
 
+export function deleteSession(sessionId: number) {
+  return client.delete(`/chat/session/${sessionId}`);
+}
+
 export async function sendMessage(
   sessionId: string,
   content: string,

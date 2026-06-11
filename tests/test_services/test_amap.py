@@ -40,7 +40,9 @@ async def test_poi_search_success() -> None:
 @respx.mock
 async def test_poi_search_api_error() -> None:
     respx.get("https://restapi.amap.com/v3/place/text").mock(
-        return_value=httpx.Response(200, json={"status": "0", "info": "INVALID_USER_KEY"})
+        return_value=httpx.Response(
+            200, json={"status": "0", "info": "INVALID_USER_KEY"}
+        )
     )
 
     async with httpx.AsyncClient() as client:

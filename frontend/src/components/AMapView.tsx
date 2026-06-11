@@ -187,7 +187,7 @@ export default function AMapView({
         position: [spot.longitude, spot.latitude],
         title: spot.name,
         label: {
-          content: `<div style="padding:2px 6px;background:#1677ff;color:#fff;border-radius:10px;font-size:12px;white-space:nowrap;">${index + 1}. ${escapeHtml(spot.name)}</div>`,
+          content: `<div style="padding:2px 8px;background:#C25430;color:#fff;border-radius:10px;font-size:12px;white-space:nowrap;font-weight:500;">${index + 1}. ${escapeHtml(spot.name)}</div>`,
           direction: 'top',
           offset: new AMap.Pixel(0, -5),
         },
@@ -237,9 +237,9 @@ export default function AMapView({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#f5f5f5',
+        background: '#FAF7F2',
         borderRadius: 8,
-        color: '#999',
+        color: '#9B8E85',
       }}>
         请配置 VITE_AMAP_KEY；若启用 JS API 安全密钥，请同时配置 VITE_AMAP_SECURITY_CODE
       </div>

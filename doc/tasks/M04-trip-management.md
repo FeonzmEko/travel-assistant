@@ -11,32 +11,32 @@
 
 ### 4.1 保存行程接口
 
-- [ ] 创建 `POST /api/trips` 路由（需认证）
-- [ ] 入参：`TripPlan` 结构体（含 days、activities、budget 等）
-- [ ] 级联创建 Trip → TripDay → TripActivity 记录
-- [ ] 返回 `{trip_id}`
+- [x] 创建 `POST /api/trips` 路由（需认证）
+- [x] 入参：`TripPlan` 结构体（含 days、activities、budget 等）
+- [x] 级联创建 Trip → TripDay → TripActivity 记录
+- [x] 返回 `{trip_id}`
 
 ### 4.2 行程列表接口
 
-- [ ] 创建 `GET /api/trips` 路由（需认证）
-- [ ] 入参：`page`、`size`
-- [ ] 返回当前用户的行程摘要列表（`TripSummary`）
+- [x] 创建 `GET /api/trips` 路由（需认证）
+- [x] 入参：`page`、`size`
+- [x] 返回当前用户的行程摘要列表（`TripSummary`）
 
 ### 4.3 行程详情接口
 
-- [ ] 创建 `GET /api/trips/{id}` 路由（需认证）
-- [ ] 验证行程所属用户
-- [ ] 级联查询并返回完整 `TripPlan`（含所有天和活动）
+- [x] 创建 `GET /api/trips/{id}` 路由（需认证）
+- [x] 验证行程所属用户
+- [x] 级联查询并返回完整 `TripPlan`（含所有天和活动）
 
 ### 4.4 删除行程接口
 
-- [ ] 创建 `DELETE /api/trips/{id}` 路由（需认证）
-- [ ] 验证行程所属用户
-- [ ] 级联删除 Trip 及其关联的 TripDay / TripActivity
+- [x] 创建 `DELETE /api/trips/{id}` 路由（需认证）
+- [x] 验证行程所属用户
+- [x] 级联删除 Trip 及其关联的 TripDay / TripActivity
 
 ### 4.5 行程导出接口
 
-- [ ] 安装 PDF 生成库（如 `reportlab` 或 `weasyprint`）
-- [ ] 创建 `GET /api/trips/{id}/export` 路由（需认证）
-- [ ] 读取行程数据，渲染为 PDF 格式
-- [ ] 返回文件流响应（`StreamingResponse`）
+- [x] 安装 PDF 生成库（如 `reportlab` 或 `weasyprint`）
+- [x] 创建 `GET /api/trips/{id}/export` 路由（需认证）
+- [x] 读取行程数据，渲染为 PDF 格式
+- [x] 返回文件流响应（`StreamingResponse`）

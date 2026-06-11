@@ -1,9 +1,15 @@
+from __future__ import annotations
+
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database import Base
+
+if TYPE_CHECKING:
+    from backend.models.user import User
 
 
 class ChatSession(Base):
@@ -17,8 +23,8 @@ class ChatSession(Base):
         server_default=func.now(), onupdate=lambda: datetime.now(tz=UTC)
     )
 
-    user: Mapped["User"] = relationship(back_populates="chat_sessions")  # noqa: F821
-    messages: Mapped[list["ChatMessage"]] = relationship(
+    user: Mapped[User] = relationship(back_populates="chat_sessions")
+    messages: Mapped[list[ChatMessage]] = relationship(
         back_populates="session", cascade="all, delete-orphan"
     )
 
@@ -34,4 +40,4 @@ class ChatMessage(Base):
     content: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
-    session: Mapped["ChatSession"] = relationship(back_populates="messages")
+    session: Mapped[ChatSession] = relationship(back_populates="messages")

@@ -8,8 +8,6 @@ from __future__ import annotations
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-
 from backend.agents.planner import (
     TOOLS,
     create_planner_agent,
@@ -46,13 +44,12 @@ SAMPLE_TRIP_JSON = {
 
 # =================== extract_trip_plan 测试 ===================
 
+
 class TestExtractTripPlan:
     def test_json_code_block(self) -> None:
         text = (
             "这是行程方案\n\n"
-            "```json\n"
-            + json.dumps(SAMPLE_TRIP_JSON, ensure_ascii=False)
-            + "\n```"
+            "```json\n" + json.dumps(SAMPLE_TRIP_JSON, ensure_ascii=False) + "\n```"
         )
         plan = extract_trip_plan(text)
         assert plan is not None
@@ -86,21 +83,24 @@ class TestExtractTripPlan:
 
 # =================== Tool 注册测试 ===================
 
+
 class TestToolRegistration:
     def test_tools_count(self) -> None:
-        assert len(TOOLS) == 4
+        assert len(TOOLS) == 5
 
     def test_tool_names(self) -> None:
         names = {t.name for t in TOOLS}
         assert names == {
-            "find_spots_tool",
-            "plan_route_tool",
-            "check_weather_tool",
-            "estimate_budget_tool",
+            "get_current_time_tool",
+            "find_spots_agent",
+            "plan_route_agent",
+            "check_weather_agent",
+            "estimate_budget_agent",
         }
 
 
 # =================== Agent 构建测试 ===================
+
 
 class TestCreatePlannerAgent:
     @patch("backend.agents.planner.settings")
@@ -114,6 +114,7 @@ class TestCreatePlannerAgent:
 
 
 # =================== plan_trip 测试 ===================
+
 
 class TestPlanTrip:
     @patch("backend.agents.planner.create_planner_agent")
@@ -181,6 +182,7 @@ class TestPlanTrip:
     async def test_timeout_handling(self, mock_create: MagicMock) -> None:
         async def slow_invoke(*args, **kwargs):  # type: ignore[no-untyped-def]
             import asyncio
+
             await asyncio.sleep(10)
 
         mock_agent = MagicMock()
@@ -194,31 +196,31 @@ class TestPlanTrip:
 
 # =================== run_planner_stream 测试 ===================
 
+
 class TestRunPlannerStream:
     @patch("backend.agents.planner.create_planner_agent")
     async def test_stream_events_sequence(self, mock_create: MagicMock) -> None:
         trip_json = json.dumps(SAMPLE_TRIP_JSON, ensure_ascii=False)
         text_with_plan = f"行程如下\n```json\n{trip_json}\n```"
 
-        mock_chunk = MagicMock(spec=["content"])
-        mock_chunk.content = text_with_plan
-
         async def fake_astream_events(inp, *, config=None, version=None):  # type: ignore[no-untyped-def]
-            yield {
-                "event": "on_tool_start",
-                "name": "find_spots_tool",
-                "data": {},
-            }
-            yield {
-                "event": "on_tool_end",
-                "name": "find_spots_tool",
-                "data": {"output": '[{"name":"故宫"}]'},
-            }
             from langchain_core.messages import AIMessageChunk
-            yield {
-                "event": "on_chat_model_stream",
-                "data": {"chunk": AIMessageChunk(content=text_with_plan)},
-            }
+
+            # 第一轮 LLM：工具调用轮次（含 tool_call_chunks）→ 应被过滤
+            reasoning_chunk = AIMessageChunk(content="好的，让我搜索")
+            reasoning_chunk.tool_call_chunks = [{"name": "find_spots_agent", "args": "{}", "id": "call_1", "index": 0, "type": "tool_call_chunk"}]
+            yield {"event": "on_chat_model_start", "data": {}, "name": "ChatOpenAI"}
+            yield {"event": "on_chat_model_stream", "data": {"chunk": reasoning_chunk}}
+            yield {"event": "on_chat_model_end", "data": {}, "name": "ChatOpenAI"}
+
+            # 工具执行
+            yield {"event": "on_tool_start", "name": "find_spots_agent", "data": {}}
+            yield {"event": "on_tool_end", "name": "find_spots_agent", "data": {"output": '[{"name":"故宫"}]'}}
+
+            # 第二轮 LLM：最终回复（无 tool_call_chunks）→ 应被推送
+            yield {"event": "on_chat_model_start", "data": {}, "name": "ChatOpenAI"}
+            yield {"event": "on_chat_model_stream", "data": {"chunk": AIMessageChunk(content=text_with_plan)}}
+            yield {"event": "on_chat_model_end", "data": {}, "name": "ChatOpenAI"}
 
         mock_agent = MagicMock()
         mock_agent.astream_events = fake_astream_events
@@ -231,22 +233,28 @@ class TestRunPlannerStream:
         types = [e["type"] for e in events]
         assert "tool_call" in types
         assert "tool_result" in types
-        assert "token" in types
+        assert "token" in types  # 最终回复轮次清洗后应生成 token 事件
         assert "trip_plan" in types
         assert types[-1] == "done"
 
         plan_event = next(e for e in events if e["type"] == "trip_plan")
         assert plan_event["data"]["title"] == "北京三日游"
 
+        # token 事件中不应包含工具调用轮次的文本
+        token_event = next(e for e in events if e["type"] == "token")
+        assert "让我搜索" not in token_event["data"]
+
     @patch("backend.agents.planner.create_planner_agent")
     async def test_stream_no_plan(self, mock_create: MagicMock) -> None:
         from langchain_core.messages import AIMessageChunk
 
         async def fake_astream_events(inp, *, config=None, version=None):  # type: ignore[no-untyped-def]
+            yield {"event": "on_chat_model_start", "data": {}, "name": "ChatOpenAI"}
             yield {
                 "event": "on_chat_model_stream",
                 "data": {"chunk": AIMessageChunk(content="随便说点什么")},
             }
+            yield {"event": "on_chat_model_end", "data": {}, "name": "ChatOpenAI"}
 
         mock_agent = MagicMock()
         mock_agent.astream_events = fake_astream_events
@@ -258,13 +266,14 @@ class TestRunPlannerStream:
 
         types = [e["type"] for e in events]
         assert "trip_plan" not in types
+        assert "token" in types  # 简单对话（无工具调用）应有 token
         assert "done" in types
 
     @patch("backend.agents.planner.create_planner_agent")
     async def test_stream_error_handling(self, mock_create: MagicMock) -> None:
         async def failing_stream(inp, *, config=None, version=None):  # type: ignore[no-untyped-def]
             raise RuntimeError("LLM API error")
-            yield  # noqa: unreachable  # make it an async generator
+            yield  # make it an async generator (unreachable, but needed for syntax)
 
         mock_agent = MagicMock()
         mock_agent.astream_events = failing_stream

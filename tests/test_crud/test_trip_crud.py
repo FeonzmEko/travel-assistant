@@ -24,7 +24,9 @@ from backend.schemas.user import UserCreate
 async def user_id(db: AsyncSession) -> int:
     user = await create_user(
         db,
-        UserCreate(username="tripuser", password="password123", email="trip@example.com"),
+        UserCreate(
+            username="tripuser", password="password123", email="trip@example.com"
+        ),
         password_hash="hashed",
     )
     return user.id

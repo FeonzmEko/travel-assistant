@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Form, Input, Select, Button, Card, Row, Col, Pagination, Rate, Empty, Spin, message } from 'antd';
 import { SearchOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { searchSpots, type Spot } from '@/api/spots';
@@ -17,32 +17,59 @@ const spotTypes = [
 
 export default function Spots() {
   const navigate = useNavigate();
+  const [urlParams, setUrlParams] = useSearchParams();
+
+  const urlKeyword = urlParams.get('keyword') || '';
+  const urlCity = urlParams.get('city') || '';
+  const urlType = urlParams.get('type') || '';
+  const urlPage = parseInt(urlParams.get('page') || '1', 10);
+
   const [items, setItems] = useState<Spot[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(urlPage);
   const [loading, setLoading] = useState(false);
-  const [searchParams, setSearchParams] = useState<{ keyword?: string; city?: string; type?: string }>({});
+  const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
 
-  const doSearch = async (params: typeof searchParams, p = 1) => {
+  const doSearch = useCallback(async (params: { keyword?: string; city?: string; type?: string }, p = 1) => {
     setLoading(true);
+    const q: Record<string, string> = {};
+    if (params.keyword) q.keyword = params.keyword;
+    if (params.city) q.city = params.city;
+    if (params.type) q.type = params.type;
+    q.page = String(p);
+    setUrlParams(q, { replace: true });
+
     try {
       const res = await searchSpots({ ...params, page: p, size: 12 });
       setItems(res.data.items);
       setTotal(res.data.total);
       setPage(p);
-      setSearchParams(params);
     } catch {
       messageApi.error('搜索失败');
     } finally {
       setLoading(false);
     }
-  };
+  }, [setUrlParams, messageApi]);
+
+  // 页面挂载时，如果 URL 有搜索参数则自动搜索
+  useEffect(() => {
+    if (urlKeyword || urlCity || urlType) {
+      form.setFieldsValue({ keyword: urlKeyword, city: urlCity, type: urlType || undefined });
+      doSearch({ keyword: urlKeyword, city: urlCity, type: urlType || undefined }, urlPage);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{ padding: 24 }}>
       {contextHolder}
-      <Form layout="inline" onFinish={(v: typeof searchParams) => doSearch(v)} style={{ marginBottom: 24, flexWrap: 'wrap', gap: 8 }}>
+      <Form
+        form={form}
+        layout="inline"
+        initialValues={{ keyword: urlKeyword, city: urlCity, type: urlType || undefined }}
+        onFinish={(v: { keyword?: string; city?: string; type?: string }) => doSearch(v)}
+        style={{ marginBottom: 24, flexWrap: 'wrap', gap: 8 }}
+      >
         <Form.Item name="keyword">
           <Input placeholder="关键词" prefix={<SearchOutlined />} allowClear />
         </Form.Item>
@@ -87,7 +114,9 @@ export default function Spots() {
                     cover={
                       spot.image_url
                         ? <img alt={spot.name} src={spot.image_url} style={{ height: 180, objectFit: 'cover' }} />
-                        : <div style={{ height: 180, background: '#f0f5ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>🏞️</div>
+                        : <div style={{ height: 180, background: '#FDF0E8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <EnvironmentOutlined style={{ fontSize: 40, color: '#D4744C', opacity: 0.4 }} />
+                          </div>
                     }
                     onClick={() => navigate(`/spots/${spot.id}`)}
                   >
@@ -105,7 +134,7 @@ export default function Spots() {
               ))}
             </Row>
             <div style={{ marginTop: 24, textAlign: 'center' }}>
-              <Pagination current={page} total={total} pageSize={12} onChange={(p) => doSearch(searchParams, p)} showTotal={(t) => `共 ${t} 条`} />
+              <Pagination current={page} total={total} pageSize={12} onChange={(p) => doSearch({ keyword: urlKeyword, city: urlCity, type: urlType || undefined }, p)} showTotal={(t) => `共 ${t} 条`} />
             </div>
           </>
         )}

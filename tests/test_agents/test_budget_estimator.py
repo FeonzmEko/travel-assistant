@@ -15,9 +15,7 @@ def test_estimate_budget_tool() -> None:
 
 
 def test_estimate_budget_tool_over_budget() -> None:
-    result = estimate_budget_tool.invoke(
-        {"trip_days": 3, "budget_limit": 500.0}
-    )
+    result = estimate_budget_tool.invoke({"trip_days": 3, "budget_limit": 500.0})
     data = json.loads(result)
     assert data["over_budget"] is True
     assert len(data["suggestions"]) > 0

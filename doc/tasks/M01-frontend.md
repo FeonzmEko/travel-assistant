@@ -10,64 +10,64 @@
 
 ### 1.1 前端项目初始化
 
-- [ ] 使用 Vite + React + TypeScript 初始化前端项目
-- [ ] 安装基础依赖：`react-router-dom`、`axios`、UI 组件库（如 Ant Design）
-- [ ] 配置项目目录结构（`pages/`、`components/`、`api/`、`hooks/`、`store/`）
-- [ ] 配置 API 代理（`vite.config.ts` 中 proxy 到后端）
+- [x] 使用 Vite + React + TypeScript 初始化前端项目
+- [x] 安装基础依赖：`react-router-dom`、`axios`、UI 组件库（如 Ant Design）
+- [x] 配置项目目录结构（`pages/`、`components/`、`api/`、`hooks/`、`store/`）
+- [x] 配置 API 代理（`vite.config.ts` 中 proxy 到后端）
 
 ### 1.2 全局布局与路由
 
-- [ ] 创建全局 Layout 组件（导航栏、侧边栏、内容区）
-- [ ] 配置 React Router 路由：首页、登录、注册、对话、景点、行程、个人中心
-- [ ] 实现路由守卫（未登录重定向到登录页）
+- [x] 创建全局 Layout 组件（导航栏、侧边栏、内容区）
+- [x] 配置 React Router 路由：首页、登录、注册、对话、景点、行程、个人中心
+- [x] 实现路由守卫（未登录重定向到登录页）
 
 ### 1.3 用户页面
 
-- [ ] 实现注册页面（表单：用户名、密码、邮箱）
-- [ ] 实现登录页面（表单：用户名、密码）
-- [ ] 实现个人中心页面（展示和编辑个人信息）
-- [ ] 封装认证 API（`api/auth.ts`）：`register`、`login`、`logout`、`getProfile`、`updateProfile`
-- [ ] 实现 Token 存储与自动携带（`axios` 拦截器）
+- [x] 实现注册页面（表单：用户名、密码、邮箱）
+- [x] 实现登录页面（表单：用户名、密码）
+- [x] 实现个人中心页面（展示和编辑个人信息）
+- [x] 封装认证 API（`api/auth.ts`）：`register`、`login`、`logout`、`getProfile`、`updateProfile`
+- [x] 实现 Token 存储与自动携带（`axios` 拦截器）
 
 ### 1.4 对话页面（核心）
 
-- [ ] 实现对话列表侧边栏（会话列表 + 新建会话按钮）
-- [ ] 实现对话消息区域（消息气泡、用户/助手区分）
-- [ ] 实现消息输入框（支持 Enter 发送）
-- [ ] 封装 SSE 客户端（`api/chat.ts`），处理 `EventSource` 流式响应
-- [ ] 实现流式消息渲染（逐 token 显示）
-- [ ] 处理 `tool_call` / `tool_result` 事件（展示 Agent 思考过程，可折叠）
-- [ ] 处理 `trip_plan` 事件（渲染结构化行程卡片）
+- [x] 实现对话列表侧边栏（会话列表 + 新建会话按钮）
+- [x] 实现对话消息区域（消息气泡、用户/助手区分）
+- [x] 实现消息输入框（支持 Enter 发送）
+- [x] 封装 SSE 客户端（`api/chat.ts`），处理 `EventSource` 流式响应
+- [x] 实现流式消息渲染（逐 token 显示）
+- [x] 处理 `tool_call` / `tool_result` 事件（展示 Agent 思考过程，可折叠）
+- [x] 处理 `trip_plan` 事件（渲染结构化行程卡片）
 
 ### 1.5 景点页面
 
-- [ ] 实现景点搜索页（搜索框 + 筛选条件 + 结果列表）
-- [ ] 实现景点详情页（图片轮播、基本信息、评分、评价摘要）
-- [ ] 封装景点 API（`api/spots.ts`）：`searchSpots`、`getSpotDetail`
+- [x] 实现景点搜索页（搜索框 + 筛选条件 + 结果列表）
+- [x] 实现景点详情页（图片轮播、基本信息、评分、评价摘要）
+- [x] 封装景点 API（`api/spots.ts`）：`searchSpots`、`getSpotDetail`
 
 ### 1.6 地图组件
 
-- [ ] 安装高德地图 JS SDK（`@amap/amap-jsapi-loader`）
-- [ ] 实现基础地图组件（初始化、定位）
-- [ ] 实现景点标注功能（Marker + InfoWindow）
-- [ ] 实现路线绘制功能（Polyline）
-- [ ] 地图与景点/行程页面联动
+- [x] 安装高德地图 JS SDK（`@amap/amap-jsapi-loader`）
+- [x] 实现基础地图组件（初始化、定位）
+- [x] 实现景点标注功能（Marker + InfoWindow）
+- [x] 实现路线绘制功能（Polyline）
+- [x] 地图与景点/行程页面联动
 
 ### 1.7 行程页面
 
-- [ ] 实现行程列表页（卡片展示，含目的地、日期、状态）
-- [ ] 实现行程详情页（按天展示活动、预算摘要、天气信息）
-- [ ] 实现行程删除功能（确认弹窗）
-- [ ] 实现行程导出按钮（下载 PDF）
-- [ ] 封装行程 API（`api/trips.ts`）：`saveTrip`、`getTrips`、`getTripDetail`、`deleteTrip`、`exportTrip`
+- [x] 实现行程列表页（卡片展示，含目的地、日期、状态）
+- [x] 实现行程详情页（按天展示活动、预算摘要、天气信息）
+- [x] 实现行程删除功能（确认弹窗）
+- [x] 实现行程导出按钮（下载 PDF）
+- [x] 封装行程 API（`api/trips.ts`）：`saveTrip`、`getTrips`、`getTripDetail`、`deleteTrip`、`exportTrip`
 
 ### 1.8 天气组件
 
-- [ ] 实现天气信息卡片组件（温度、天气图标、风力、建议）
-- [ ] 在行程详情页中集成天气组件
+- [x] 实现天气信息卡片组件（温度、天气图标、风力、建议）
+- [x] 在行程详情页中集成天气组件
 
 ### 1.9 预算组件
 
-- [ ] 实现预算概览组件（总预算 vs 预估费用进度条）
-- [ ] 实现费用明细组件（分类展示：交通、门票、餐饮、住宿）
-- [ ] 在行程详情页中集成预算组件
+- [x] 实现预算概览组件（总预算 vs 预估费用进度条）
+- [x] 实现费用明细组件（分类展示：交通、门票、餐饮、住宿）
+- [x] 在行程详情页中集成预算组件

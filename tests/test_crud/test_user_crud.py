@@ -13,7 +13,9 @@ from backend.schemas.user import UserCreate, UserUpdate
 
 @pytest.fixture
 def user_data() -> UserCreate:
-    return UserCreate(username="testuser", password="password123", email="test@example.com")
+    return UserCreate(
+        username="testuser", password="password123", email="test@example.com"
+    )
 
 
 async def test_create_user(db: AsyncSession, user_data: UserCreate) -> None:

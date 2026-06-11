@@ -52,18 +52,14 @@ async def get_trip(db: AsyncSession, trip_id: int) -> Trip | None:
     result = await db.execute(
         select(Trip)
         .where(Trip.id == trip_id)
-        .options(
-            selectinload(Trip.days).selectinload(TripDay.activities)
-        )
+        .options(selectinload(Trip.days).selectinload(TripDay.activities))
     )
     return result.scalar_one_or_none()
 
 
 async def get_user_trips(db: AsyncSession, user_id: int) -> list[Trip]:
     result = await db.execute(
-        select(Trip)
-        .where(Trip.user_id == user_id)
-        .order_by(Trip.updated_at.desc())
+        select(Trip).where(Trip.user_id == user_id).order_by(Trip.updated_at.desc())
     )
     return list(result.scalars().all())
 

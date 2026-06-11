@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Input, List, Typography, Spin, Collapse, Card, Empty, Tag, message } from 'antd';
-import { PlusOutlined, SendOutlined, RobotOutlined, UserOutlined, BulbOutlined, SaveOutlined } from '@ant-design/icons';
+import { Button, Input, List, Typography, Spin, Collapse, Card, Empty, Tag, message, Popconfirm } from 'antd';
+import { PlusOutlined, SendOutlined, RobotOutlined, UserOutlined, BulbOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { createSession, getSessions, getHistory, sendMessage, type Session, type SSEEvent } from '@/api/chat';
+import { createSession, getSessions, getHistory, sendMessage, deleteSession, type Session, type SSEEvent } from '@/api/chat';
 import { createTrip, type TripPlanData } from '@/api/trips';
 
 const { Text } = Typography;
@@ -24,6 +24,7 @@ export default function Chat() {
   const [streaming, setStreaming] = useState(false);
   const [loadingSessions, setLoadingSessions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const tokenRafRef = useRef<number | null>(null);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -49,6 +50,28 @@ export default function Chat() {
     setSessions((prev) => [newSession, ...prev]);
     setActiveSession(res.data.session_id);
     setMessages([]);
+  };
+
+  const handleDeleteSession = async (sessionId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await deleteSession(sessionId);
+      setSessions((prev) => {
+        const remaining = prev.filter((s) => s.id !== sessionId);
+        if (activeSession === sessionId) {
+          if (remaining.length > 0) {
+            loadHistory(remaining[0].id);
+          } else {
+            setActiveSession(null);
+            setMessages([]);
+          }
+        }
+        return remaining;
+      });
+      message.success('会话已删除');
+    } catch {
+      message.error('删除失败');
+    }
   };
 
   const handleSend = async () => {
@@ -89,7 +112,13 @@ export default function Chat() {
             break;
           case 'token':
             assistantContent += evt.data;
-            updateLastMessage();
+            // 用 RAF 节流，避免每个 token chunk 都触发 ReactMarkdown 重解析
+            if (tokenRafRef.current === null) {
+              tokenRafRef.current = requestAnimationFrame(() => {
+                updateLastMessage();
+                tokenRafRef.current = null;
+              });
+            }
             break;
           case 'tool_call':
             try {
@@ -111,10 +140,35 @@ export default function Chat() {
             assistantContent += `\n> ⚠️ 错误: ${evt.data}`;
             updateLastMessage();
             break;
+          case 'done':
+            try {
+              const doneData = JSON.parse(evt.data);
+              // 自动生成的标题更新到会话列表
+              if (doneData.title) {
+                setSessions((prev) =>
+                  prev.map((s) =>
+                    s.id === activeSession ? { ...s, title: doneData.title } : s
+                  )
+                );
+              }
+              // 用清洗后的展示文本（已去除 TripPlan JSON 代码块和中间推理步骤）替换累积内容
+              if (doneData.text != null && doneData.text !== '') {
+                assistantContent = String(doneData.text);
+                updateLastMessage();
+              }
+            } catch { /* ignore */ }
+            break;
         }
       });
     } finally {
+      // 先结束 streaming 状态，确保最终渲染走 ReactMarkdown
       setStreaming(false);
+      // 刷新最后一个 RAF 中待渲染的 token
+      if (tokenRafRef.current !== null) {
+        cancelAnimationFrame(tokenRafRef.current);
+        tokenRafRef.current = null;
+      }
+      updateLastMessage();
     }
   };
 
@@ -177,7 +231,7 @@ export default function Chat() {
               </Button>
             </div>
           }
-          style={{ marginTop: 12, background: '#f6ffed', borderColor: '#b7eb8f' }}
+          style={{ marginTop: 12, background: '#FDF0E8', borderColor: '#F0D5C0', borderRadius: 12 }}
         >
           {data.start_date && data.end_date && (
             <div style={{ marginBottom: 8, color: '#888' }}>
@@ -209,30 +263,80 @@ export default function Chat() {
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 112px)' }}>
       {/* 左侧会话列表 */}
-      <div style={{ width: 260, borderRight: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: 16 }}>
-          <Button type="primary" icon={<PlusOutlined />} block onClick={handleNewSession}>
+      <div style={{
+        width: 270,
+        borderRight: '1px solid #F0EAE2',
+        display: 'flex',
+        flexDirection: 'column',
+        background: '#FAF7F2',
+      }}>
+        <div style={{ padding: '16px 14px' }}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            block
+            onClick={handleNewSession}
+            style={{
+              height: 42,
+              borderRadius: 10,
+              fontSize: 14,
+              fontWeight: 500,
+              background: 'linear-gradient(135deg, #C25430 0%, #9E3F20 100%)',
+              border: 'none',
+              boxShadow: '0 2px 8px rgba(194,84,48,0.2)',
+            }}
+          >
             新建对话
           </Button>
         </div>
-        <div style={{ flex: 1, overflow: 'auto' }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: '0 8px' }}>
           {loadingSessions ? (
             <div style={{ textAlign: 'center', padding: 24 }}><Spin /></div>
           ) : (
             <List
               dataSource={sessions}
+              split={false}
               renderItem={(s) => (
                 <List.Item
                   onClick={() => loadHistory(s.id)}
                   style={{
-                    padding: '12px 16px',
+                    padding: '10px 12px',
                     cursor: 'pointer',
-                    background: activeSession === s.id ? '#e6f4ff' : undefined,
+                    background: activeSession === s.id ? '#FDF0E8' : 'transparent',
+                    borderRadius: 10,
+                    marginBottom: 4,
+                    border: 'none',
+                    transition: 'background 200ms ease',
                   }}
                 >
-                  <Text ellipsis style={{ width: '100%' }}>
+                  <Text
+                    ellipsis
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      fontSize: 14,
+                      color: activeSession === s.id ? '#C25430' : '#2C2420',
+                      fontWeight: activeSession === s.id ? 500 : 400,
+                    }}
+                  >
                     {s.title || `对话 ${s.id}`}
                   </Text>
+                  <Popconfirm
+                    title="确定删除该对话？"
+                    onConfirm={(e) => handleDeleteSession(s.id, e as unknown as React.MouseEvent)}
+                    onCancel={(e) => (e as unknown as React.MouseEvent).stopPropagation()}
+                    okText="删除"
+                    cancelText="取消"
+                  >
+                    <Button
+                      type="text"
+                      size="small"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ flexShrink: 0, marginLeft: 4, opacity: 0.5 }}
+                    />
+                  </Popconfirm>
                 </List.Item>
               )}
             />
@@ -241,29 +345,42 @@ export default function Chat() {
       </div>
 
       {/* 右侧消息区域 */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#FFF' }}>
         {!activeSession ? (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Empty description="选择或新建一个对话开始聊天" />
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#FAF7F2',
+          }}>
+            <Empty
+              description={
+                <span style={{ color: '#9B8E85', fontSize: 15 }}>
+                  选择或新建一个对话开始聊天
+                </span>
+              }
+            />
           </div>
         ) : (
           <>
-            <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
+            <div style={{ flex: 1, overflow: 'auto', padding: 24, background: '#FAF7F2' }}>
               {messages.map((msg, i) => (
                 <div
                   key={i}
                   style={{
                     display: 'flex',
                     justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                    marginBottom: 16,
+                    marginBottom: 20,
                   }}
                 >
-                  <div style={{ maxWidth: '75%', display: 'flex', gap: 8, flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}>
+                  <div style={{ maxWidth: '75%', display: 'flex', gap: 10, flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}>
                     <div style={{
-                      width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+                      width: 36, height: 36, borderRadius: 12, flexShrink: 0,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: msg.role === 'user' ? '#1677ff' : '#f0f0f0',
-                      color: msg.role === 'user' ? '#fff' : '#666',
+                      background: msg.role === 'user' ? 'linear-gradient(135deg, #C25430, #9E3F20)' : '#FDF0E8',
+                      color: msg.role === 'user' ? '#FFF' : '#C25430',
+                      fontSize: 15,
                     }}>
                       {msg.role === 'user' ? <UserOutlined /> : <RobotOutlined />}
                     </div>
@@ -298,28 +415,41 @@ export default function Chat() {
                       {msg.role === 'user' ? (
                         <div style={{
                           padding: '10px 16px',
-                          borderRadius: 12,
-                          background: '#1677ff',
-                          color: '#fff',
+                          borderRadius: 14,
+                          background: 'linear-gradient(135deg, #C25430 0%, #B04A28 100%)',
+                          color: '#FFF',
                           whiteSpace: 'pre-wrap',
                           wordBreak: 'break-word',
+                          boxShadow: '0 2px 8px rgba(194,84,48,0.2)',
+                          fontSize: 14,
+                          lineHeight: 1.7,
                         }}>
                           {msg.content}
                         </div>
                       ) : (
                         <div style={{
-                          padding: '10px 16px',
-                          borderRadius: 12,
-                          background: '#f5f5f5',
-                          color: '#333',
+                          padding: '12px 18px',
+                          borderRadius: 14,
+                          background: '#F9F6F1',
+                          color: '#2C2420',
                           wordBreak: 'break-word',
+                          border: '1px solid #F0EAE2',
+                          fontSize: 14,
+                          lineHeight: 1.7,
                         }}>
                           {msg.content ? (
-                            <div className="markdown-body">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            streaming && i === messages.length - 1 ? (
+                              /* 流式传输期间用纯文本，ReactMarkdown 频繁重解析会导致空格和渲染碎片 */
+                              <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
                                 {msg.content}
-                              </ReactMarkdown>
-                            </div>
+                              </div>
+                            ) : (
+                              <div className="markdown-body">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                  {msg.content}
+                                </ReactMarkdown>
+                              </div>
+                            )
                           ) : (
                             streaming && i === messages.length - 1 ? <Spin size="small" /> : null
                           )}
@@ -334,16 +464,50 @@ export default function Chat() {
               ))}
               <div ref={messagesEndRef} />
             </div>
-            <div style={{ padding: '16px 24px', borderTop: '1px solid #f0f0f0' }}>
-              <Input.Search
+            <div style={{
+              padding: '16px 24px',
+              borderTop: '1px solid #F0EAE2',
+              display: 'flex',
+              gap: 12,
+              alignItems: 'flex-end',
+              background: '#FFF',
+            }}>
+              <Input.TextArea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="输入您的旅行问题，例如：帮我规划一个北京三日游"
-                enterButton={<Button type="primary" icon={<SendOutlined />} loading={streaming}>发送</Button>}
-                onSearch={handleSend}
-                size="large"
+                placeholder="输入您的旅行问题（Enter 发送，Shift+Enter 换行）"
+                autoSize={{ minRows: 1, maxRows: 4 }}
                 disabled={streaming}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (input.trim() && !streaming) handleSend();
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  borderRadius: 12,
+                  borderColor: '#F0EAE2',
+                  fontSize: 14,
+                }}
               />
+              <Button
+                type="primary"
+                icon={<SendOutlined />}
+                loading={streaming}
+                onClick={handleSend}
+                disabled={!input.trim() || streaming}
+                style={{
+                  height: 42,
+                  borderRadius: 10,
+                  background: 'linear-gradient(135deg, #C25430, #9E3F20)',
+                  border: 'none',
+                  boxShadow: '0 2px 8px rgba(194,84,48,0.25)',
+                  fontWeight: 500,
+                }}
+              >
+                发送
+              </Button>
             </div>
           </>
         )}

@@ -7,9 +7,7 @@ from backend.models.spot_cache import SpotCache
 from backend.schemas.spot import SpotCacheCreate, SpotCacheUpdate
 
 
-async def create_spot_cache(
-    db: AsyncSession, spot_in: SpotCacheCreate
-) -> SpotCache:
+async def create_spot_cache(db: AsyncSession, spot_in: SpotCacheCreate) -> SpotCache:
     spot = SpotCache(**spot_in.model_dump())
     db.add(spot)
     await db.commit()

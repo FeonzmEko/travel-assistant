@@ -92,9 +92,7 @@ class TestSpotSearch:
         assert data["total"] == 2
         mock_amap.assert_not_called()
 
-    async def test_search_no_params_returns_empty(
-        self, client: AsyncClient
-    ) -> None:
+    async def test_search_no_params_returns_empty(self, client: AsyncClient) -> None:
         resp = await client.get("/api/spots/search")
         assert resp.status_code == 200
         data = resp.json()
@@ -102,9 +100,7 @@ class TestSpotSearch:
         assert data["items"] == []
 
     @patch("backend.api.spots.amap_poi_search", new_callable=AsyncMock)
-    async def test_pagination(
-        self, mock_amap: AsyncMock, client: AsyncClient
-    ) -> None:
+    async def test_pagination(self, mock_amap: AsyncMock, client: AsyncClient) -> None:
         mock_amap.return_value = _make_amap_spots(5)
 
         await client.get(

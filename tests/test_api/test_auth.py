@@ -39,7 +39,11 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 async def test_register_success(client: AsyncClient) -> None:
     resp = await client.post(
         "/api/auth/register",
-        json={"username": "testuser", "password": "password123", "email": "test@example.com"},
+        json={
+            "username": "testuser",
+            "password": "password123",
+            "email": "test@example.com",
+        },
     )
     assert resp.status_code == 201
     data = resp.json()
@@ -62,11 +66,19 @@ async def test_register_duplicate_username(client: AsyncClient) -> None:
 async def test_register_duplicate_email(client: AsyncClient) -> None:
     await client.post(
         "/api/auth/register",
-        json={"username": "user1", "password": "password123", "email": "same@example.com"},
+        json={
+            "username": "user1",
+            "password": "password123",
+            "email": "same@example.com",
+        },
     )
     resp = await client.post(
         "/api/auth/register",
-        json={"username": "user2", "password": "password123", "email": "same@example.com"},
+        json={
+            "username": "user2",
+            "password": "password123",
+            "email": "same@example.com",
+        },
     )
     assert resp.status_code == 409
 
@@ -90,7 +102,11 @@ async def test_register_short_password(client: AsyncClient) -> None:
 async def test_login_success(client: AsyncClient) -> None:
     await client.post(
         "/api/auth/register",
-        json={"username": "loginuser", "password": "password123", "email": "login@example.com"},
+        json={
+            "username": "loginuser",
+            "password": "password123",
+            "email": "login@example.com",
+        },
     )
     resp = await client.post(
         "/api/auth/login",
@@ -105,7 +121,11 @@ async def test_login_success(client: AsyncClient) -> None:
 async def test_login_wrong_password(client: AsyncClient) -> None:
     await client.post(
         "/api/auth/register",
-        json={"username": "wrongpw", "password": "password123", "email": "wp@example.com"},
+        json={
+            "username": "wrongpw",
+            "password": "password123",
+            "email": "wp@example.com",
+        },
     )
     resp = await client.post(
         "/api/auth/login",
@@ -125,7 +145,11 @@ async def test_login_nonexistent_user(client: AsyncClient) -> None:
 async def test_profile_with_token(client: AsyncClient) -> None:
     await client.post(
         "/api/auth/register",
-        json={"username": "profuser", "password": "password123", "email": "prof@example.com"},
+        json={
+            "username": "profuser",
+            "password": "password123",
+            "email": "prof@example.com",
+        },
     )
     login_resp = await client.post(
         "/api/auth/login",
@@ -147,7 +171,11 @@ async def test_profile_without_token(client: AsyncClient) -> None:
 async def test_update_profile(client: AsyncClient) -> None:
     await client.post(
         "/api/auth/register",
-        json={"username": "upuser", "password": "password123", "email": "up@example.com"},
+        json={
+            "username": "upuser",
+            "password": "password123",
+            "email": "up@example.com",
+        },
     )
     login_resp = await client.post(
         "/api/auth/login",

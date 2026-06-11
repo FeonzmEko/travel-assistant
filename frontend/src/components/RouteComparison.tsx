@@ -19,15 +19,15 @@ interface RouteComparisonProps {
 }
 
 const strategyMap: Record<string, { label: string; color: string }> = {
-  '0': { label: '速度优先', color: 'green' },
-  '1': { label: '费用优先', color: 'blue' },
-  '2': { label: '距离优先', color: 'orange' },
-  speed: { label: '速度优先', color: 'green' },
-  cost: { label: '费用优先', color: 'blue' },
-  distance: { label: '距离优先', color: 'orange' },
-  '速度优先': { label: '速度优先', color: 'green' },
-  '费用优先': { label: '费用优先', color: 'blue' },
-  '距离优先': { label: '距离优先', color: 'orange' },
+  '0': { label: '速度优先', color: '#4A8C5C' },
+  '1': { label: '费用优先', color: '#C25430' },
+  '2': { label: '距离优先', color: '#C8963E' },
+  speed: { label: '速度优先', color: '#4A8C5C' },
+  cost: { label: '费用优先', color: '#C25430' },
+  distance: { label: '距离优先', color: '#C8963E' },
+  '速度优先': { label: '速度优先', color: '#4A8C5C' },
+  '费用优先': { label: '费用优先', color: '#C25430' },
+  '距离优先': { label: '距离优先', color: '#C8963E' },
 };
 
 function formatDuration(minutes: number): string {
@@ -93,7 +93,7 @@ export default function RouteComparison({ routes, onSelect, selectedIndex, style
           onClick: () => onSelect && index !== undefined && onSelect(routes[index]),
           style: {
             cursor: onSelect ? 'pointer' : 'default',
-            background: selectedIndex === index ? '#e6f4ff' : undefined,
+            background: selectedIndex === index ? '#FDF0E8' : undefined,
           },
         })}
       />

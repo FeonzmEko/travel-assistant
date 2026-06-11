@@ -1,9 +1,15 @@
+from __future__ import annotations
+
 from datetime import UTC, date, datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Date, Float, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database import Base
+
+if TYPE_CHECKING:
+    from backend.models.user import User
 
 
 class Trip(Base):
@@ -22,8 +28,8 @@ class Trip(Base):
         server_default=func.now(), onupdate=lambda: datetime.now(tz=UTC)
     )
 
-    user: Mapped["User"] = relationship(back_populates="trips")  # noqa: F821
-    days: Mapped[list["TripDay"]] = relationship(
+    user: Mapped[User] = relationship(back_populates="trips")
+    days: Mapped[list[TripDay]] = relationship(
         back_populates="trip", cascade="all, delete-orphan"
     )
 
@@ -37,8 +43,8 @@ class TripDay(Base):
     date: Mapped[date] = mapped_column(Date)
     weather: Mapped[str | None] = mapped_column(String(100), default=None)
 
-    trip: Mapped["Trip"] = relationship(back_populates="days")
-    activities: Mapped[list["TripActivity"]] = relationship(
+    trip: Mapped[Trip] = relationship(back_populates="days")
+    activities: Mapped[list[TripActivity]] = relationship(
         back_populates="trip_day", cascade="all, delete-orphan"
     )
 
@@ -59,4 +65,4 @@ class TripActivity(Base):
     longitude: Mapped[float | None] = mapped_column(Float, default=None)
     latitude: Mapped[float | None] = mapped_column(Float, default=None)
 
-    trip_day: Mapped["TripDay"] = relationship(back_populates="activities")
+    trip_day: Mapped[TripDay] = relationship(back_populates="activities")

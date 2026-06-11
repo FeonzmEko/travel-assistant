@@ -78,7 +78,7 @@ async def search(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
-) -> dict:
+) -> dict[str, object]:
     total, cached_items = await search_spots(
         db, keyword=keyword, city=city, type_tag=type, page=page, size=size
     )
@@ -90,9 +90,7 @@ async def search(
     if not keyword or not city:
         return {"total": 0, "items": []}
 
-    base_total, _ = await search_spots(
-        db, keyword=keyword, city=city, page=1, size=1
-    )
+    base_total, _ = await search_spots(db, keyword=keyword, city=city, page=1, size=1)
     if base_total > 0:
         return {"total": 0, "items": []}
 

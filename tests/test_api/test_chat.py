@@ -5,7 +5,6 @@ Mock Agent，测试 SSE 事件流格式、会话 CRUD、对话历史。
 
 from __future__ import annotations
 
-import json
 from collections.abc import AsyncGenerator
 from unittest.mock import AsyncMock, patch
 
@@ -66,6 +65,7 @@ def _auth(token: str) -> dict[str, str]:
 
 
 # =================== Session CRUD 测试 ===================
+
 
 class TestSessionCRUD:
     async def test_create_session(self, client: AsyncClient) -> None:
@@ -144,12 +144,11 @@ class TestSessionCRUD:
 
 # =================== History 测试 ===================
 
+
 class TestHistory:
     async def test_get_empty_history(self, client: AsyncClient) -> None:
         token = await _register_and_login(client)
-        create_resp = await client.post(
-            "/api/chat/session", headers=_auth(token)
-        )
+        create_resp = await client.post("/api/chat/session", headers=_auth(token))
         sid = create_resp.json()["session_id"]
 
         resp = await client.get(
@@ -160,18 +159,14 @@ class TestHistory:
 
     async def test_history_not_found(self, client: AsyncClient) -> None:
         token = await _register_and_login(client)
-        resp = await client.get(
-            "/api/chat/session/9999/history", headers=_auth(token)
-        )
+        resp = await client.get("/api/chat/session/9999/history", headers=_auth(token))
         assert resp.status_code == 404
 
     async def test_history_isolation(self, client: AsyncClient) -> None:
         token1 = await _register_and_login(client, "hist_a")
         token2 = await _register_and_login(client, "hist_b")
 
-        create_resp = await client.post(
-            "/api/chat/session", headers=_auth(token1)
-        )
+        create_resp = await client.post("/api/chat/session", headers=_auth(token1))
         sid = create_resp.json()["session_id"]
 
         resp = await client.get(
@@ -182,11 +177,14 @@ class TestHistory:
 
 # =================== SSE Message 测试 ===================
 
+
 def _make_fake_stream(events: list[dict]):  # type: ignore[type-arg]
     """创建一个假的 run_planner_stream 异步生成器。"""
+
     async def fake_stream(user_message: str, history: list | None = None):  # type: ignore[type-arg]
         for evt in events:
             yield evt
+
     return fake_stream
 
 
@@ -195,16 +193,16 @@ class TestSSEMessage:
     async def test_sse_token_events(
         self, mock_stream: AsyncMock, client: AsyncClient
     ) -> None:
-        mock_stream.side_effect = _make_fake_stream([
-            {"type": "token", "data": "你好"},
-            {"type": "token", "data": "世界"},
-            {"type": "done", "data": {"text": "你好世界"}},
-        ])
+        mock_stream.side_effect = _make_fake_stream(
+            [
+                {"type": "token", "data": "你好"},
+                {"type": "token", "data": "世界"},
+                {"type": "done", "data": {"text": "你好世界"}},
+            ]
+        )
 
         token = await _register_and_login(client)
-        create_resp = await client.post(
-            "/api/chat/session", headers=_auth(token)
-        )
+        create_resp = await client.post("/api/chat/session", headers=_auth(token))
         sid = create_resp.json()["session_id"]
 
         resp = await client.post(
@@ -223,17 +221,17 @@ class TestSSEMessage:
     async def test_sse_tool_events(
         self, mock_stream: AsyncMock, client: AsyncClient
     ) -> None:
-        mock_stream.side_effect = _make_fake_stream([
-            {"type": "tool_call", "data": {"tool": "find_spots_tool"}},
-            {"type": "tool_result", "data": {"output": "[{\"name\":\"故宫\"}]"}},
-            {"type": "token", "data": "查到了"},
-            {"type": "done", "data": {"text": "查到了"}},
-        ])
+        mock_stream.side_effect = _make_fake_stream(
+            [
+                {"type": "tool_call", "data": {"tool": "find_spots_tool"}},
+                {"type": "tool_result", "data": {"output": '[{"name":"故宫"}]'}},
+                {"type": "token", "data": "查到了"},
+                {"type": "done", "data": {"text": "查到了"}},
+            ]
+        )
 
         token = await _register_and_login(client)
-        create_resp = await client.post(
-            "/api/chat/session", headers=_auth(token)
-        )
+        create_resp = await client.post("/api/chat/session", headers=_auth(token))
         sid = create_resp.json()["session_id"]
 
         resp = await client.post(
@@ -250,16 +248,16 @@ class TestSSEMessage:
         self, mock_stream: AsyncMock, client: AsyncClient
     ) -> None:
         plan = {"title": "北京三日游", "destination": "北京"}
-        mock_stream.side_effect = _make_fake_stream([
-            {"type": "token", "data": "行程如下"},
-            {"type": "trip_plan", "data": plan},
-            {"type": "done", "data": {"text": "行程如下"}},
-        ])
+        mock_stream.side_effect = _make_fake_stream(
+            [
+                {"type": "token", "data": "行程如下"},
+                {"type": "trip_plan", "data": plan},
+                {"type": "done", "data": {"text": "行程如下"}},
+            ]
+        )
 
         token = await _register_and_login(client)
-        create_resp = await client.post(
-            "/api/chat/session", headers=_auth(token)
-        )
+        create_resp = await client.post("/api/chat/session", headers=_auth(token))
         sid = create_resp.json()["session_id"]
 
         resp = await client.post(
@@ -275,14 +273,14 @@ class TestSSEMessage:
     async def test_sse_error_event(
         self, mock_stream: AsyncMock, client: AsyncClient
     ) -> None:
-        mock_stream.side_effect = _make_fake_stream([
-            {"type": "error", "data": "LLM API error"},
-        ])
+        mock_stream.side_effect = _make_fake_stream(
+            [
+                {"type": "error", "data": "LLM API error"},
+            ]
+        )
 
         token = await _register_and_login(client)
-        create_resp = await client.post(
-            "/api/chat/session", headers=_auth(token)
-        )
+        create_resp = await client.post("/api/chat/session", headers=_auth(token))
         sid = create_resp.json()["session_id"]
 
         resp = await client.post(
@@ -297,15 +295,15 @@ class TestSSEMessage:
     async def test_message_saves_to_history(
         self, mock_stream: AsyncMock, client: AsyncClient
     ) -> None:
-        mock_stream.side_effect = _make_fake_stream([
-            {"type": "token", "data": "回复内容"},
-            {"type": "done", "data": {"text": "回复内容"}},
-        ])
+        mock_stream.side_effect = _make_fake_stream(
+            [
+                {"type": "token", "data": "回复内容"},
+                {"type": "done", "data": {"text": "回复内容"}},
+            ]
+        )
 
         token = await _register_and_login(client)
-        create_resp = await client.post(
-            "/api/chat/session", headers=_auth(token)
-        )
+        create_resp = await client.post("/api/chat/session", headers=_auth(token))
         sid = create_resp.json()["session_id"]
 
         await client.post(

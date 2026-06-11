@@ -11,18 +11,18 @@
 
 ### 8.1 Tool 定义
 
-- [ ] 用 `@tool` 装饰器注册 `amap_route_plan` 为 LangChain Tool
-- [ ] 编写描述和 Pydantic 入参 Schema
+- [x] 用 `@tool` 装饰器注册 `amap_route_plan` 为 LangChain Tool
+- [x] 编写描述和 Pydantic 入参 Schema
 
 ### 8.2 Agent 构建
 
-- [ ] 编写路线 Agent 的 System Prompt（路线规划专家角色）
-- [ ] 使用 LangChain 构建 ReAct Agent
-- [ ] 定义输入 Schema：`{spots: [Spot], transport_preference?}`
-- [ ] 定义输出 Schema：`[Route]` 含路线段、距离、耗时
+- [x] 编写路线 Agent 的 System Prompt（路线规划专家角色）
+- [x] 使用 LangChain 构建 ReAct Agent
+- [x] 定义输入 Schema：`{spots: [Spot], transport_preference?}`
+- [x] 定义输出 Schema：`[Route]` 含路线段、距离、耗时
 
 ### 8.3 包装为规划 Agent 的 Tool
 
-- [ ] 将路线 Agent 封装为 `plan_route` 函数
-- [ ] 编写函数签名和 docstring
-- [ ] 测试：输入多个杭州景点坐标，验证返回合理路线
+- [x] 将路线 Agent 封装为 `plan_route` 函数
+- [x] 编写函数签名和 docstring
+- [x] 测试：输入多个杭州景点坐标，验证返回合理路线

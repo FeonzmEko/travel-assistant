@@ -9,16 +9,17 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from langchain.agents import create_agent
+from langchain_core.runnables import Runnable
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from backend.config import settings
 from backend.services.amap import amap_poi_search
 
-
 # --------------- Tool input schemas ---------------
+
 
 class PoiSearchInput(BaseModel):
     keyword: str = Field(description="搜索关键词，如 '故宫' '美食'")
@@ -33,8 +34,11 @@ class SpotDbSearchInput(BaseModel):
 
 # --------------- Tools ---------------
 
+
 @tool(args_schema=PoiSearchInput)
-async def amap_poi_search_tool(keyword: str, city: str, type_code: str | None = None) -> str:
+async def amap_poi_search_tool(
+    keyword: str, city: str, type_code: str | None = None
+) -> str:
     """通过高德地图 API 搜索景点 POI 信息，返回景点名称、地址、经纬度等。"""
     spots = await amap_poi_search(keyword=keyword, city=city, type_code=type_code)
     return json.dumps(
@@ -58,8 +62,8 @@ async def amap_poi_search_tool(keyword: str, city: str, type_code: str | None = 
 @tool(args_schema=SpotDbSearchInput)
 async def spot_db_search_tool(keyword: str, city: str) -> str:
     """从本地景点缓存数据库中搜索景点信息。"""
-    from backend.database import async_session_factory
     from backend.crud.spot_cache import search_spots
+    from backend.database import async_session_factory
 
     async with async_session_factory() as db:
         _total, items = await search_spots(db, keyword=keyword, city=city)
@@ -91,15 +95,15 @@ SYSTEM_PROMPT = (
 TOOLS = [amap_poi_search_tool, spot_db_search_tool]
 
 
-def create_spot_finder_agent():  # type: ignore[no-untyped-def]
-    """构建景点搜索 Agent（基于 LangGraph create_react_agent）。"""
+def create_spot_finder_agent() -> Runnable[Any, Any]:
+    """构建景点搜索 Agent（基于 LangChain create_agent）。"""
     llm = ChatOpenAI(
         model=settings.deepseek_model,
         api_key=settings.deepseek_api_key,
         base_url=settings.deepseek_base_url,
         temperature=0.1,
     )
-    return create_react_agent(llm, TOOLS, prompt=SYSTEM_PROMPT)
+    return create_agent(llm, TOOLS, system_prompt=SYSTEM_PROMPT)
 
 
 async def find_spots(

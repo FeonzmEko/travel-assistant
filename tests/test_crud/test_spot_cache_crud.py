@@ -26,9 +26,7 @@ def spot_data() -> SpotCacheCreate:
     )
 
 
-async def test_create_spot_cache(
-    db: AsyncSession, spot_data: SpotCacheCreate
-) -> None:
+async def test_create_spot_cache(db: AsyncSession, spot_data: SpotCacheCreate) -> None:
     spot = await create_spot_cache(db, spot_data)
     assert spot.id is not None
     assert spot.name == "故宫博物院"
@@ -88,9 +86,7 @@ async def test_search_spots_pagination(db: AsyncSession) -> None:
     assert len(items) == 1
 
 
-async def test_update_spot_cache(
-    db: AsyncSession, spot_data: SpotCacheCreate
-) -> None:
+async def test_update_spot_cache(db: AsyncSession, spot_data: SpotCacheCreate) -> None:
     spot = await create_spot_cache(db, spot_data)
     updated = await update_spot_cache(
         db, spot, SpotCacheUpdate(rating=4.9, description="更新后的描述")

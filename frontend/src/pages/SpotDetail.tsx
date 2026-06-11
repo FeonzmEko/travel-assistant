@@ -66,7 +66,7 @@ export default function SpotDetail() {
           {spot.type && (
             <Descriptions.Item label="类型">
               {spot.type.split(';').map((t) => (
-                <Tag key={t} color="blue">{t}</Tag>
+                <Tag key={t} color="volcano">{t}</Tag>
               ))}
             </Descriptions.Item>
           )}
