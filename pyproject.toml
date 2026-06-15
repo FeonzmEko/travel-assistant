@@ -16,6 +16,8 @@ dependencies = [
     "passlib[bcrypt]>=1.7.4",
     "langchain>=0.3.0",
     "langchain-openai>=0.3.0",
+    "dashscope",
+    "pymilvus",
     "sse-starlette>=2.2.0",
     "reportlab>=4.4.0",
     "python-dotenv>=1.1.0",

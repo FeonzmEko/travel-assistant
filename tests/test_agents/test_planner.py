@@ -14,6 +14,7 @@ from backend.agents.planner import (
     extract_trip_plan,
     plan_trip,
     run_planner_stream,
+    search_travel_knowledge_tool,
 )
 
 SAMPLE_TRIP_JSON = {
@@ -86,7 +87,7 @@ class TestExtractTripPlan:
 
 class TestToolRegistration:
     def test_tools_count(self) -> None:
-        assert len(TOOLS) == 5
+        assert len(TOOLS) == 6
 
     def test_tool_names(self) -> None:
         names = {t.name for t in TOOLS}
@@ -96,7 +97,27 @@ class TestToolRegistration:
             "plan_route_agent",
             "check_weather_agent",
             "estimate_budget_agent",
+            "search_travel_knowledge_tool",
         }
+
+    @patch("backend.services.knowledge_base.search_travel_knowledge", new_callable=AsyncMock)
+    async def test_knowledge_tool_returns_json(self, mock_search: AsyncMock) -> None:
+        mock_search.return_value = [
+            {"content": "三亚经济型轿车淡季日租通常在 120-180 元"}
+        ]
+
+        result = await search_travel_knowledge_tool.ainvoke(
+            {"query": "三亚租车价格", "city": "三亚", "category": "租车价格"}
+        )
+
+        data = json.loads(result)
+        assert data[0]["content"].startswith("三亚经济型轿车")
+        mock_search.assert_awaited_once_with(
+            query="三亚租车价格",
+            top_k=5,
+            category="租车价格",
+            city="三亚",
+        )
 
 
 # =================== Agent 构建测试 ===================
