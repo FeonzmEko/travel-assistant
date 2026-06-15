@@ -375,12 +375,16 @@ def extract_trip_plan(text: str) -> dict[str, Any] | None:
     尝试多种模式匹配，带降级方案：
     1. ```json ... ``` 代码块
     2. ``` ... ``` 代码块
-    3. 以 {"title" 开头的独立 JSON 对象
+    3. 以 {"title" 开头的独立 JSON 对象（贪婪匹配到最后一个 }）
+    4. 在文本任意位置查找 {"title"...} JSON 对象（兜底）
     """
     patterns = [
-        r"```json\s*(\{.*?\})\s*```",
-        r"```\s*(\{.*?\})\s*```",
-        r'(\{"title".*?\})\s*$',
+        # 1) 标准 ```json 代码块
+        r"```json\s*(\{[\s\S]*?\}\s*?)```",
+        # 2) 无语言标记的 ``` 代码块（以 {"title" 开头）
+        r"```\s*(\{\"title\"[\s\S]*?\}\s*?)```",
+        # 3) 末尾以 {"title" 开头的独立 JSON（尝试平衡括号匹配）
+        r'(\{"title"\s*:\s*"[^"]*"[\s\S]*\})\s*$',
     ]
     for pattern in patterns:
         match = re.search(pattern, text, re.DOTALL)
@@ -389,6 +393,45 @@ def extract_trip_plan(text: str) -> dict[str, Any] | None:
                 return json.loads(match.group(1))  # type: ignore[no-any-return]
             except json.JSONDecodeError:
                 continue
+
+    # 4) 兜底：在文本中查找任意 {"title"...} 开头的 JSON 块
+    #    尝试从第一个 {"title" 开始，匹配到平衡的结束 }
+    for m in re.finditer(r'\{"title"\s*:', text):
+        start = m.start()
+        # 手动括号平衡匹配
+        depth = 0
+        end = start
+        in_string = False
+        escape_next = False
+        for i in range(start, len(text)):
+            c = text[i]
+            if escape_next:
+                escape_next = False
+                continue
+            if c == '\\':
+                escape_next = True
+                continue
+            if c == '"' and not escape_next:
+                in_string = not in_string
+                continue
+            if in_string:
+                continue
+            if c == '{':
+                depth += 1
+            elif c == '}':
+                depth -= 1
+                if depth == 0:
+                    end = i + 1
+                    break
+        if end > start:
+            candidate = text[start:end]
+            try:
+                obj = json.loads(candidate)
+                if isinstance(obj, dict) and "title" in obj and "days" in obj:
+                    return obj
+            except json.JSONDecodeError:
+                continue
+
     return None
 
 
@@ -516,4 +559,10 @@ async def run_planner_stream(
     if trip_plan:
         yield {"type": "trip_plan", "data": trip_plan}
 
-    yield {"type": "done", "data": {"text": display_text}}
+    yield {
+        "type": "done",
+        "data": {
+            "text": display_text,
+            "raw_text": full_text,  # 原始文本，供前端兜底提取 TripPlan JSON
+        },
+    }

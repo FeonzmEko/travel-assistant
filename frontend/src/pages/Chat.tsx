@@ -74,6 +74,27 @@ export default function Chat() {
     }
   };
 
+  // 客户端备用：从文本中提取 TripPlan JSON（后端 extract_trip_plan 的纯 JS 实现）
+  const extractTripPlanFromText = (text: string): string | null => {
+    const patterns = [
+      /```json\s*(\{[\s\S]*?\})\s*```/,
+      /```\s*(\{"title"[\s\S]*?\})\s*```/,
+      /(\{"title"[\s\S]*?\})\s*$/,
+    ];
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match) {
+        try {
+          JSON.parse(match[1]);
+          return match[1];
+        } catch {
+          continue;
+        }
+      }
+    }
+    return null;
+  };
+
   const handleSend = async () => {
     if (!input.trim() || !activeSession || streaming) return;
     const userMsg = input.trim();
@@ -86,6 +107,7 @@ export default function Chat() {
     const toolCalls: { name: string; result: string }[] = [];
     let currentToolName = '';
     let tripPlan = '';
+    let rawTextForExtraction = '';  // 后端返回的原始文本，含 TripPlan JSON，供兜底提取
 
     setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
 
@@ -101,6 +123,27 @@ export default function Chat() {
         };
         return updated;
       });
+    };
+
+    // 客户端兜底提取 + 最终落地
+    const finalizeTripPlan = () => {
+      if (!tripPlan) {
+        // 优先从后端返回的原始文本提取
+        if (rawTextForExtraction) {
+          const extracted = extractTripPlanFromText(rawTextForExtraction);
+          if (extracted) {
+            tripPlan = extracted;
+          }
+        }
+        // 最后尝试从清洗后的展示文本提取（备用）
+        if (!tripPlan && assistantContent) {
+          const extracted = extractTripPlanFromText(assistantContent);
+          if (extracted) {
+            tripPlan = extracted;
+          }
+        }
+      }
+      updateLastMessage();
     };
 
     try {
@@ -151,11 +194,22 @@ export default function Chat() {
                   )
                 );
               }
+              // 保存后端返回的原始文本，供兜底提取 TripPlan JSON
+              if (doneData.raw_text) {
+                rawTextForExtraction = String(doneData.raw_text);
+              }
               // 用清洗后的展示文本（已去除 TripPlan JSON 代码块和中间推理步骤）替换累积内容
               if (doneData.text != null && doneData.text !== '') {
                 assistantContent = String(doneData.text);
-                updateLastMessage();
               }
+              // 兜底：若后端未推送 trip_plan 事件，从原始文本中提取
+              if (!tripPlan && rawTextForExtraction) {
+                const extracted = extractTripPlanFromText(rawTextForExtraction);
+                if (extracted) {
+                  tripPlan = extracted;
+                }
+              }
+              updateLastMessage();
             } catch { /* ignore */ }
             break;
         }
@@ -168,7 +222,8 @@ export default function Chat() {
         cancelAnimationFrame(tokenRafRef.current);
         tokenRafRef.current = null;
       }
-      updateLastMessage();
+      // 最终落地：若后端未推送 trip_plan，从消息内容中提取
+      finalizeTripPlan();
     }
   };
 
