@@ -2,6 +2,7 @@ import io
 import re
 from xml.sax.saxutils import escape
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from reportlab.lib import colors  # type: ignore[import-untyped]
@@ -9,10 +10,12 @@ from reportlab.lib.enums import TA_LEFT, TA_RIGHT  # type: ignore[import-untyped
 from reportlab.lib.pagesizes import A4  # type: ignore[import-untyped]
 from reportlab.lib.styles import ParagraphStyle  # type: ignore[import-untyped]
 from reportlab.lib.units import cm  # type: ignore[import-untyped]
+from reportlab.lib.utils import ImageReader  # type: ignore[import-untyped]
 from reportlab.pdfbase import pdfmetrics  # type: ignore[import-untyped]
 from reportlab.pdfbase.cidfonts import UnicodeCIDFont  # type: ignore[import-untyped]
 from reportlab.pdfbase.ttfonts import TTFont  # type: ignore[import-untyped]
 from reportlab.platypus import (  # type: ignore[import-untyped]
+    Image,
     KeepTogether,
     Paragraph,
     SimpleDocTemplate,
@@ -23,6 +26,7 @@ from reportlab.platypus import (  # type: ignore[import-untyped]
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.api.deps import get_current_user
+from backend.config import settings
 from backend.crud.trip import create_trip, delete_trip, get_trip, get_user_trips
 from backend.database import get_db
 from backend.models.trip import Trip
@@ -31,6 +35,7 @@ from backend.schemas.trip import TripCreate, TripOut
 
 router = APIRouter(prefix="/api/trips", tags=["trips"])
 _PDF_FONT_NAME: str | None = None
+_AMAP_STATICMAP_URL = "https://restapi.amap.com/v3/staticmap"
 
 # 行程手册视觉系统：单一主色（松绿青）+ 赤陶橙点缀，避免炫技渐变
 _C_PRIMARY = colors.HexColor("#0F5C57")
@@ -165,6 +170,13 @@ def _make_styles(font_name: str) -> dict[str, ParagraphStyle]:
             fontSize=13,
             leading=18,
             textColor=_C_PRIMARY_DARK,
+        ),
+        "caption": ParagraphStyle(
+            "caption",
+            fontName=font_name,
+            fontSize=8.5,
+            leading=12,
+            textColor=_C_MUTED,
         ),
         "day_num": ParagraphStyle(
             "day_num",
@@ -438,6 +450,97 @@ def _activities_table(
     return table
 
 
+def _collect_map_points(trip: Trip) -> list[tuple[float, float]]:
+    """按行程顺序收集去重后的景点坐标。"""
+    points: list[tuple[float, float]] = []
+    seen: set[str] = set()
+    for day in sorted(trip.days, key=lambda d: d.day_index):
+        for act in sorted(day.activities, key=lambda a: a.order_index):
+            if (
+                act.longitude is not None
+                and act.latitude is not None
+                and act.spot_name not in seen
+            ):
+                seen.add(act.spot_name)
+                points.append((float(act.longitude), float(act.latitude)))
+    return points
+
+
+async def _fetch_static_map(
+    trip: Trip, client: httpx.AsyncClient | None = None
+) -> bytes | None:
+    """请求高德静态地图，失败时返回 None（不阻断 PDF 导出）。"""
+    key = settings.amap_api_key
+    if not key or key in {"xxx", "your-amap-key"}:
+        return None
+
+    points = _collect_map_points(trip)
+    if not points:
+        return None
+    points = points[:50]
+
+    def _coord(p: tuple[float, float]) -> str:
+        return f"{p[0]:.6f},{p[1]:.6f}"
+
+    # markers / paths 同一样式组内坐标用 ";" 分隔（"|" 用于分隔不同样式组）
+    params: dict[str, str | int] = {
+        "key": key,
+        "size": "1024*420",
+        "scale": 2,
+        "markers": "mid,0x0F5C57,:" + ";".join(_coord(p) for p in points),
+    }
+    if len(points) >= 2:
+        params["paths"] = "5,0x0F5C57,1,,:" + ";".join(_coord(p) for p in points)
+
+    should_close = client is None
+    if client is None:
+        client = httpx.AsyncClient(timeout=10.0)
+    try:
+        resp = await client.get(_AMAP_STATICMAP_URL, params=params)
+        resp.raise_for_status()
+        content_type = resp.headers.get("content-type", "")
+        if not content_type.startswith("image"):
+            return None
+        return resp.content
+    except Exception:
+        return None
+    finally:
+        if should_close:
+            await client.aclose()
+
+
+def _map_section(
+    map_image: bytes, point_count: int, s: dict[str, ParagraphStyle], width: float
+) -> KeepTogether:
+    iw, ih = ImageReader(io.BytesIO(map_image)).getSize()
+    draw_h = width * ih / iw if iw else width * 0.41
+    img = Image(io.BytesIO(map_image), width=width, height=draw_h)
+    framed = Table([[img]], colWidths=[width])
+    framed.setStyle(
+        TableStyle(
+            [
+                ("BOX", (0, 0), (-1, -1), 0.6, _C_LINE),
+                ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                ("TOPPADDING", (0, 0), (-1, -1), 0),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+            ]
+        )
+    )
+    return KeepTogether(
+        [
+            Paragraph("行程地图", s["section"]),
+            Spacer(1, 0.25 * cm),
+            framed,
+            Spacer(1, 0.15 * cm),
+            Paragraph(
+                f"途经 {point_count} 个标记地点 · 地图数据 © 高德地图", s["caption"]
+            ),
+            Spacer(1, 0.7 * cm),
+        ]
+    )
+
+
 def _draw_footer(canvas: object, doc: object) -> None:
     canvas.saveState()  # type: ignore[attr-defined]
     width, _ = A4
@@ -454,7 +557,7 @@ def _draw_footer(canvas: object, doc: object) -> None:
     canvas.restoreState()  # type: ignore[attr-defined]
 
 
-def _build_pdf(trip: Trip) -> bytes:
+def _build_pdf(trip: Trip, map_image: bytes | None = None) -> bytes:
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -474,6 +577,10 @@ def _build_pdf(trip: Trip) -> bytes:
     elements.append(Spacer(1, 0.5 * cm))
     elements.append(_overview_cards(trip, s, width))
     elements.append(Spacer(1, 0.7 * cm))
+
+    if map_image:
+        point_count = len(_collect_map_points(trip))
+        elements.append(_map_section(map_image, point_count, s, width))
 
     if trip.budget_breakdown:
         elements.append(Paragraph("预算明细", s["section"]))
@@ -533,7 +640,8 @@ async def export_trip_pdf(
     if trip is None:
         raise HTTPException(status_code=404, detail="行程不存在")
     _check_ownership(trip, current_user)
-    pdf_bytes = _build_pdf(trip)
+    map_image = await _fetch_static_map(trip)
+    pdf_bytes = _build_pdf(trip, map_image=map_image)
     return StreamingResponse(
         io.BytesIO(pdf_bytes),
         media_type="application/pdf",
