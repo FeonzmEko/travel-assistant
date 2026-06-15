@@ -32,6 +32,7 @@ PLANNER_SYSTEM_PROMPT = """\
 - **路线规划 Agent**（plan_route_agent）：规划最优游览路线和交通方式
 - **天气查询 Agent**（check_weather_agent）：查询天气预报并评估影响
 - **预算估算 Agent**（estimate_budget_agent）：估算行程费用
+- **旅游知识库工具**（search_travel_knowledge_tool）：查询租车价格、小众路线、本地旅行贴士等补充知识
 
 每个子 Agent 拥有独立的 LLM 推理能力和专属工具，你只需要将任务分发给它们。
 
@@ -58,9 +59,10 @@ PLANNER_SYSTEM_PROMPT = """\
 1. 先调用 get_current_time_tool 获取当前日期
 2. 调用 find_spots_agent 搜索目的地景点
 3. 调用 check_weather_agent 查询天气
-4. 根据景点信息调用 plan_route_agent 规划路线
-5. 调用 estimate_budget_agent 估算预算
-6. 汇总所有子 Agent 的结果，生成完整行程方案
+4. 当用户涉及自驾、租车、预算细节、小众路线或本地经验时，调用 search_travel_knowledge_tool 查询知识库
+5. 根据景点信息调用 plan_route_agent 规划路线
+6. 调用 estimate_budget_agent 估算预算
+7. 汇总所有子 Agent 和知识库结果，生成完整行程方案
 
 ### 行程调整（P-02）
 当用户要求修改已生成的行程时：
@@ -112,6 +114,7 @@ PLANNER_SYSTEM_PROMPT = """\
 - 根据天气情况灵活调整室内外活动
 - 预算估算要包含交通、住宿、餐饮、门票等各项费用
 - budget_breakdown 字段务必填写费用分类明细
+- 知识库结果是本地经验参考，不要编造成实时价格；涉及租车价格时说明价格会随季节和车型波动
 """
 
 MAX_ITERATIONS = 25
@@ -146,6 +149,13 @@ class EstimateBudgetInput(BaseModel):
         default="public", description="交通方式：public 或 taxi"
     )
     budget_limit: float | None = Field(default=None, description="预算上限")
+
+
+class KnowledgeSearchInput(BaseModel):
+    query: str = Field(description="查询内容，如 '三亚租车价格' 或 '杭州小众路线'")
+    city: str | None = Field(default=None, description="可选城市过滤")
+    category: str | None = Field(default=None, description="可选分类，如 租车价格、小众路线")
+    top_k: int = Field(default=5, ge=1, le=10, description="返回结果数量")
 
 
 # --------------- Sub-Agent Tools ---------------
@@ -247,6 +257,30 @@ async def estimate_budget_agent(
         )
 
 
+@tool(args_schema=KnowledgeSearchInput)
+async def search_travel_knowledge_tool(
+    query: str,
+    city: str | None = None,
+    category: str | None = None,
+    top_k: int = 5,
+) -> str:
+    """查询旅游知识库，返回租车价格、小众路线、预算参考和本地旅行贴士。"""
+    from backend.services.knowledge_base import search_travel_knowledge
+
+    try:
+        results = await search_travel_knowledge(
+            query=query,
+            top_k=top_k,
+            category=category,
+            city=city,
+        )
+        return json.dumps(results, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps(
+            {"error": f"旅游知识库查询失败: {e}"}, ensure_ascii=False
+        )
+
+
 @tool
 def get_current_time_tool() -> str:
     """获取当前的确切日期和时间（北京时间），用于确定用户所说的"最近""这周末"等相对时间。"""
@@ -279,6 +313,7 @@ TOOLS = [
     plan_route_agent,
     check_weather_agent,
     estimate_budget_agent,
+    search_travel_knowledge_tool,
 ]
 
 
