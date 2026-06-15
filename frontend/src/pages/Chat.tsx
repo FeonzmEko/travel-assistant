@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Button, Input, List, Typography, Spin, Card, Empty, Tag, message, Popconfirm } from 'antd';
-import { PlusOutlined, SendOutlined, RobotOutlined, UserOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Input, List, Typography, Spin, Collapse, Card, Empty, Tag, message, Popconfirm } from 'antd';
+import { PlusOutlined, SendOutlined, RobotOutlined, UserOutlined, BulbOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createSession, getSessions, getHistory, sendMessage, deleteSession, type Session, type SSEEvent } from '@/api/chat';
@@ -11,6 +11,8 @@ const { Text } = Typography;
 interface DisplayMessage {
   role: 'user' | 'assistant';
   content: string;
+  thinking?: string;
+  toolCalls?: { name: string; result: string }[];
   tripPlan?: string;
 }
 
@@ -101,7 +103,11 @@ export default function Chat() {
     setStreaming(true);
 
     let assistantContent = '';
+    let thinkingContent = '';
+    const toolCalls: { name: string; result: string }[] = [];
+    let currentToolName = '';
     let tripPlan = '';
+    let rawTextForExtraction = '';  // 后端返回的原始文本，含 TripPlan JSON，供兜底提取
 
     setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
 
@@ -111,6 +117,8 @@ export default function Chat() {
         updated[updated.length - 1] = {
           role: 'assistant',
           content: assistantContent,
+          thinking: thinkingContent || undefined,
+          toolCalls: toolCalls.length > 0 ? [...toolCalls] : undefined,
           tripPlan: tripPlan || undefined,
         };
         return updated;
@@ -120,7 +128,15 @@ export default function Chat() {
     // 客户端兜底提取 + 最终落地
     const finalizeTripPlan = () => {
       if (!tripPlan) {
-        if (assistantContent) {
+        // 优先从后端返回的原始文本提取
+        if (rawTextForExtraction) {
+          const extracted = extractTripPlanFromText(rawTextForExtraction);
+          if (extracted) {
+            tripPlan = extracted;
+          }
+        }
+        // 最后尝试从清洗后的展示文本提取（备用）
+        if (!tripPlan && assistantContent) {
           const extracted = extractTripPlanFromText(assistantContent);
           if (extracted) {
             tripPlan = extracted;
@@ -133,6 +149,10 @@ export default function Chat() {
     try {
       await sendMessage(String(activeSession), userMsg, (evt: SSEEvent) => {
         switch (evt.event) {
+          case 'thinking':
+            thinkingContent = evt.data;
+            updateLastMessage();
+            break;
           case 'token':
             assistantContent += evt.data;
             // 用 RAF 节流，避免每个 token chunk 都触发 ReactMarkdown 重解析
@@ -142,6 +162,18 @@ export default function Chat() {
                 tokenRafRef.current = null;
               });
             }
+            break;
+          case 'tool_call':
+            try {
+              const parsed = JSON.parse(evt.data);
+              currentToolName = parsed.tool || evt.data;
+            } catch {
+              currentToolName = evt.data;
+            }
+            break;
+          case 'tool_result':
+            toolCalls.push({ name: currentToolName || 'tool', result: evt.data });
+            updateLastMessage();
             break;
           case 'trip_plan':
             tripPlan = evt.data;
@@ -162,9 +194,20 @@ export default function Chat() {
                   )
                 );
               }
+              // 保存后端返回的原始文本，供兜底提取 TripPlan JSON
+              if (doneData.raw_text) {
+                rawTextForExtraction = String(doneData.raw_text);
+              }
               // 用清洗后的展示文本（已去除 TripPlan JSON 代码块和中间推理步骤）替换累积内容
               if (doneData.text != null && doneData.text !== '') {
                 assistantContent = String(doneData.text);
+              }
+              // 兜底：若后端未推送 trip_plan 事件，从原始文本中提取
+              if (!tripPlan && rawTextForExtraction) {
+                const extracted = extractTripPlanFromText(rawTextForExtraction);
+                if (extracted) {
+                  tripPlan = extracted;
+                }
               }
               updateLastMessage();
             } catch { /* ignore */ }
@@ -182,6 +225,18 @@ export default function Chat() {
       // 最终落地：若后端未推送 trip_plan，从消息内容中提取
       finalizeTripPlan();
     }
+  };
+
+  const toolNameMap: Record<string, string> = {
+    find_spots_tool: '🔍 景点搜索',
+    plan_route_tool: '🗺️ 路线规划',
+    check_weather_tool: '🌤️ 天气查询',
+    estimate_budget_tool: '💰 预算估算',
+    find_spots_agent: '🔍 景点搜索 Agent',
+    plan_route_agent: '🗺️ 路线规划 Agent',
+    check_weather_agent: '🌤️ 天气查询 Agent',
+    estimate_budget_agent: '💰 预算估算 Agent',
+    get_current_time_tool: '🕐 获取当前时间',
   };
 
   const [savingTrip, setSavingTrip] = useState(false);
@@ -385,6 +440,32 @@ export default function Chat() {
                       {msg.role === 'user' ? <UserOutlined /> : <RobotOutlined />}
                     </div>
                     <div style={{ minWidth: 0 }}>
+                      {/* 思考过程 */}
+                      {msg.thinking && (
+                        <Collapse
+                          size="small"
+                          style={{ marginBottom: 8 }}
+                          items={[{
+                            key: 'thinking',
+                            label: <span><BulbOutlined /> Agent 思考过程</span>,
+                            children: <div style={{ fontSize: 13, color: '#888', whiteSpace: 'pre-wrap' }}>{msg.thinking}</div>,
+                          }]}
+                        />
+                      )}
+
+                      {/* 工具调用 */}
+                      {msg.toolCalls && msg.toolCalls.length > 0 && (
+                        <Collapse
+                          size="small"
+                          style={{ marginBottom: 8 }}
+                          items={msg.toolCalls.map((tc, j) => ({
+                            key: j,
+                            label: toolNameMap[tc.name] || `🔧 ${tc.name}`,
+                            children: <pre style={{ fontSize: 12, maxHeight: 200, overflow: 'auto', margin: 0, whiteSpace: 'pre-wrap' }}>{tc.result}</pre>,
+                          }))}
+                        />
+                      )}
+
                       {/* 消息内容 */}
                       {msg.role === 'user' ? (
                         <div style={{
