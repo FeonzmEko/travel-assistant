@@ -172,7 +172,6 @@ async def send_message(
     async def event_generator() -> AsyncGenerator[dict[str, str], None]:
         full_response = ""
         clean_text = ""
-        raw_text = ""  # 原始未清洗文本，供前端兜底提取 TripPlan JSON
         try:
             async for event in run_planner_stream(msg.content, history=history[:-1]):
                 event_type = str(event.get("type", ""))
@@ -181,18 +180,6 @@ async def send_message(
                 if event_type == "token":
                     full_response += str(event_data)
                     yield {"event": "token", "data": str(event_data)}
-                elif event_type == "thinking":
-                    yield {"event": "thinking", "data": str(event_data)}
-                elif event_type == "tool_call":
-                    yield {
-                        "event": "tool_call",
-                        "data": json.dumps(event_data, ensure_ascii=False),
-                    }
-                elif event_type == "tool_result":
-                    yield {
-                        "event": "tool_result",
-                        "data": json.dumps(event_data, ensure_ascii=False),
-                    }
                 elif event_type == "trip_plan":
                     yield {
                         "event": "trip_plan",
@@ -204,8 +191,6 @@ async def send_message(
                         # 使用 planner 清洗后的展示文本（已去除 TripPlan JSON 代码块）
                         clean_text = str(done_data.get("text", full_response))
                         full_response = clean_text
-                        # 保留原始文本供前端兜底
-                        raw_text = str(done_data.get("raw_text", ""))
                 elif event_type == "error":
                     yield {"event": "error", "data": str(event_data)}
 
@@ -223,9 +208,6 @@ async def send_message(
             # 将清洗后的展示文本转发给前端，用于替换流式累积的原始内容
             if clean_text:
                 done_payload["text"] = clean_text
-            # 原始文本供前端兜底提取 TripPlan JSON
-            if raw_text:
-                done_payload["raw_text"] = raw_text
             if session.title == "新对话":
                 new_title = await _generate_title(msg.content)
                 if new_title:
