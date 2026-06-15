@@ -26,7 +26,7 @@ export function getHistory(sessionId: string) {
 }
 
 export interface SSEEvent {
-  event: 'token' | 'trip_plan' | 'done' | 'error';
+  event: 'thinking' | 'token' | 'tool_call' | 'tool_result' | 'trip_plan' | 'done' | 'error';
   data: string;
 }
 
