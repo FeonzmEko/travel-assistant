@@ -2,6 +2,21 @@
 
 基于 LangChain 多 Agent 协作的智能旅游规划服务，支持 AI 对话式行程规划、景点搜索、路线规划、天气查询和预算估算。
 
+## 📸 效果预览
+
+### 前端样式
+
+<p>
+  <img src="./images/Snipaste_2026-06-15_16-49-12.png" alt="智能对话页面" width="49%" />
+  <img src="./images/Snipaste_2026-06-15_16-49-24.png" alt="行程详情页面" width="49%" />
+</p>
+
+### PDF 样式
+
+<p>
+  <img src="./images/Snipaste_2026-06-15_16-50-25.png" alt="PDF 导出样式" width="60%" />
+</p>
+
 ## ✨ 功能特性
 
 - **🤖 AI 对话式行程规划** — 通过自然语言对话，AI 自动为你生成完整的旅游行程
