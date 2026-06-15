@@ -9,6 +9,7 @@
 - **🗺️ 路线规划** — 智能规划出行路线，合理安排交通方式
 - **🌤️ 天气查询** — 实时查询目的地天气，辅助行程决策
 - **💰 预算估算** — 自动估算行程各项费用，支持预算明细
+- **📚 旅游知识库** — 基于 Milvus + 阿里 embedding 检索租车价格、小众路线等本地经验
 - **📄 行程导出** — 支持将行程导出为 PDF 文件
 - **👤 用户系统** — JWT 认证，支持注册、登录和个人中心
 
@@ -46,6 +47,8 @@ travel-assistant/
 | **AI 框架** | LangChain 0.3+ |
 | **LLM** | DeepSeek API |
 | **数据库** | SQLite (aiosqlite) |
+| **向量库** | Milvus standalone (Docker) |
+| **Embedding** | 阿里 DashScope text embedding |
 | **ORM** | SQLAlchemy 2.0 (异步) |
 | **前端框架** | React 19 + TypeScript |
 | **构建工具** | Vite 8 |
@@ -86,6 +89,15 @@ AMAP_API_KEY=your-amap-api-key
 # 天气 API
 WEATHER_API_KEY=your-weather-api-key
 
+# 阿里 DashScope Embedding
+DASHSCOPE_API_KEY=your-dashscope-api-key
+DASHSCOPE_EMBEDDING_MODEL=text-embedding-v4
+EMBEDDING_DIMENSION=1024
+
+# Milvus
+MILVUS_URI=http://localhost:19530
+MILVUS_COLLECTION_NAME=travel_knowledge
+
 # JWT
 JWT_SECRET_KEY=your-secret-key-change-in-production
 JWT_EXPIRE_MINUTES=1440
@@ -94,7 +106,23 @@ JWT_EXPIRE_MINUTES=1440
 DATABASE_URL=sqlite+aiosqlite:///./travel_assistant.db
 ```
 
-### 3. 启动后端
+### 3. Windows 一键启动
+
+```bat
+start.bat
+```
+
+脚本会启动 Milvus，并分别打开后端和前端开发服务窗口。
+
+### 4. 手动启动 Milvus 知识库
+
+```bash
+docker compose -f docker-compose.milvus.yml up -d
+```
+
+Milvus 启动后，可调用 `POST /api/knowledge/seed` 将内置旅游知识写入向量库。
+
+### 5. 启动后端
 
 ```bash
 # 安装依赖
@@ -104,7 +132,7 @@ uv sync
 uv run uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 4. 启动前端
+### 6. 启动前端
 
 ```bash
 cd frontend
@@ -121,7 +149,7 @@ npm run dev
 
 前端开发服务器已配置 API 代理，`/api` 请求会自动转发到后端 `http://localhost:8000`。
 
-### 5. 访问应用
+### 7. 访问应用
 
 打开浏览器访问 [http://localhost:5173](http://localhost:5173)
 
@@ -143,6 +171,8 @@ uv run pytest --cov=backend --cov-report=html
 | POST | `/api/auth/login` | 用户登录 |
 | GET | `/api/user/profile` | 获取个人信息 |
 | GET | `/api/spots/search` | 搜索景点 |
+| POST | `/api/knowledge/seed` | 初始化旅游知识库 |
+| POST | `/api/knowledge/query` | 查询旅游知识库 |
 | POST | `/api/chat` | AI 对话（SSE 流式响应） |
 | GET | `/api/trips` | 行程列表 |
 | POST | `/api/trips` | 创建行程 |

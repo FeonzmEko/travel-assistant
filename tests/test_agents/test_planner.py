@@ -10,10 +10,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from backend.agents.planner import (
     TOOLS,
+    clean_display_text,
     create_planner_agent,
     extract_trip_plan,
     plan_trip,
     run_planner_stream,
+    search_travel_knowledge_tool,
 )
 
 SAMPLE_TRIP_JSON = {
@@ -81,12 +83,79 @@ class TestExtractTripPlan:
         assert plan["budget_total"] == 3000
 
 
+# =================== clean_display_text 测试 ===================
+
+
+class TestCleanDisplayText:
+    def test_strips_react_and_tool_artifacts(self) -> None:
+        text = (
+            "Thought: 我需要调用工具\n"
+            "Action: find_spots_agent\n"
+            'Action Input: {"city": "成都"}\n'
+            'Observation: [{"name": "都江堰"}]\n'
+            "Final Answer: 成都七天自驾游可以这样安排：\n\n"
+            "第一天：抵达成都，宽窄巷子。"
+        )
+
+        cleaned = clean_display_text(text)
+
+        assert "Thought" not in cleaned
+        assert "Action" not in cleaned
+        assert "Observation" not in cleaned
+        assert "成都七天自驾游" in cleaned
+
+    def test_strips_chinese_markers_and_think_block(self) -> None:
+        text = (
+            "<think>先分析用户需求，再调用路线工具</think>\n"
+            "思考：需要查询景点\n"
+            "工具调用：plan_route_agent\n"
+            "工具结果：路线 JSON\n"
+            "最终答案：建议第 1 天游览成都市区。"
+        )
+
+        cleaned = clean_display_text(text)
+
+        assert "think" not in cleaned
+        assert "工具调用" not in cleaned
+        assert "工具结果" not in cleaned
+        assert cleaned == "建议第 1 天游览成都市区。"
+
+    def test_strips_langchain_message_repr(self) -> None:
+        text = (
+            "AIMessage(content='', additional_kwargs={'tool_calls': []})\n"
+            "ToolMessage(content='内部工具结果')\n"
+            "Final Answer: 这是最终行程。"
+        )
+
+        cleaned = clean_display_text(text)
+
+        assert "AIMessage" not in cleaned
+        assert "ToolMessage" not in cleaned
+        assert cleaned == "这是最终行程。"
+
+    def test_strips_tool_dump_before_final_plan_heading(self) -> None:
+        text = (
+            '"forecasts": [{"date": "2026-06-19", "dayweather": "多云"}]\n'
+            "查询weather 数据库没有找到结果，高德地图API返回了较多结果。\n"
+            '"route_plan": {"total_distance": 401.7, "duration_sec": 19320}\n\n'
+            "🏔️ 西藏7日自然风光深度游 · 行程方案\n"
+            "D1：抵达拉萨，适应高原。"
+        )
+
+        cleaned = clean_display_text(text)
+
+        assert "forecasts" not in cleaned
+        assert "高德地图API" not in cleaned
+        assert "route_plan" not in cleaned
+        assert cleaned.startswith("🏔️ 西藏7日自然风光深度游 · 行程方案")
+
+
 # =================== Tool 注册测试 ===================
 
 
 class TestToolRegistration:
     def test_tools_count(self) -> None:
-        assert len(TOOLS) == 5
+        assert len(TOOLS) == 6
 
     def test_tool_names(self) -> None:
         names = {t.name for t in TOOLS}
@@ -96,7 +165,27 @@ class TestToolRegistration:
             "plan_route_agent",
             "check_weather_agent",
             "estimate_budget_agent",
+            "search_travel_knowledge_tool",
         }
+
+    @patch("backend.services.knowledge_base.search_travel_knowledge", new_callable=AsyncMock)
+    async def test_knowledge_tool_returns_json(self, mock_search: AsyncMock) -> None:
+        mock_search.return_value = [
+            {"content": "三亚经济型轿车淡季日租通常在 120-180 元"}
+        ]
+
+        result = await search_travel_knowledge_tool.ainvoke(
+            {"query": "三亚租车价格", "city": "三亚", "category": "租车价格"}
+        )
+
+        data = json.loads(result)
+        assert data[0]["content"].startswith("三亚经济型轿车")
+        mock_search.assert_awaited_once_with(
+            query="三亚租车价格",
+            top_k=5,
+            category="租车价格",
+            city="三亚",
+        )
 
 
 # =================== Agent 构建测试 ===================
@@ -231,8 +320,8 @@ class TestRunPlannerStream:
             events.append(evt)
 
         types = [e["type"] for e in events]
-        assert "tool_call" in types
-        assert "tool_result" in types
+        assert "tool_call" not in types
+        assert "tool_result" not in types
         assert "token" in types  # 最终回复轮次清洗后应生成 token 事件
         assert "trip_plan" in types
         assert types[-1] == "done"
@@ -243,6 +332,71 @@ class TestRunPlannerStream:
         # token 事件中不应包含工具调用轮次的文本
         token_event = next(e for e in events if e["type"] == "token")
         assert "让我搜索" not in token_event["data"]
+
+        done_event = events[-1]
+        assert "raw_text" not in done_event["data"]
+        assert "让我搜索" not in done_event["data"]["text"]
+
+    @patch("backend.agents.planner.create_planner_agent")
+    async def test_stream_suppresses_nested_agent_model_output(
+        self, mock_create: MagicMock
+    ) -> None:
+        from langchain_core.messages import AIMessageChunk
+
+        async def fake_astream_events(inp, *, config=None, version=None):  # type: ignore[no-untyped-def]
+            reasoning_chunk = AIMessageChunk(content="我先调用路线工具")
+            reasoning_chunk.tool_call_chunks = [
+                {
+                    "name": "plan_route_agent",
+                    "args": "{}",
+                    "id": "call_1",
+                    "index": 0,
+                    "type": "tool_call_chunk",
+                }
+            ]
+            yield {"event": "on_chat_model_start", "data": {}, "name": "ChatOpenAI"}
+            yield {"event": "on_chat_model_stream", "data": {"chunk": reasoning_chunk}}
+            yield {"event": "on_chat_model_end", "data": {}, "name": "ChatOpenAI"}
+
+            yield {"event": "on_tool_start", "name": "plan_route_agent", "data": {}}
+            yield {"event": "on_chat_model_start", "data": {}, "name": "ChatOpenAI"}
+            yield {
+                "event": "on_chat_model_stream",
+                "data": {
+                    "chunk": AIMessageChunk(
+                        content='高德地图API返回结果 {"total_distance": 401.7}'
+                    )
+                },
+            }
+            yield {"event": "on_chat_model_end", "data": {}, "name": "ChatOpenAI"}
+            yield {
+                "event": "on_tool_end",
+                "name": "plan_route_agent",
+                "data": {"output": '{"total_distance": 401.7}'},
+            }
+
+            yield {"event": "on_chat_model_start", "data": {}, "name": "ChatOpenAI"}
+            yield {
+                "event": "on_chat_model_stream",
+                "data": {"chunk": AIMessageChunk(content="最终方案：建议第一天抵达拉萨。")},
+            }
+            yield {"event": "on_chat_model_end", "data": {}, "name": "ChatOpenAI"}
+
+        mock_agent = MagicMock()
+        mock_agent.astream_events = fake_astream_events
+        mock_create.return_value = mock_agent
+
+        events = []
+        async for evt in run_planner_stream("去西藏"):
+            events.append(evt)
+
+        visible_text = "\n".join(
+            str(e.get("data")) for e in events if e["type"] in {"token", "done"}
+        )
+        assert "高德地图API" not in visible_text
+        assert "total_distance" not in visible_text
+        assert "我先调用路线工具" not in visible_text
+        assert "最终方案" in visible_text
 
     @patch("backend.agents.planner.create_planner_agent")
     async def test_stream_no_plan(self, mock_create: MagicMock) -> None:

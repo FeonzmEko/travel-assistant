@@ -218,11 +218,12 @@ class TestSSEMessage:
         assert "event: done" in body
 
     @patch("backend.api.chat.run_planner_stream")
-    async def test_sse_tool_events(
+    async def test_sse_hides_internal_events(
         self, mock_stream: AsyncMock, client: AsyncClient
     ) -> None:
         mock_stream.side_effect = _make_fake_stream(
             [
+                {"type": "thinking", "data": "我需要先搜索景点"},
                 {"type": "tool_call", "data": {"tool": "find_spots_tool"}},
                 {"type": "tool_result", "data": {"output": '[{"name":"故宫"}]'}},
                 {"type": "token", "data": "查到了"},
@@ -240,8 +241,14 @@ class TestSSEMessage:
             headers=_auth(token),
         )
         body = resp.text
-        assert "event: tool_call" in body
-        assert "event: tool_result" in body
+        assert "event: thinking" not in body
+        assert "event: tool_call" not in body
+        assert "event: tool_result" not in body
+        assert "我需要先搜索景点" not in body
+        assert "find_spots_tool" not in body
+        assert '[{"name":"故宫"}]' not in body
+        assert "event: token" in body
+        assert "查到了" in body
 
     @patch("backend.api.chat.run_planner_stream")
     async def test_sse_trip_plan_event(

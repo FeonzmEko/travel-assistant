@@ -1,0 +1,82 @@
+[
+  {
+    "id": "car-rental-sanya-compact",
+    "category": "租车价格",
+    "city": "三亚",
+    "tags": ["租车", "自驾", "预算"],
+    "source": "seed",
+    "content": "三亚经济型轿车淡季日租通常在 120-180 元，旺季可能到 220-350 元；机场/高铁站取还车更方便但价格略高。建议提前确认是否包含基础保险、异地还车费和夜间服务费。"
+  },
+  {
+    "id": "car-rental-dali-suv",
+    "category": "租车价格",
+    "city": "大理",
+    "tags": ["租车", "洱海", "SUV"],
+    "source": "seed",
+    "content": "大理环洱海自驾常用紧凑型 SUV，日租约 180-300 元；节假日需提前 3-7 天预订。环海西路村镇路段较窄，停车点分散，建议预留停车和拍照时间。"
+  },
+  {
+    "id": "car-rental-chengdu-west-sichuan",
+    "category": "租车价格",
+    "city": "成都",
+    "tags": ["租车", "川西", "自驾"],
+    "source": "seed",
+    "content": "成都出发川西小环线若租 SUV，常见日租约 260-450 元，四驱车型更高；还需考虑油费、过路费、异地救援和高原路况风险。新手不建议夜间翻越山口。"
+  },
+  {
+    "id": "niche-route-hangzhou-tea-village",
+    "category": "小众路线",
+    "city": "杭州",
+    "tags": ["徒步", "茶园", "小众"],
+    "source": "seed",
+    "content": "杭州小众半日路线可选择九溪烟树-龙井村-满觉陇，适合喜欢茶园、溪流和轻徒步的游客。雨后石阶湿滑，建议穿防滑鞋，避开周末下午车流高峰。"
+  },
+  {
+    "id": "niche-route-beijing-west-hills",
+    "category": "小众路线",
+    "city": "北京",
+    "tags": ["徒步", "古道", "周末"],
+    "source": "seed",
+    "content": "北京周末小众路线可走模式口-法海寺-八大处外围，兼顾古道、壁画和低强度徒步。法海寺壁画需预约，路线午后暴晒，夏季建议上午出发。"
+  },
+  {
+    "id": "niche-route-xiamen-coast",
+    "category": "小众路线",
+    "city": "厦门",
+    "tags": ["海岸线", "骑行", "摄影"],
+    "source": "seed",
+    "content": "厦门避开人流可选黄厝海滩-玩月坡-音乐广场清晨骑行线，比鼓浪屿更适合看日出和拍海岸。共享单车部分路段禁停，建议提前确认停车点。"
+  },
+  {
+    "id": "local-tip-chongqing-night-transport",
+    "category": "旅行贴士",
+    "city": "重庆",
+    "tags": ["交通", "夜景", "避坑"],
+    "source": "seed",
+    "content": "重庆夜景行程不要把洪崖洞、千厮门大桥、解放碑安排得过于紧凑，晚高峰步行反而更稳。打车定位建议选主路口，避免车辆进入拥堵支路。"
+  },
+  {
+    "id": "budget-guilin-rural-route",
+    "category": "预算参考",
+    "city": "桂林",
+    "tags": ["阳朔", "乡村", "预算"],
+    "source": "seed",
+    "content": "桂林阳朔乡村路线可将十里画廊、旧县村、遇龙河骑行组合为一天。自行车/电动车租赁约 30-80 元/天，竹筏需单独购票且受水位影响。"
+  },
+  {
+    "id": "niche-route-suzhou-canals",
+    "category": "小众路线",
+    "city": "苏州",
+    "tags": ["古城", "运河", "Citywalk"],
+    "source": "seed",
+    "content": "苏州古城小众 Citywalk 可从平江路支巷转向钮家巷、肖家巷，再到耦园周边，比主街更安静。石板路多，雨天建议减少拖箱步行。"
+  },
+  {
+    "id": "car-rental-qinghai-lake",
+    "category": "租车价格",
+    "city": "西宁",
+    "tags": ["租车", "青海湖", "高原"],
+    "source": "seed",
+    "content": "西宁出发青海湖小环线租车，经济型轿车约 180-300 元/天，SUV 约 300-550 元/天。高原紫外线强、补给点间隔较远，建议携带饮水和防晒用品。"
+  }
+]
