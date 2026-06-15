@@ -425,7 +425,12 @@ export default function Chat() {
                               </div>
                             )
                           ) : (
-                            streaming && i === messages.length - 1 ? <Spin size="small" /> : null
+                            streaming && i === messages.length - 1 ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#9B8E85' }}>
+                                <Spin size="small" />
+                                <Text type="secondary">正在整合景点、天气、路线和预算，完整规划可能需要几分钟，请稍候...</Text>
+                              </div>
+                            ) : null
                           )}
                         </div>
                       )}
