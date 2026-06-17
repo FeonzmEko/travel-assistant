@@ -148,6 +148,39 @@ class TestSpotSearch:
         data2 = resp2.json()
         assert data2["total"] == 0
 
+    @patch("backend.api.spots.amap_poi_search", new_callable=AsyncMock)
+    async def test_curated_fallback_when_amap_empty(
+        self, mock_amap: AsyncMock, client: AsyncClient
+    ) -> None:
+        mock_amap.return_value = []
+
+        resp = await client.get(
+            "/api/spots/search", params={"keyword": "西湖", "city": "杭州"}
+        )
+
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["total"] >= 1
+        names = [item["name"] for item in data["items"]]
+        assert any("西湖" in name for name in names)
+        first = data["items"][0]
+        assert first["source"] == "curated"
+        assert first["image_url"]
+        assert isinstance(first["images_list"], list)
+        assert first["images_list"]
+
+    @patch("backend.api.spots.amap_poi_search", new_callable=AsyncMock)
+    async def test_curated_fallback_city_only_skips_amap(
+        self, mock_amap: AsyncMock, client: AsyncClient
+    ) -> None:
+        resp = await client.get("/api/spots/search", params={"city": "北京"})
+
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["total"] >= 1
+        assert all("北京" in item["city"] for item in data["items"])
+        mock_amap.assert_not_called()
+
 
 class TestSpotDetail:
     """GET /api/spots/{id}"""

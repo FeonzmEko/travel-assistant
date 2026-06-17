@@ -31,6 +31,8 @@ async def init_db() -> None:
             for statement in (
                 "ALTER TABLE trip_activities ADD COLUMN longitude FLOAT",
                 "ALTER TABLE trip_activities ADD COLUMN latitude FLOAT",
+                "ALTER TABLE spot_cache ADD COLUMN address VARCHAR(300)",
+                "ALTER TABLE spot_cache ADD COLUMN tel VARCHAR(100)",
             ):
                 try:
                     await conn.execute(text(statement))
