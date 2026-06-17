@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Typography, Spin, Button, Descriptions, Tag, Rate, Empty, Card, message } from 'antd';
 import { ArrowLeftOutlined, EnvironmentOutlined, PhoneOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { getSpot, type Spot } from '@/api/spots';
@@ -11,6 +11,7 @@ const { Title, Paragraph } = Typography;
 export default function SpotDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [spot, setSpot] = useState<Spot | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -45,7 +46,7 @@ export default function SpotDetail() {
       {contextHolder}
       <Button
         icon={<ArrowLeftOutlined />}
-        onClick={() => navigate('/spots')}
+        onClick={() => (location.key !== 'default' ? navigate(-1) : navigate('/spots'))}
         style={{ marginBottom: 16 }}
       >
         返回搜索
