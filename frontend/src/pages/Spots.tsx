@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Form, Input, Select, Button, Card, Row, Col, Pagination, Rate, Empty, Spin, message } from 'antd';
+import { Form, Input, Select, Button, Card, Row, Col, Pagination, Rate, Tag, Empty, Spin, message } from 'antd';
 import { SearchOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { searchSpots, type Spot } from '@/api/spots';
 import AMapView, { type MapSpot } from '@/components/AMapView';
+import SpotImage from '@/components/SpotImage';
 
 const { Meta } = Card;
 
@@ -58,7 +59,7 @@ export default function Spots() {
       form.setFieldsValue({ keyword: urlKeyword, city: urlCity, type: urlType || undefined });
       doSearch({ keyword: urlKeyword, city: urlCity, type: urlType || undefined }, urlPage);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div style={{ padding: 24 }}>
@@ -112,21 +113,53 @@ export default function Spots() {
                   <Card
                     hoverable
                     cover={
-                      spot.image_url
-                        ? <img alt={spot.name} src={spot.image_url} style={{ height: 180, objectFit: 'cover' }} />
-                        : <div style={{ height: 180, background: '#FDF0E8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <EnvironmentOutlined style={{ fontSize: 40, color: '#D4744C', opacity: 0.4 }} />
-                          </div>
+                      <div style={{ position: 'relative' }}>
+                        <SpotImage
+                          src={spot.image_url}
+                          seed={String(spot.id)}
+                          name={spot.name}
+                          style={{ height: 180 }}
+                        />
+                        {spot.type && (
+                          <Tag
+                            color="volcano"
+                            style={{ position: 'absolute', top: 8, left: 8, margin: 0 }}
+                          >
+                            {spot.type.split(';')[0]}
+                          </Tag>
+                        )}
+                      </div>
                     }
                     onClick={() => navigate(`/spots/${spot.id}`)}
                   >
                     <Meta
                       title={spot.name}
                       description={
-                        <>
-                          {spot.city && <div><EnvironmentOutlined /> {spot.city}</div>}
-                          {spot.rating != null && <Rate disabled defaultValue={spot.rating} allowHalf style={{ fontSize: 14 }} />}
-                        </>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {(spot.city || spot.address) && (
+                            <span
+                              style={{ color: '#8c8c8c', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                              title={spot.address || spot.city}
+                            >
+                              <EnvironmentOutlined /> {spot.city}{spot.address ? ` · ${spot.address}` : ''}
+                            </span>
+                          )}
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            {spot.rating != null ? (
+                              <span>
+                                <Rate disabled defaultValue={spot.rating} allowHalf style={{ fontSize: 12 }} />
+                                <span style={{ marginLeft: 6, color: '#fa8c16' }}>{spot.rating}</span>
+                              </span>
+                            ) : (
+                              <span />
+                            )}
+                            {spot.ticket_price != null && (
+                              <span style={{ color: '#C25430', fontWeight: 600 }}>
+                                {spot.ticket_price > 0 ? `¥${spot.ticket_price}` : '免费'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       }
                     />
                   </Card>

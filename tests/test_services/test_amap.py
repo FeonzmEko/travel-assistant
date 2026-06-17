@@ -38,6 +38,77 @@ async def test_poi_search_success() -> None:
 
 
 @respx.mock
+async def test_poi_search_extracts_photos_and_rating() -> None:
+    respx.get("https://restapi.amap.com/v3/place/text").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "status": "1",
+                "count": "1",
+                "pois": [
+                    {
+                        "id": "B1",
+                        "name": "西湖",
+                        "type": "风景名胜",
+                        "location": "120.149780,30.247478",
+                        "cityname": "杭州市",
+                        "address": "西湖区",
+                        "tel": "0571-12345678",
+                        "photos": [
+                            {"title": "", "url": "http://img.example/1.jpg"},
+                            {"url": "http://img.example/2.jpg"},
+                            {"title": "no-url"},
+                        ],
+                        "biz_ext": {"rating": "4.7", "cost": "80"},
+                    }
+                ],
+            },
+        )
+    )
+
+    async with httpx.AsyncClient() as client:
+        spots = await amap_poi_search("西湖", "杭州", client=client)
+
+    assert spots[0].images == [
+        "http://img.example/1.jpg",
+        "http://img.example/2.jpg",
+    ]
+    assert spots[0].rating == pytest.approx(4.7)
+    assert spots[0].ticket_price == pytest.approx(80)
+
+
+@respx.mock
+async def test_poi_search_handles_empty_biz_ext() -> None:
+    respx.get("https://restapi.amap.com/v3/place/text").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "status": "1",
+                "count": "1",
+                "pois": [
+                    {
+                        "id": "B2",
+                        "name": "某地",
+                        "type": "风景名胜",
+                        "location": "120.0,30.0",
+                        "cityname": "杭州市",
+                        "biz_ext": [],
+                        "photos": [],
+                    }
+                ],
+            },
+        )
+    )
+
+    async with httpx.AsyncClient() as client:
+        spots = await amap_poi_search("某地", "杭州", client=client)
+
+    assert spots[0].rating is None
+    assert spots[0].ticket_price is None
+    assert spots[0].images == []
+
+
+@respx.mock
 async def test_poi_search_api_error() -> None:
     respx.get("https://restapi.amap.com/v3/place/text").mock(
         return_value=httpx.Response(
