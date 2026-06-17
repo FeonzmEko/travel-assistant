@@ -74,8 +74,6 @@ PLANNER_SYSTEM_PROMPT = """\
 ## 输出行程方案时的要求
 - 用自然语言详细描述行程方案，包括每日安排、交通建议、美食推荐、注意事项
 - 不要在回复中输出任何 JSON 代码。JSON 数据由系统自动生成，用户看不到也不需要看到
-- 严禁展示内部思考、工具调用名称、工具返回原文、接口字段、经纬度原始对象、路线分段 JSON 或数据库查询过程
-- 工具和子 Agent 的结果只能被你消化后总结成用户能直接使用的自然语言结论
 - 在回复的最末尾，单独附上 TripPlan JSON，用 ```json 代码块包裹（系统会自动提取并隐藏这部分）
 
 ## TripPlan JSON 格式（放在回复最末尾，系统自动提取）
@@ -343,95 +341,37 @@ def create_planner_agent() -> Runnable[Any, Any]:
 
 def normalize_cjk_spacing(text: str) -> str:
     """移除中文字符之间的异常空格，修复"布 达 拉 宫"→"布达拉宫"。 """
-    cjk_punctuation = r"，。！？、；：\"'（）【】《》"
     # CJK 字符之间的空格
     text = re.sub(r'(?<=[一-鿿])\s+(?=[一-鿿])', '', text)
     # CJK 字符与中文标点之间的空格
-    text = re.sub(rf"(?<=[一-鿿])\s+(?=[{cjk_punctuation}])", "", text)
-    text = re.sub(rf"(?<=[{cjk_punctuation}])\s+(?=[一-鿿])", "", text)
+    text = re.sub(r'(?<=[一-鿿])\s+(?=[，。！？、；：""''（）【】《》])', '', text)
+    text = re.sub(r'(?<=[，。！？、；：""''（）【】《》])\s+(?=[一-鿿])', '', text)
     # 中文标点之间的空格
-    text = re.sub(
-        rf"(?<=[{cjk_punctuation}])\s+(?=[{cjk_punctuation}])", "", text
-    )
+    text = re.sub(r'(?<=[，。！？、；：""''（）【】《》])\s+(?=[，。！？、；：""''（）【】《》])', '', text)
     return text
 
 
 def _strip_react_artifacts(text: str) -> str:
     """移除 ReAct 推理过程中残留的 Thought / Action / Observation 等内部标记。"""
-    # 移除模型显式输出的隐藏思考块。
-    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE)
-    text = re.sub(r"<think>.*$", "", text, flags=re.DOTALL | re.IGNORECASE)
-
-    # 如果存在 Final Answer / 最终答案 标记，只保留其后的内容。
-    fa_match = re.search(r"(?:Final Answer|最终答案|最终回答)\s*[：:]\s*", text)
+    # 如果存在 Final Answer 标记，只保留其后的内容
+    fa_match = re.search(r'Final Answer:\s*', text)
     if fa_match:
         text = text[fa_match.end():]
 
-    marker = (
-        r"Thought|思考|Action Input|行动输入|工具输入|Action|行动|"
-        r"Tool Call|Tool Result|工具调用|工具结果|Observation|观察|"
-        r"Final Answer|最终答案|最终回答"
-    )
-    hidden_marker = (
-        r"Thought|思考|Action Input|行动输入|工具输入|Action|行动|"
-        r"Tool Call|Tool Result|工具调用|工具结果|Observation|观察"
-    )
-    text = re.sub(
-        rf"\n*(?:{hidden_marker})\s*[：:].*?(?=\n*(?:{marker})\s*[：:]|$)",
-        "",
-        text,
-        flags=re.DOTALL | re.IGNORECASE,
-    )
-
-    # 移除 LangChain 消息对象或工具调用对象被字符串化后的残留。
-    text = re.sub(
-        r"\n*(?:AIMessage|ToolMessage|HumanMessage|SystemMessage)"
-        r"\(.*?(?:tool_calls|additional_kwargs|response_metadata|content=).*?\)\s*",
-        "",
-        text,
-        flags=re.DOTALL,
-    )
-    text = re.sub(
-        r"\n*(?:tool_calls|tool_call_chunks|additional_kwargs|response_metadata)="
-        r".*?(?=\n\S|$)",
-        "",
-        text,
-        flags=re.DOTALL,
-    )
+    # 移除 Thought: ... 行（含多行模式直到下一个标记）
+    text = re.sub(r'\n*Thought:\s*.*?(?=\n*(?:Action|Final Answer|Observation|$))', '', text, flags=re.DOTALL)
+    # 移除 Action: xxx 行
+    text = re.sub(r'\n*Action:\s*\w+.*?(?=\n|$)', '', text)
+    # 移除 Action Input: {...} 块
+    text = re.sub(r'\n*Action Input:\s*\{.*?\}', '', text, flags=re.DOTALL)
+    # 移除 Observation: {...} 块
+    text = re.sub(r'\n*Observation:\s*.*?(?=\n*(?:Thought|Action|Final Answer|$))', '', text, flags=re.DOTALL)
 
     # 移除残留的 ```json / ``` 围栏标记（不含内容，内容已被 strip_trip_plan_json 处理）
     text = re.sub(r'```json\s*', '', text)
     text = re.sub(r'```\s*', '', text)
 
     return text.strip()
-
-
-def _strip_tool_dump_preamble(text: str) -> str:
-    """丢弃最终回答前被模型误拼进去的工具原始输出。"""
-    heading_pattern = re.compile(
-        r"(?m)^[^\n]{0,48}(?:行程方案|旅行方案|行程概览|每日详细安排|游览路线总结)[^\n]{0,48}$"
-    )
-    for match in heading_pattern.finditer(text):
-        prefix = text[: match.start()]
-        json_field_count = len(re.findall(r'"[^"\n]{1,40}"\s*:', prefix))
-        tool_noise_count = sum(
-            marker in prefix
-            for marker in (
-                "高德地图API",
-                "数据库",
-                "查询weather",
-                "raw_response",
-                "route_plan",
-                "forecasts",
-                "total_distance",
-                "duration_sec",
-                "longitude",
-                "latitude",
-            )
-        )
-        if len(prefix) > 80 and (json_field_count >= 6 or tool_noise_count >= 2):
-            return text[match.start():].lstrip()
-    return text
 
 
 def clean_display_text(text: str) -> str:
@@ -452,13 +392,10 @@ def clean_display_text(text: str) -> str:
     # 3. 移除 ReAct 内部标记
     cleaned = _strip_react_artifacts(cleaned)
 
-    # 4. 如果模型把工具原始输出拼在最终方案前面，只保留方案正文
-    cleaned = _strip_tool_dump_preamble(cleaned)
-
-    # 5. 修复中文空格
+    # 4. 修复中文空格
     cleaned = normalize_cjk_spacing(cleaned)
 
-    # 6. 压缩多余空行
+    # 5. 压缩多余空行
     cleaned = re.sub(r'\n{3,}', '\n\n', cleaned).strip()
 
     return cleaned
@@ -579,7 +516,7 @@ async def plan_trip(
 
     output = agent_messages[-1].content
     trip_plan = extract_trip_plan(output)
-    return {"text": clean_display_text(output), "trip_plan": trip_plan}
+    return {"text": output, "trip_plan": trip_plan}
 
 
 async def run_planner_stream(
@@ -588,18 +525,17 @@ async def run_planner_stream(
 ) -> AsyncGenerator[dict[str, Any], None]:
     """流式规划旅行方案，逐步产出 SSE 事件。
 
-    事件类型: token, trip_plan, done, error
+    事件类型: token, tool_call, tool_result, trip_plan, done, error
 
     核心改进：按 LLM turn 缓冲，过滤 ReAct 推理轮次，只将最终回复轮次的
     人类可读内容以 token 事件推送。彻底杜绝 JSON 原始数据、内部推理步骤、
     多 Agent 输出穿插等问题。
     """
     agent = create_planner_agent()
-    visible_raw_text = ""
+    full_text = ""
     turn_buffer = ""
     # 当前 LLM 轮次是否包含 tool_call（通过 AIMessageChunk.tool_call_chunks 检测）
     turn_has_tool_calls = False
-    tool_depth = 0
 
     messages: list[dict[str, str]] = []
     if history:
@@ -614,17 +550,6 @@ async def run_planner_stream(
         ):
             kind = event.get("event", "")
 
-            if kind == "on_tool_start":
-                tool_depth += 1
-                continue
-
-            if kind == "on_tool_end":
-                tool_depth = max(0, tool_depth - 1)
-                continue
-
-            if tool_depth > 0:
-                continue
-
             if kind == "on_chat_model_start":
                 turn_buffer = ""
                 turn_has_tool_calls = False
@@ -636,35 +561,43 @@ async def run_planner_stream(
                     if chunk.tool_call_chunks or chunk.tool_calls:
                         turn_has_tool_calls = True
                     if chunk.content and isinstance(chunk.content, str):
+                        full_text += chunk.content
                         turn_buffer += chunk.content
 
             elif kind == "on_chat_model_end":
-                output = event.get("data", {}).get("output")
-                if getattr(output, "tool_call_chunks", None) or getattr(
-                    output, "tool_calls", None
-                ):
-                    turn_has_tool_calls = True
-
                 # 含 tool_call 的轮次 = LLM 内部推理，抑制不推送
                 # 不含 tool_call 的轮次 = 最终回复，清洗后推送
                 if turn_buffer and not turn_has_tool_calls:
-                    visible_raw_text += turn_buffer
+                    clean = clean_display_text(turn_buffer)
+                    if clean:
+                        yield {"type": "token", "data": clean}
+
+            elif kind == "on_tool_start":
+                tool_name = event.get("name", "")
+                yield {"type": "tool_call", "data": {"tool": tool_name}}
+
+            elif kind == "on_tool_end":
+                tool_output = event.get("data", {}).get("output", "")
+                yield {
+                    "type": "tool_result",
+                    "data": {"output": str(tool_output)[:500]},
+                }
 
     except Exception as e:
         yield {"type": "error", "data": str(e)}
         return
 
     # 综合清洗全文：去 JSON 代码块 → 去 ReAct 残留 → 修复中文空格
-    trip_plan = extract_trip_plan(visible_raw_text)
-    display_text = clean_display_text(visible_raw_text)
-
-    if display_text:
-        yield {"type": "token", "data": display_text}
+    trip_plan = extract_trip_plan(full_text)
+    display_text = clean_display_text(full_text)
 
     if trip_plan:
         yield {"type": "trip_plan", "data": trip_plan}
 
     yield {
         "type": "done",
-        "data": {"text": display_text},
+        "data": {
+            "text": display_text,
+            "raw_text": full_text,  # 原始文本，供前端兜底提取 TripPlan JSON
+        },
     }

@@ -2,6 +2,21 @@
 
 基于 LangChain 多 Agent 协作的智能旅游规划服务，支持 AI 对话式行程规划、景点搜索、路线规划、天气查询和预算估算。
 
+## 📸 效果预览
+
+### 前端样式
+
+<p>
+  <img src="./images/Snipaste_2026-06-15_16-49-12.png" alt="智能对话页面" width="49%" />
+  <img src="./images/Snipaste_2026-06-15_16-49-24.png" alt="行程详情页面" width="49%" />
+</p>
+
+### PDF 样式
+
+<p>
+  <img src="./images/Snipaste_2026-06-15_16-50-25.png" alt="PDF 导出样式" width="60%" />
+</p>
+
 ## ✨ 功能特性
 
 - **🤖 AI 对话式行程规划** — 通过自然语言对话，AI 自动为你生成完整的旅游行程
@@ -106,18 +121,45 @@ JWT_EXPIRE_MINUTES=1440
 DATABASE_URL=sqlite+aiosqlite:///./travel_assistant.db
 ```
 
-### 3. Windows 一键启动
+### 3. 命令行一键启动
 
-```bat
-start.bat
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start.ps1
 ```
 
-脚本会启动 Milvus，并分别打开后端和前端开发服务窗口。
+脚本会启动 Milvus，先检查后端/前端依赖，然后在当前终端实时显示后端和前端日志。若需要同时查看 Milvus 容器日志：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start.ps1 -MilvusLogs
+```
+
+脚本默认使用本地镜像，不会主动拉取远程镜像。默认镜像为：
+
+```powershell
+milvusdb/milvus:v2.5.10
+minio/minio:RELEASE.2023-03-20T20-16-18Z
+quay.io/coreos/etcd:v3.5.18
+```
+
+如果你的本地镜像 tag 不同，可以启动前覆盖：
+
+```powershell
+$env:MILVUS_IMAGE="milvusdb/milvus:v2.5.10"
+$env:MINIO_IMAGE="minio/minio:你的本地tag"
+$env:ETCD_IMAGE="quay.io/coreos/etcd:你的本地tag"
+powershell -ExecutionPolicy Bypass -File .\start.ps1
+```
+
+也可以临时只启动前后端：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start.ps1 -SkipMilvus
+```
 
 ### 4. 手动启动 Milvus 知识库
 
 ```bash
-docker compose -f docker-compose.milvus.yml up -d
+docker compose -f docker-compose.milvus.yml up -d --pull never
 ```
 
 Milvus 启动后，可调用 `POST /api/knowledge/seed` 将内置旅游知识写入向量库。
