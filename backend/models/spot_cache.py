@@ -17,6 +17,8 @@ class SpotCache(Base):
     longitude: Mapped[float | None] = mapped_column(Float, default=None)
     latitude: Mapped[float | None] = mapped_column(Float, default=None)
     type_tags: Mapped[str | None] = mapped_column(Text, default=None)
+    address: Mapped[str | None] = mapped_column(String(300), default=None)
+    tel: Mapped[str | None] = mapped_column(String(100), default=None)
     description: Mapped[str | None] = mapped_column(Text, default=None)
     images: Mapped[str | None] = mapped_column(Text, default=None)
     rating: Mapped[float | None] = mapped_column(Float, default=None)

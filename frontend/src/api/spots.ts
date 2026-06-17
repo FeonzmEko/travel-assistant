@@ -9,11 +9,13 @@ export interface Spot {
   rating?: number;
   description?: string;
   image_url?: string;
+  images_list?: string[];
   latitude?: number;
   longitude?: number;
   open_time?: string;
   ticket_price?: number;
   tel?: string;
+  source?: string;
 }
 
 export interface SpotSearchParams {

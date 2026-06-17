@@ -4,6 +4,7 @@ import { Typography, Spin, Button, Descriptions, Tag, Rate, Empty, Card, message
 import { ArrowLeftOutlined, EnvironmentOutlined, PhoneOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { getSpot, type Spot } from '@/api/spots';
 import AMapView from '@/components/AMapView';
+import SpotImage from '@/components/SpotImage';
 
 const { Title, Paragraph } = Typography;
 
@@ -12,11 +13,13 @@ export default function SpotDetail() {
   const navigate = useNavigate();
   const [spot, setSpot] = useState<Spot | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeIdx, setActiveIdx] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+    setActiveIdx(0);
     getSpot(id)
       .then((res) => setSpot(res.data))
       .catch(() => messageApi.error('获取景点详情失败'))
@@ -30,6 +33,13 @@ export default function SpotDetail() {
     ? [{ name: spot.name, longitude: spot.longitude, latitude: spot.latitude }]
     : [];
 
+  const gallery = spot.images_list && spot.images_list.length > 0
+    ? spot.images_list
+    : spot.image_url
+      ? [spot.image_url]
+      : [];
+  const mainSrc = gallery[activeIdx] ?? gallery[0];
+
   return (
     <div style={{ padding: 24 }}>
       {contextHolder}
@@ -42,13 +52,38 @@ export default function SpotDetail() {
       </Button>
 
       <Card>
-        {spot.image_url && (
-          <img
-            src={spot.image_url}
-            alt={spot.name}
-            style={{ width: '100%', maxHeight: 400, objectFit: 'cover', borderRadius: 8, marginBottom: 24 }}
+        <div style={{ marginBottom: 24 }}>
+          <SpotImage
+            src={mainSrc}
+            seed={`${spot.id}-${activeIdx}`}
+            name={spot.name}
+            style={{ width: '100%', height: 360, borderRadius: 8 }}
           />
-        )}
+          {gallery.length > 1 && (
+            <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+              {gallery.map((url, i) => (
+                <div
+                  key={url}
+                  onClick={() => setActiveIdx(i)}
+                  style={{
+                    cursor: 'pointer',
+                    borderRadius: 6,
+                    overflow: 'hidden',
+                    border: i === activeIdx ? '2px solid #C25430' : '2px solid transparent',
+                    lineHeight: 0,
+                  }}
+                >
+                  <SpotImage
+                    src={url}
+                    seed={`${spot.id}-thumb-${i}`}
+                    name={spot.name}
+                    style={{ width: 96, height: 64 }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         <Title level={3}>{spot.name}</Title>
 
@@ -83,7 +118,7 @@ export default function SpotDetail() {
           )}
           {spot.ticket_price != null && (
             <Descriptions.Item label="门票价格">
-              <Tag color="orange">¥{spot.ticket_price}</Tag>
+              <Tag color="orange">{spot.ticket_price > 0 ? `¥${spot.ticket_price}` : '免费'}</Tag>
             </Descriptions.Item>
           )}
           {spot.tel && (

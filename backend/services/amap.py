@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Any
 
 import httpx
 
@@ -15,6 +16,10 @@ class Spot:
     type_tags: list[str] = field(default_factory=list)
     address: str = ""
     tel: str = ""
+    images: list[str] = field(default_factory=list)
+    rating: float | None = None
+    open_time: str = ""
+    ticket_price: float | None = None
 
 
 @dataclass
@@ -34,6 +39,43 @@ class Route:
 
 
 AMAP_BASE_URL = "https://restapi.amap.com/v3"
+
+
+def _to_str(value: object) -> str:
+    """高德对空字段常返回 [] 而非空串，这里统一归一为字符串。"""
+    if isinstance(value, str):
+        return value
+    return ""
+
+
+def _to_float(value: object) -> float | None:
+    if isinstance(value, int | float):
+        return float(value)
+    if isinstance(value, str) and value.strip():
+        try:
+            return float(value.strip())
+        except ValueError:
+            return None
+    return None
+
+
+def _extract_photos(poi: dict[str, Any]) -> list[str]:
+    photos = poi.get("photos")
+    if not isinstance(photos, list):
+        return []
+    urls: list[str] = []
+    for photo in photos:
+        if isinstance(photo, dict):
+            url = photo.get("url")
+            if isinstance(url, str) and url.strip():
+                urls.append(url.strip())
+    return urls
+
+
+def _extract_biz_ext(poi: dict[str, Any]) -> dict[str, Any]:
+    """biz_ext 可能是 dict，也可能在无数据时是空 list。"""
+    biz_ext = poi.get("biz_ext")
+    return biz_ext if isinstance(biz_ext, dict) else {}
 
 
 async def amap_poi_search(
@@ -69,17 +111,25 @@ async def amap_poi_search(
 
         spots: list[Spot] = []
         for poi in data.get("pois", []):
-            location = poi.get("location", "0,0").split(",")
+            location = _to_str(poi.get("location")) or "0,0"
+            coords = location.split(",")
+            longitude = _to_float(coords[0]) if len(coords) == 2 else None
+            latitude = _to_float(coords[1]) if len(coords) == 2 else None
+            biz_ext = _extract_biz_ext(poi)
             spots.append(
                 Spot(
-                    name=poi.get("name", ""),
-                    source_id=poi.get("id", ""),
-                    city=poi.get("cityname", city),
-                    longitude=float(location[0]) if len(location) == 2 else 0.0,
-                    latitude=float(location[1]) if len(location) == 2 else 0.0,
-                    type_tags=poi.get("type", "").split(";"),
-                    address=poi.get("address", ""),
-                    tel=poi.get("tel", ""),
+                    name=_to_str(poi.get("name")),
+                    source_id=_to_str(poi.get("id")),
+                    city=_to_str(poi.get("cityname")) or city,
+                    longitude=longitude if longitude is not None else 0.0,
+                    latitude=latitude if latitude is not None else 0.0,
+                    type_tags=_to_str(poi.get("type")).split(";"),
+                    address=_to_str(poi.get("address")),
+                    tel=_to_str(poi.get("tel")),
+                    images=_extract_photos(poi),
+                    rating=_to_float(biz_ext.get("rating")),
+                    open_time=_to_str(biz_ext.get("open_time")),
+                    ticket_price=_to_float(biz_ext.get("cost")),
                 )
             )
         return spots
