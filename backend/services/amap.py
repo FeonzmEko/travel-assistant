@@ -80,7 +80,7 @@ def _extract_biz_ext(poi: dict[str, Any]) -> dict[str, Any]:
 
 async def amap_poi_search(
     keyword: str,
-    city: str,
+    city: str = "",
     type_code: str | None = None,
     page: int = 1,
     size: int = 20,
@@ -89,11 +89,12 @@ async def amap_poi_search(
     params: dict[str, str | int] = {
         "key": settings.amap_api_key,
         "keywords": keyword,
-        "city": city,
         "offset": size,
         "page": page,
         "extensions": "all",
     }
+    if city:
+        params["city"] = city
     if type_code:
         params["types"] = type_code
 

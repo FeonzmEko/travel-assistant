@@ -73,6 +73,19 @@ class TestSpotSearch:
         mock_amap.assert_called_once()
 
     @patch("backend.api.spots.amap_poi_search", new_callable=AsyncMock)
+    async def test_keyword_only_calls_amap(
+        self, mock_amap: AsyncMock, client: AsyncClient
+    ) -> None:
+        mock_amap.return_value = _make_amap_spots(2)
+
+        resp = await client.get("/api/spots/search", params={"keyword": "九寨沟"})
+
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["total"] == 2
+        mock_amap.assert_called_once()
+
+    @patch("backend.api.spots.amap_poi_search", new_callable=AsyncMock)
     async def test_cache_hit_skips_amap(
         self, mock_amap: AsyncMock, client: AsyncClient
     ) -> None:

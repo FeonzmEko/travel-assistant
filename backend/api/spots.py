@@ -205,11 +205,13 @@ async def search(
     if base_total > 0:
         return {"total": 0, "items": []}
 
-    # 1) 优先高德 POI（需同时提供关键词与城市）
+    # 1) 优先高德 POI（有关键词即可，城市可选；高德支持全国检索）
     remote_items: list[SpotCacheOut] = []
-    if keyword and city:
+    if keyword:
         try:
-            remote_items = await _cache_amap_spots(db, keyword, city, type, page, size)
+            remote_items = await _cache_amap_spots(
+                db, keyword, city or "", type, page, size
+            )
         except httpx.HTTPError:
             logger.exception("高德 POI 搜索失败，回退到精选景点数据")
     if remote_items:
