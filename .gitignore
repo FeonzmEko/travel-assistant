@@ -24,3 +24,15 @@ wheels/
 
 # Node
 node_modules/
+
+# Agent skills (local only)
+.agents/
+
+# Understand-anything knowledge graph (local only)
+.understand-anything/
+
+# Startup script (local only)
+start.bat
+
+# Temp files
+*understand-anything*
